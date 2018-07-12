@@ -8,7 +8,7 @@ import (
 func (a CPI) RebootVM(cid apiv1.VMCID) error {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.Reboot)
 
-	vm, err := a.findVmById(cid)
+	vm, err := a.findVmByName(cid)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Rebooting vm %s", cid.AsString())
 	}

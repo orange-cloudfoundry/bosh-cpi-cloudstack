@@ -113,6 +113,7 @@ type CloudStackConfig struct {
 type DefaultOffers struct {
 	Disk          string
 	EphemeralDisk string
+	CustomDisk    string
 }
 
 type CalculateCloudProps struct {
@@ -129,31 +130,6 @@ type Timeout struct {
 	DeleteVolume int64
 }
 
-func (t *Timeout) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, t); err != nil {
-		return err
-	}
-	if t.Global <= 0 {
-		t.Global = 1800
-	}
-	if t.Reboot <= 0 {
-		t.Reboot = t.Global
-	}
-	if t.CreateVm <= 0 {
-		t.CreateVm = t.Global
-	}
-	if t.DeleteVm <= 0 {
-		t.DeleteVm = t.Global
-	}
-	if t.CreateVolume <= 0 {
-		t.CreateVolume = t.Global
-	}
-	if t.DeleteVolume <= 0 {
-		t.DeleteVolume = t.Global
-	}
-	return nil
-}
-
 type StemcellConfig struct {
 	PublicVisibility *bool
 	RequiresHvm      *bool
@@ -161,7 +137,7 @@ type StemcellConfig struct {
 }
 
 func NewConfigFromPath(path string, fs boshsys.FileSystem) (Config, error) {
-	var config Config
+	config := defaultConfig()
 	bytes, err := fs.ReadFile(path)
 	if err != nil {
 		return config, bosherr.WrapErrorf(err, "Reading config '%s'", path)
@@ -178,6 +154,26 @@ func NewConfigFromPath(path string, fs boshsys.FileSystem) (Config, error) {
 	}
 
 	return config, nil
+}
+
+func defaultConfig() Config {
+	timeout := Timeout{
+		Global:       1800,
+		CreateVolume: 1800,
+		DeleteVolume: 1800,
+		Reboot:       1800,
+		CreateVm:     1800,
+		DeleteVm:     1800,
+	}
+	defOffers := DefaultOffers{
+		CustomDisk: "shared.custom",
+	}
+	return Config{
+		CloudStack: CloudStackConfig{
+			Timeout:       timeout,
+			DefaultOffers: defOffers,
+		},
+	}
 }
 
 func (c Config) Validate() error {

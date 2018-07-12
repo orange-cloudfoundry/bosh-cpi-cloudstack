@@ -14,34 +14,30 @@ func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) 
 	if err != nil {
 		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
 	}
+
 	diskOfferName := diskProps.DiskOffering
 	if diskOfferName == "" {
 		diskOfferName = a.config.CloudStack.DefaultOffers.Disk
 		a.logger.Info("create_disk", "Using default disk offering %s because not set in properties", diskOfferName)
 	}
 
+	if diskOfferName == "" {
+		diskOfferName = a.config.CloudStack.DefaultOffers.CustomDisk
+		a.logger.Info("create_disk", "Using default custom disk offering %s because there is no default disk offers", diskOfferName)
+	}
+
 	diskName := fmt.Sprintf("%s%s", config.PersistenceDiskPrefix, uuid.NewV4().String())
-
-	pDiskOffer := a.client.DiskOffering.NewListDiskOfferingsParams()
-	pDiskOffer.SetName(diskOfferName)
-
-	resp, err := a.client.DiskOffering.ListDiskOfferings(pDiskOffer)
-	if err != nil {
-		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
-	}
-
-	if len(resp.DiskOfferings) == 0 {
-		return apiv1.DiskCID{}, bosherr.WrapErrorf(
-			fmt.Errorf("Cannot found offering %s", diskOfferName),
-			"Cannot create disk for vm %s", cid.AsString())
-	}
 
 	zoneId, err := a.findZoneId()
 	if err != nil {
 		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
 	}
 
-	offer := resp.DiskOfferings[0]
+	offer, err := a.findDiskOfferingByName(diskOfferName)
+	if err != nil {
+		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+	}
+
 	p := a.client.Volume.NewCreateVolumeParams()
 	p.SetName(diskName)
 	p.SetZoneid(zoneId)
