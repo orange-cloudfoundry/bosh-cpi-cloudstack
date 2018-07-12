@@ -911,12 +911,14 @@ func (s *TemplateService) GetUploadParamsForTemplate(p *GetUploadParamsForTempla
 		return nil, err
 	}
 
-	var r GetUploadParamsForTemplateResponse
+	var r struct {
+		Response GetUploadParamsForTemplateResponse `json:"getuploadparams"`
+	}
 	if err := json.Unmarshal(resp, &r); err != nil {
 		return nil, err
 	}
 
-	return &r, nil
+	return &r.Response, nil
 }
 
 type GetUploadParamsForTemplateResponse struct {

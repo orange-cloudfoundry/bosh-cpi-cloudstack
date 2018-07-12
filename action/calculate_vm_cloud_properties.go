@@ -1,12 +1,12 @@
 package action
 
 import (
+	"fmt"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/xanzy/go-cloudstack/cloudstack"
 	"sort"
 	"strings"
-	"fmt"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
 func (a CPI) CalculateVMCloudProperties(res apiv1.VMResources) (apiv1.VMCloudProps, error) {

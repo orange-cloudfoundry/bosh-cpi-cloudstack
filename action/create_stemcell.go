@@ -2,6 +2,7 @@ package action
 
 import (
 	"bytes"
+	"crypto/tls"
 	"fmt"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
@@ -34,7 +35,8 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] not handling light stemcell yet")
 	}
 
-	name := fmt.Sprintf(config.TemplateNameFormat, uuid.Must(uuid.NewV4()))
+	id := uuid.NewV4()
+	name := fmt.Sprintf(config.TemplateNameFormat, id)
 
 	zoneid, err := a.findZoneId()
 	if err != nil {
@@ -54,14 +56,14 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 		name,
 		ostypeid,
 		zoneid)
-
-	a.logger.Info("create_stemcell", "fds : %#v", params)
+	params.SetIsextractable(true)
+	params.SetRequireshvm(*a.config.CloudStack.Stemcell.RequiresHvm)
+	params.SetBits(64)
 
 	res, err := a.client.Template.GetUploadParamsForTemplate(params)
 	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] could not get upload parameters")
 	}
-	a.logger.Info("create_stemcell", "fds : %#v", res)
 
 	request, err := NewFileUploadRequest(res.PostURL, "file", imagePath)
 	if err != nil {
@@ -71,7 +73,14 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 	request.Header.Set("X-signature", res.Signature)
 	request.Header.Set("X-metadata", res.Metadata)
 	request.Header.Set("X-expires", res.Expires)
-	client := &http.Client{}
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	}
+
 	if _, err = client.Do(request); err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] error while uploading file '%s'", imagePath)
 	}
