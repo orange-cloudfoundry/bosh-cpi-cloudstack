@@ -1,4 +1,4 @@
-package vm
+package reg
 
 import (
 	gobytes "bytes"
@@ -10,6 +10,7 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
 type registryAgentEnvService struct {
@@ -23,7 +24,7 @@ type registryResp struct {
 }
 
 func NewRegistryAgentEnvService(
-	registryOptions RegistryOptions,
+	registryOptions config.RegistryOptions,
 	instanceID apiv1.VMCID,
 	logger boshlog.Logger,
 ) AgentEnvService {
