@@ -5,6 +5,7 @@ import (
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	"github.com/xanzy/go-cloudstack/cloudstack"
 )
 
 func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal) error {
@@ -16,30 +17,45 @@ func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal)
 	return nil
 }
 
-func (a CPI) findVmId(cid apiv1.VMCID) (string, error) {
+func (a CPI) findVmsByName(cid apiv1.VMCID) ([]*cloudstack.VirtualMachine, error) {
 	p := a.client.VirtualMachine.NewListVirtualMachinesParams()
 	p.SetName(cid.AsString())
 	resp, err := a.client.VirtualMachine.ListVirtualMachines(p)
 	if err != nil {
-		return "", bosherr.WrapErrorf(err, "Can't find vm name '%s'", cid.AsString())
+		return []*cloudstack.VirtualMachine{}, err
 	}
-	if len(resp.VirtualMachines) == 0 {
-		return "", bosherr.Errorf("Can't find vm name '%s'", cid.AsString())
-
-	}
-	return resp.VirtualMachines[0].Id, nil
+	return resp.VirtualMachines, nil
 }
 
-func (a CPI) findVolumeId(cid apiv1.DiskCID) (string, error) {
+func (a CPI) findVolumesByName(cid apiv1.DiskCID) ([]*cloudstack.Volume, error) {
 	p := a.client.Volume.NewListVolumesParams()
 	p.SetName(cid.AsString())
 	resp, err := a.client.Volume.ListVolumes(p)
 	if err != nil {
-		return "", bosherr.WrapErrorf(err, "Can't find disk name '%s'", cid.AsString())
+		return []*cloudstack.Volume{}, err
 	}
-	if len(resp.Volumes) == 0 {
-		return "", bosherr.Errorf("Can't find disk name '%s'", cid.AsString())
+	return resp.Volumes, nil
+}
+
+func (a CPI) findVmId(cid apiv1.VMCID) (string, error) {
+	vms, err := a.findVmsByName(cid)
+	if err != nil {
+		return "", bosherr.WrapErrorf(err, "Can't find vm name '%s'", cid.AsString())
+	}
+	if len(vms) == 0 {
+		return "", bosherr.Errorf("Can't find vm name '%s'", cid.AsString())
 
 	}
-	return resp.Volumes[0].Id, nil
+	return vms[0].Id, nil
+}
+
+func (a CPI) findVolumeId(cid apiv1.DiskCID) (string, error) {
+	volumes, err := a.findVolumesByName(cid)
+	if err != nil {
+		return "", bosherr.WrapErrorf(err, "Can't find disk name '%s'", cid.AsString())
+	}
+	if len(volumes) == 0 {
+		return "", bosherr.Errorf("Can't find disk name '%s'", cid.AsString())
+	}
+	return volumes[0].Id, nil
 }
