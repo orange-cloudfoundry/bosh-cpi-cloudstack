@@ -36,6 +36,9 @@ func (a CPI) findEphemeralDiskOffering(diskSize int) (string, error) {
 	if len(a.config.CloudStack.CalculateCloudProps.DiskTags) > 0 {
 		tmpOffers := make([]*cloudstack.DiskOffering, 0)
 		for _, offer := range offers {
+			if offer.Iscustomized {
+				continue
+			}
 			for _, tag := range a.config.CloudStack.CalculateCloudProps.DiskTags {
 				if strings.Contains(offer.Tags, tag) {
 					tmpOffers = append(tmpOffers, offer)
@@ -56,7 +59,7 @@ func (a CPI) findEphemeralDiskOffering(diskSize int) (string, error) {
 
 	finalOffers := make([]*cloudstack.DiskOffering, 0)
 	for _, offer := range offers {
-		if offer.Disksize < int64(diskSize) {
+		if offer.Disksize < int64(diskSize) || offer.Iscustomized {
 			continue
 		}
 		finalOffers = append(finalOffers, offer)

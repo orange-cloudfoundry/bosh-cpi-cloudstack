@@ -16,5 +16,5 @@ func (a CPI) HasVM(cid apiv1.VMCID) (bool, error) {
 			fmt.Errorf("multiple vm found with this name"),
 			"Has vm failed on vm %s", cid.AsString())
 	}
-	return true, nil
+	return len(vms) == 1, nil
 }
