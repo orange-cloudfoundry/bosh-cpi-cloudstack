@@ -6,6 +6,7 @@ import (
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
 	"github.com/xanzy/go-cloudstack/cloudstack"
+	"fmt"
 )
 
 func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal) error {
@@ -37,7 +38,7 @@ func (a CPI) findVolumesByName(cid apiv1.DiskCID) ([]*cloudstack.Volume, error) 
 	return resp.Volumes, nil
 }
 
-func (a CPI) findVmById(cid apiv1.VMCID) (*cloudstack.VirtualMachine, error) {
+func (a CPI) findVmByName(cid apiv1.VMCID) (*cloudstack.VirtualMachine, error) {
 	vms, err := a.findVmsByName(cid)
 	if err != nil {
 		return nil, bosherr.WrapErrorf(err, "Can't find vm name '%s'", cid.AsString())
@@ -49,7 +50,7 @@ func (a CPI) findVmById(cid apiv1.VMCID) (*cloudstack.VirtualMachine, error) {
 	return vms[0], nil
 }
 
-func (a CPI) findVolumeById(cid apiv1.DiskCID) (*cloudstack.Volume, error) {
+func (a CPI) findVolumeByName(cid apiv1.DiskCID) (*cloudstack.Volume, error) {
 	volumes, err := a.findVolumesByName(cid)
 	if err != nil {
 		return nil, bosherr.WrapErrorf(err, "Can't find disk name '%s'", cid.AsString())
@@ -71,6 +72,20 @@ func (a CPI) findZoneId() (string, error) {
 		return "", bosherr.Errorf("Can't find zone name '%s'", a.config.CloudStack.DefaultZone)
 	}
 	return resp.Zones[0].Id, nil
+}
+
+func (a CPI) findDiskOfferingByName(name string) (*cloudstack.DiskOffering, error) {
+	p := a.client.DiskOffering.NewListDiskOfferingsParams()
+	p.SetName(name)
+
+	resp, err := a.client.DiskOffering.ListDiskOfferings(p)
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.DiskOfferings) == 0 {
+		return nil, fmt.Errorf("Cannot found offering %s", name)
+	}
+	return resp.DiskOfferings[0], nil
 }
 
 func (a CPI) findOsTypeId(descr string) (string, error) {

@@ -9,7 +9,7 @@ import (
 
 func (a CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 	diskCids := make([]apiv1.DiskCID, 0)
-	vm, err := a.findVmById(cid)
+	vm, err := a.findVmByName(cid)
 	if err != nil {
 		return diskCids, bosherr.WrapErrorf(err, "Cannot getting disks for vm %s", cid.AsString())
 	}

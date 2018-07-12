@@ -7,7 +7,7 @@ import (
 )
 
 func (a CPI) SetDiskMetadata(cid apiv1.DiskCID, meta apiv1.DiskMeta) error {
-	vol, err := a.findVolumeById(cid)
+	vol, err := a.findVolumeByName(cid)
 	if err != nil {
 		bosherr.WrapErrorf(err, "Setting metadata for volume")
 	}

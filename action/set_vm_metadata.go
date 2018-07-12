@@ -7,7 +7,7 @@ import (
 )
 
 func (a CPI) SetVMMetadata(cid apiv1.VMCID, meta apiv1.VMMeta) error {
-	vm, err := a.findVmById(cid)
+	vm, err := a.findVmByName(cid)
 	if err != nil {
 		bosherr.WrapErrorf(err, "Setting metadata for vm")
 	}
