@@ -9,6 +9,8 @@ import (
 )
 
 func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) (apiv1.DiskCID, error) {
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVolume)
+
 	var diskProps DiskCloudProperties
 	err := props.As(&diskProps)
 	if err != nil {

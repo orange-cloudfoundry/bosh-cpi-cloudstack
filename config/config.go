@@ -128,6 +128,7 @@ type Timeout struct {
 	DeleteVm     int64
 	CreateVolume int64
 	DeleteVolume int64
+	ResizeVolume int64
 }
 
 type StemcellConfig struct {
@@ -164,6 +165,7 @@ func defaultConfig() Config {
 		Reboot:       1800,
 		CreateVm:     1800,
 		DeleteVm:     1800,
+		ResizeVolume: 1800,
 	}
 	defOffers := DefaultOffers{
 		CustomDisk: "shared.custom",
