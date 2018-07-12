@@ -9,13 +9,13 @@ import (
 
 func (a CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 	diskCids := make([]apiv1.DiskCID, 0)
-	id, err := a.findVmId(cid)
+	vm, err := a.findVmById(cid)
 	if err != nil {
 		return diskCids, bosherr.WrapErrorf(err, "Cannot getting disks for vm %s", cid.AsString())
 	}
 
 	p := a.client.Volume.NewListVolumesParams()
-	p.SetVirtualmachineid(id)
+	p.SetVirtualmachineid(vm.Id)
 	p.SetType(string(config.Datadisk))
 	resp, err := a.client.Volume.ListVolumes(p)
 	if err != nil {

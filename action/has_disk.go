@@ -16,5 +16,5 @@ func (a CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
 			fmt.Errorf("multiple volumes found with this name"),
 			"Has disk failed on disk %s", cid.AsString())
 	}
-	return true, nil
+	return len(volumes) == 1, nil
 }

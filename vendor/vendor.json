@@ -252,6 +252,12 @@
 			"revisionTime": "2017-07-16T19:34:46Z"
 		},
 		{
+			"checksumSHA1": "TvF3ym5sZVNqGlUOS9HgOIl/sZM=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "d41af8bb6a7704f00bc3b7cba9355ae6a5a80048",
+			"revisionTime": "2015-10-28T23:17:19Z"
+		},
+		{
 			"checksumSHA1": "xCyijWso/qrd6K3ol10rvGOo9yE=",
 			"path": "github.com/xanzy/go-cloudstack/cloudstack",
 			"revision": "50cce667cbf0eca36ad6ad1b9f1d808b57f39234",

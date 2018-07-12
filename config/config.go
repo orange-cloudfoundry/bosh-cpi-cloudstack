@@ -106,6 +106,13 @@ type CloudStackConfig struct {
 
 	// Zone
 	DefaultZone string
+
+	DefaultOffers DefaultOffers
+}
+
+type DefaultOffers struct {
+	Disk          string
+	EphemeralDisk string
 }
 
 type CalculateCloudProps struct {

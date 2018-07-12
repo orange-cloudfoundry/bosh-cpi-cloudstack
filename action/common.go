@@ -37,27 +37,27 @@ func (a CPI) findVolumesByName(cid apiv1.DiskCID) ([]*cloudstack.Volume, error) 
 	return resp.Volumes, nil
 }
 
-func (a CPI) findVmId(cid apiv1.VMCID) (string, error) {
+func (a CPI) findVmById(cid apiv1.VMCID) (*cloudstack.VirtualMachine, error) {
 	vms, err := a.findVmsByName(cid)
 	if err != nil {
-		return "", bosherr.WrapErrorf(err, "Can't find vm name '%s'", cid.AsString())
+		return nil, bosherr.WrapErrorf(err, "Can't find vm name '%s'", cid.AsString())
 	}
 	if len(vms) == 0 {
-		return "", bosherr.Errorf("Can't find vm name '%s'", cid.AsString())
+		return nil, bosherr.Errorf("Can't find vm name '%s'", cid.AsString())
 
 	}
-	return vms[0].Id, nil
+	return vms[0], nil
 }
 
-func (a CPI) findVolumeId(cid apiv1.DiskCID) (string, error) {
+func (a CPI) findVolumeById(cid apiv1.DiskCID) (*cloudstack.Volume, error) {
 	volumes, err := a.findVolumesByName(cid)
 	if err != nil {
-		return "", bosherr.WrapErrorf(err, "Can't find disk name '%s'", cid.AsString())
+		return nil, bosherr.WrapErrorf(err, "Can't find disk name '%s'", cid.AsString())
 	}
 	if len(volumes) == 0 {
-		return "", bosherr.Errorf("Can't find disk name '%s'", cid.AsString())
+		return nil, bosherr.Errorf("Can't find disk name '%s'", cid.AsString())
 	}
-	return volumes[0].Id, nil
+	return volumes[0], nil
 }
 
 func (a CPI) findZoneId() (string, error) {
