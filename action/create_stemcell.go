@@ -8,11 +8,16 @@ import (
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/satori/go.uuid"
+	"github.com/xanzy/go-cloudstack/cloudstack"
+	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"os"
+	"path/filepath"
 	"strings"
+	"time"
 )
 
 // CreateStemcell - Create CS template from given stemcell
@@ -36,22 +41,43 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] not handling light stemcell yet")
 	}
 
-	id := uuid.NewV4()
-	name := fmt.Sprintf(config.TemplateNameFormat, id)
-	parts := strings.Split(name, "-")
-	name = strings.Join(parts[0:4], "-")
+	name := a.generateStemcellID()
+	uploadP, err := a.getUploadParams(name)
+	if err != nil {
+		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
+	}
 
+	r, err := a.createUploadRequest(imagePath, uploadP.PostURL, uploadP.Expires, uploadP.Signature, uploadP.Metadata)
+	if err != nil {
+		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
+	}
+
+	err = a.performUpload(r)
+	if err != nil {
+		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
+	}
+
+	err = a.pollTemplateStatus(uploadP.Id, name)
+	if err != nil {
+		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
+	}
+
+	a.logger.Debug("create_stemcell", "create_stemcell succes : template %s (%s)", uploadP.Id, name)
+	return apiv1.NewStemcellCID(uploadP.Id), nil
+}
+
+// getUploadParams -
+func (a CPI) getUploadParams(name string) (*cloudstack.GetUploadParamsForTemplateResponse, error) {
 	zoneid, err := a.findZoneId()
 	if err != nil {
-		return apiv1.StemcellCID{}, err
+		return nil, err
 	}
 
 	ostypeid, err := a.findOsTypeId(a.config.CloudStack.Stemcell.OsType)
 	if err != nil {
-		return apiv1.StemcellCID{}, err
+		return nil, err
 	}
 
-	// TODO [xmt]: check disk format
 	params := a.client.Template.NewGetUploadParamsForTemplateParams(
 		name,
 		config.TemplateFormat,
@@ -66,17 +92,70 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 	a.logger.Debug("create_stemcell", "requesting upload parameters : %#v", params)
 	res, err := a.client.Template.GetUploadParamsForTemplate(params)
 	if err != nil {
-		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] could not get upload parameters")
+		return nil, bosherr.WrapErrorf(err, "[create_stemcell] could not get upload parameters")
 	}
 
-	request, err := NewFileUploadRequest(res.PostURL, "file", imagePath)
+	return res, nil
+}
+
+// generateStemcellID -
+// CS ids are limited to 32 bytes
+func (a CPI) generateStemcellID() string {
+	id := uuid.NewV4()
+	name := fmt.Sprintf(config.TemplateNameFormat, id)
+	parts := strings.Split(name, "-")
+	return strings.Join(parts[0:4], "-")
+}
+
+// createUploadRequest -
+func (a CPI) createUploadRequest(
+	imagePath string,
+	postURL string,
+	expires string,
+	signature string,
+	metadata string) (*http.Request, error) {
+
+	file, _ := os.Open(imagePath)
+	defer file.Close()
+
+	// header
+	h := make(textproto.MIMEHeader)
+	h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="file"; filename="%s"`, filepath.Base(file.Name())+".vhd.bz2"))
+	h.Set("Content-Type", "application/x-bzip")
+
+	// create part writer
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreatePart(h)
 	if err != nil {
-		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] could not prepare upload request for '%s'", imagePath)
+		return nil, bosherr.WrapErrorf(err, "unable to create multipart for image '%s'", imagePath)
 	}
 
-	request.Header.Set("X-signature", res.Signature)
-	request.Header.Set("X-metadata", res.Metadata)
-	request.Header.Set("X-expires", res.Expires)
+	// feed part writer
+	_, err = io.Copy(part, file)
+	if err != nil {
+		return nil, bosherr.WrapErrorf(err, "unable to read stemcell image '%s'", imagePath)
+	}
+	writer.Close()
+
+	r, _ := http.NewRequest("POST", postURL, body)
+
+	// manually replace header since:
+	//  - CS is case sensitive on header names
+	//  - golang concert header names into UpperCamelCase
+	r.Header = map[string][]string{
+		"X-signature":  []string{signature},
+		"X-metadata":   []string{metadata},
+		"X-expires":    []string{expires},
+		"Content-Type": []string{writer.FormDataContentType()},
+	}
+
+	return r, nil
+}
+
+// performUpload - upload stemcell to CS and check return status
+// - InsecureSkipVerify since CSM is misconfigured
+func (a CPI) performUpload(request *http.Request) error {
 	client := &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
@@ -84,50 +163,39 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 			},
 		},
 	}
-	// client := &http.Client{}
 
-	a.logger.Debug("create_stemcell", "uploading template to : %s", res.PostURL)
+	a.logger.Debug("create_stemcell", "performing template upload to '%s'", request.URL)
 	uploadRes, err := client.Do(request)
 	if err != nil {
-		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] error while uploading file '%s'", imagePath)
+		return bosherr.WrapErrorf(err, "error while uploading stemcell")
 	}
 
 	if uploadRes.StatusCode != 200 {
 		bodyBytes, _ := ioutil.ReadAll(uploadRes.Body)
-		return apiv1.StemcellCID{}, fmt.Errorf("[create_stemcell] error while uploading file '%s' : %s", imagePath, string(bodyBytes))
+		return fmt.Errorf("unexpected response while uploading stemcell: %s", string(bodyBytes))
 	}
 
-	a.logger.Debug("create_stemcell", "generated template id '%s' for stemcell '%s'", res.Id)
-	return apiv1.NewStemcellCID(res.Id), nil
+	return nil
 }
 
-// NewFileUploadRequest -
-func NewFileUploadRequest(uri string, paramName, path string) (*http.Request, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	fileContents, err := ioutil.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-	fi, err := file.Stat()
-	if err != nil {
-		return nil, err
-	}
-	file.Close()
+// pollTemplateStatus -
+func (a CPI) pollTemplateStatus(templateID string, name string) error {
+	dur, _ := time.ParseDuration(fmt.Sprintf("%ds", a.config.CloudStack.Timeout.PollTemplate))
+	timeout := time.Now().Add(dur)
+	for false == time.Now().After(timeout) {
+		a.logger.Debug("create_stemcell", "checking status for template %s (%s)", templateID, name)
+		resp, _, err := a.client.Template.GetTemplateByID(templateID, "executable")
+		if err != nil {
+			return bosherr.WrapErrorf(err, "unable to get status for template %s (%s)", templateID, name)
+		}
 
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile(paramName, fi.Name())
-	if err != nil {
-		return nil, err
-	}
-	part.Write(fileContents)
-	err = writer.Close()
-	if err != nil {
-		return nil, err
-	}
+		if resp.Status == "Download Complete" {
+			return nil
+		} else if strings.Contains(strings.ToLower(resp.Status), "error") {
+			return fmt.Errorf("upload failed for template %s (%s) with status '%s'", templateID, name, resp.Status)
+		}
 
-	return http.NewRequest("POST", uri, body)
+		time.Sleep(5 * time.Second)
+	}
+	return fmt.Errorf("upload failed for template %s (%s), timeout reached", templateID, name)
 }
