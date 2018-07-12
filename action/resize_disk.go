@@ -6,6 +6,8 @@ import (
 )
 
 func (a CPI) ResizeDisk(cid apiv1.DiskCID, size int) error {
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.ResizeVolume)
+
 	volume, err := a.findVolumeByName(cid)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Cannot resize disk %s", cid.AsString())

@@ -7,6 +7,8 @@ import (
 )
 
 func (a CPI) DeleteDisk(cid apiv1.DiskCID) error {
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.DeleteVolume)
+
 	volumes, err := a.findVolumesByName(cid)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Cannot delete disk %s", cid.AsString())
