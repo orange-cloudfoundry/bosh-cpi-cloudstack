@@ -1,5 +1,6 @@
 package action
 
 type DiskCloudProperties struct {
-	DiskOffering string `json:"disk_offering"`
+	DiskOffering          string `json:"disk_offering"`
+	EphemeralDiskOffering string `json:"ephemeral_disk_offering"`
 }
