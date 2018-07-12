@@ -11,6 +11,7 @@ func (a CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
 	listTplP := a.client.Template.NewListTemplatesParams("executable")
 	listTplP.SetName(cid.AsString())
 
+	a.logger.Debug("delete_stemcell", "listing templates : %#v", listTplP)
 	templatesRes, err := a.client.Template.ListTemplates(listTplP)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "[delete_stemcell] error while listing templates matching stemcell name '%s'", cid.AsString())
@@ -30,6 +31,8 @@ func (a CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
 	template := templatesRes.Templates[0]
 	deleteP := a.client.Template.NewDeleteTemplateParams(template.Id)
 	deleteP.SetZoneid(zoneid)
+	//deleteP.SetForced(true)
+	a.logger.Debug("delete_stemcell", "listing templates : %#v", deleteP)
 	_, err = a.client.Template.DeleteTemplate(deleteP)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "[delete_stemcell] error while deleteing stemcell '%s'", cid.AsString())

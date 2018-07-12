@@ -470,6 +470,14 @@ func (p *DeleteTemplateParams) SetZoneid(v string) {
 	return
 }
 
+func (p *DeleteTemplateParams) SetForced(b bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["forced"] = b
+	return
+}
+
 // You should always use this function to get a new DeleteTemplateParams instance,
 // as then you are sure you have configured all required params
 func (s *TemplateService) NewDeleteTemplateParams(id string) *DeleteTemplateParams {

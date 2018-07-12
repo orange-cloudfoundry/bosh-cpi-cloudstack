@@ -12,6 +12,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // CreateStemcell - Create CS template from given stemcell
@@ -37,6 +38,8 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 
 	id := uuid.NewV4()
 	name := fmt.Sprintf(config.TemplateNameFormat, id)
+	parts := strings.Split(name, "-")
+	name = strings.Join(parts[0:4], "-")
 
 	zoneid, err := a.findZoneId()
 	if err != nil {
@@ -60,6 +63,7 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 	params.SetRequireshvm(*a.config.CloudStack.Stemcell.RequiresHvm)
 	params.SetBits(64)
 
+	a.logger.Debug("create_stemcell", "requesting upload parameters : %#v", params)
 	res, err := a.client.Template.GetUploadParamsForTemplate(params)
 	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] could not get upload parameters")
@@ -80,11 +84,20 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 			},
 		},
 	}
+	// client := &http.Client{}
 
-	if _, err = client.Do(request); err != nil {
+	a.logger.Debug("create_stemcell", "uploading template to : %s", res.PostURL)
+	uploadRes, err := client.Do(request)
+	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] error while uploading file '%s'", imagePath)
 	}
 
+	if uploadRes.StatusCode != 200 {
+		bodyBytes, _ := ioutil.ReadAll(uploadRes.Body)
+		return apiv1.StemcellCID{}, fmt.Errorf("[create_stemcell] error while uploading file '%s' : %s", imagePath, string(bodyBytes))
+	}
+
+	a.logger.Debug("create_stemcell", "generated template id '%s' for stemcell '%s'", res.Id)
 	return apiv1.NewStemcellCID(res.Id), nil
 }
 
