@@ -8,8 +8,7 @@ import (
 
 // DeleteStemcell - Delete CS template matching given stemcell name
 func (a CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
-	// TODO [xmt]  "featured", "self", "selfexecutable","sharedexecutable","executable", and "community" ?
-	listTplP := a.client.Template.NewListTemplatesParams("self")
+	listTplP := a.client.Template.NewListTemplatesParams("executable")
 	listTplP.SetName(cid.AsString())
 
 	templatesRes, err := a.client.Template.ListTemplates(listTplP)

@@ -15,7 +15,7 @@ type CloudStackCloudProperties struct {
 	OsType          string `json:"os_type"`
 	OsDistro        string `json:"os_distro"`
 	Architecture    string `json:"architecture"`
-	AutoDiskConfig  string `json:"auto_disk_config"`
+	AutoDiskConfig  bool   `json:"auto_disk_config"`
 	LightTemplate   string `json:"light_template"`
 }
 

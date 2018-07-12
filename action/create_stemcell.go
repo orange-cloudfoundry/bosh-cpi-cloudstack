@@ -5,7 +5,8 @@ import (
 	"fmt"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
-	"github.com/kjk/betterguid"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
@@ -33,10 +34,14 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] not handling light stemcell yet")
 	}
 
-	id := betterguid.New()
-	name := fmt.Sprintf("cpitemplate-%s", id)
+	name := fmt.Sprintf(config.TemplateNameFormat, uuid.Must(uuid.NewV4()))
 
 	zoneid, err := a.findZoneId()
+	if err != nil {
+		return apiv1.StemcellCID{}, err
+	}
+
+	ostypeid, err := a.findOsTypeId(a.config.CloudStack.Stemcell.OsType)
 	if err != nil {
 		return apiv1.StemcellCID{}, err
 	}
@@ -44,16 +49,19 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 	// TODO [xmt]: check disk format
 	params := a.client.Template.NewGetUploadParamsForTemplateParams(
 		name,
-		csProp.DiskFormat,
-		csProp.Hypervisor,
+		config.TemplateFormat,
+		config.Hypervisor,
 		name,
-		csProp.OsType,
+		ostypeid,
 		zoneid)
+
+	a.logger.Info("create_stemcell", "fds : %#v", params)
 
 	res, err := a.client.Template.GetUploadParamsForTemplate(params)
 	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell] could not get upload parameters")
 	}
+	a.logger.Info("create_stemcell", "fds : %#v", res)
 
 	request, err := NewFileUploadRequest(res.PostURL, "file", imagePath)
 	if err != nil {

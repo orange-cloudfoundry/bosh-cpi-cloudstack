@@ -1,10 +1,10 @@
 package action
 
 import (
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
 	"github.com/xanzy/go-cloudstack/cloudstack"
 )
 
@@ -71,4 +71,17 @@ func (a CPI) findZoneId() (string, error) {
 		return "", bosherr.Errorf("Can't find zone name '%s'", a.config.CloudStack.DefaultZone)
 	}
 	return resp.Zones[0].Id, nil
+}
+
+func (a CPI) findOsTypeId(descr string) (string, error) {
+	p := a.client.GuestOS.NewListOsTypesParams()
+	p.SetDescription(descr)
+	resp, err := a.client.GuestOS.ListOsTypes(p)
+	if err != nil {
+		return "", bosherr.WrapErrorf(err, "Unable to list guest os types")
+	}
+	if resp.Count == 0 {
+		return "", bosherr.WrapErrorf(err, "Can't find guest os type '%s'", descr)
+	}
+	return resp.OsTypes[0].Id, nil
 }

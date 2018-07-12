@@ -13,4 +13,6 @@ const (
 	EphemeralDiskPrefix            = "cpi-ephemeral-disk-"
 	VMPrefix                       = "cpivm-"
 	TemplateFormat                 = "VHD"
+	TemplateNameFormat             = "cpitemplate-%s"
+	Hypervisor                     = "XenServer"
 )
