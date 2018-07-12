@@ -1,4 +1,4 @@
-package vm_test
+package reg_test
 
 import (
 	"encoding/base64"
@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/vm"
+	. "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/reg"
 )
 
 var _ = Describe("RegistryAgentEnvService", func() {
