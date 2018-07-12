@@ -98,7 +98,7 @@ type CloudStackConfig struct {
 	ApiKey          string
 	SecretAccessKey string
 	SkipVerifySSL   bool
-	AsyncTimeout    int64
+	Timeout         Timeout
 
 	// Key
 	DefaultKeyName string
@@ -111,6 +111,40 @@ type CloudStackConfig struct {
 type CalculateCloudProps struct {
 	DiskTags    []string
 	ServiceTags []string
+}
+
+type Timeout struct {
+	Global       int64
+	Reboot       int64
+	CreateVm     int64
+	DeleteVm     int64
+	CreateVolume int64
+	DeleteVolume int64
+}
+
+func (t *Timeout) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, t); err != nil {
+		return err
+	}
+	if t.Global <= 0 {
+		t.Global = 1800
+	}
+	if t.Reboot <= 0 {
+		t.Reboot = t.Global
+	}
+	if t.CreateVm <= 0 {
+		t.CreateVm = t.Global
+	}
+	if t.DeleteVm <= 0 {
+		t.DeleteVm = t.Global
+	}
+	if t.CreateVolume <= 0 {
+		t.CreateVolume = t.Global
+	}
+	if t.DeleteVolume <= 0 {
+		t.DeleteVolume = t.Global
+	}
+	return nil
 }
 
 type StemcellConfig struct {

@@ -25,8 +25,8 @@ func NewFactory(config config.Config, logger boshlog.Logger) Factory {
 func (f Factory) New(_ apiv1.CallContext) (apiv1.CPI, error) {
 	csConfig := f.config.CloudStack
 	client := cloudstack.NewAsyncClient(csConfig.Endpoint, csConfig.ApiKey, csConfig.SecretAccessKey, csConfig.SkipVerifySSL)
-	if f.config.CloudStack.AsyncTimeout > 0 {
-		client.AsyncTimeout(f.config.CloudStack.AsyncTimeout)
+	if f.config.CloudStack.Timeout.Global > 0 {
+		client.AsyncTimeout(f.config.CloudStack.Timeout.Global)
 	}
 
 	return &CPI{client, f.config, f.logger}, nil
