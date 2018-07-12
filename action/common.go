@@ -59,3 +59,16 @@ func (a CPI) findVolumeId(cid apiv1.DiskCID) (string, error) {
 	}
 	return volumes[0].Id, nil
 }
+
+func (a CPI) findZoneId() (string, error) {
+	p := a.client.Zone.NewListZonesParams()
+	p.SetName(a.config.CloudStack.DefaultZone)
+	resp, err := a.client.Zone.ListZones(p)
+	if err != nil {
+		return "", bosherr.WrapErrorf(err, "Can't find zone name '%s'", a.config.CloudStack.DefaultZone)
+	}
+	if len(resp.Zones) == 0 {
+		return "", bosherr.Errorf("Can't find zone name '%s'", a.config.CloudStack.DefaultZone)
+	}
+	return resp.Zones[0].Id, nil
+}
