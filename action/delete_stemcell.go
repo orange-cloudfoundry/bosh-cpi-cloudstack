@@ -23,9 +23,14 @@ func (a CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
 		return fmt.Errorf("[delete_stemcell] found multiple templates matching stemcell name '%s'", cid.AsString())
 	}
 
+	zoneid, err := a.findZoneId()
+	if err != nil {
+		return err
+	}
+
 	template := templatesRes.Templates[0]
 	deleteP := a.client.Template.NewDeleteTemplateParams(template.Id)
-	deleteP.SetZoneid(getZoneID())
+	deleteP.SetZoneid(zoneid)
 	_, err = a.client.Template.DeleteTemplate(deleteP)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "[delete_stemcell] error while deleteing stemcell '%s'", cid.AsString())

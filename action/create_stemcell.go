@@ -36,6 +36,11 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 	id := betterguid.New()
 	name := fmt.Sprintf("cpitemplate-%s", id)
 
+	zoneid, err := a.findZoneId()
+	if err != nil {
+		return apiv1.StemcellCID{}, err
+	}
+
 	// TODO [xmt]: check disk format
 	params := a.client.Template.NewGetUploadParamsForTemplateParams(
 		name,
@@ -43,7 +48,7 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 		csProp.Hypervisor,
 		name,
 		csProp.OsType,
-		getZoneId())
+		zoneid)
 
 	res, err := a.client.Template.GetUploadParamsForTemplate(params)
 	if err != nil {
