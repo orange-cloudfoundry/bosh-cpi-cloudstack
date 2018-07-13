@@ -26,9 +26,6 @@ func (a CPI) CreateVM(
 
 	userData := NewUserDataContents(vmName, a.config.Actions.Registry, networks)
 	userDataRaw, _ := json.Marshal(userData)
-	//fact := apiv1.NewAgentEnvFactory()
-	//fact.ForVM()
-	//a.regFactory.Create("").Update()
 
 	err = a.checkNetworkConfig(networks)
 	if err != nil {

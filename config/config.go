@@ -123,6 +123,7 @@ type CalculateCloudProps struct {
 type Timeout struct {
 	Global       int64
 	RebootVm     int64
+	StopVm       int64
 	CreateVm     int64
 	DeleteVm     int64
 	CreateVolume int64
@@ -171,6 +172,7 @@ func defaultConfig() Config {
 		PollTemplate: 1800,
 		AttachVolume: 1800,
 		DetachVolume: 1800,
+		StopVm:       1800,
 	}
 	defOffers := DefaultOffer{
 		CustomDisk: "shared.custom",
