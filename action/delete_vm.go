@@ -7,6 +7,7 @@ import (
 )
 
 func (a CPI) DeleteVM(cid apiv1.VMCID) error {
+	a.client.DefaultOptions()
 	vms, err := a.findVmsByName(cid)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Error when finding vm %s", cid.AsString())
