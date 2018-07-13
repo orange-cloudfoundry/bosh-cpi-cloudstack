@@ -10,6 +10,15 @@ import (
 )
 
 func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal) error {
+	listParams := a.client.Resourcetags.NewListTagsParams()
+	listParams.SetResourcetype(string(tagType))
+	listParams.SetResourceid(cid)
+
+	resp, _ := a.client.Resourcetags.ListTags(listParams)
+	if resp != nil && len(resp.Tags) > 0 {
+		return nil
+	}
+
 	params := a.client.Resourcetags.NewCreateTagsParams([]string{cid}, string(tagType), util.ConvertMapToTags(meta))
 	_, err := a.client.Resourcetags.CreateTags(params)
 	if err != nil {

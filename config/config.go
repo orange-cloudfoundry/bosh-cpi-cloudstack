@@ -107,6 +107,9 @@ type CloudStackConfig struct {
 	// Zone
 	DefaultZone  string
 	DefaultOffer DefaultOffer
+
+	// VM
+	ExpungeVm bool
 }
 
 type DefaultOffer struct {
@@ -179,6 +182,7 @@ func defaultConfig() Config {
 	}
 	return Config{
 		CloudStack: CloudStackConfig{
+			ExpungeVm:    true,
 			Timeout:      timeout,
 			DefaultOffer: defOffers,
 		},

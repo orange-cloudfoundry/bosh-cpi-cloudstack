@@ -59,6 +59,8 @@ func (a CPI) deleteVMById(vmId string) error {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.DeleteVm)
 
 	p := a.client.VirtualMachine.NewDestroyVirtualMachineParams(vmId)
+	p.SetExpunge(a.config.CloudStack.ExpungeVm)
+
 	_, err := a.client.VirtualMachine.DestroyVirtualMachine(p)
 	return err
 }
