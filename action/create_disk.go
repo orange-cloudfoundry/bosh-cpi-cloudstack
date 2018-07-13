@@ -18,7 +18,7 @@ func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) 
 
 	diskOfferName := diskProps.DiskOffering
 	if diskOfferName == "" {
-		diskOfferName = a.config.CloudStack.DefaultOffers.Disk
+		diskOfferName = a.config.CloudStack.DefaultOffer.Disk
 		a.logger.Info("create_disk", "Using default disk offering %s because not set in properties", diskOfferName)
 	}
 
@@ -33,10 +33,10 @@ func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) 
 }
 
 func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid *apiv1.VMCID) (apiv1.DiskCID, error) {
-
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVolume)
 	diskOfferName := diskProps.EphemeralDiskOffering
 	if diskOfferName == "" {
-		diskOfferName = a.config.CloudStack.DefaultOffers.EphemeralDisk
+		diskOfferName = a.config.CloudStack.DefaultOffer.EphemeralDisk
 		a.logger.Info("create_disk", "Using default disk offering %s because not set in properties", diskOfferName)
 	}
 
@@ -54,7 +54,7 @@ func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid *
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVolume)
 
 	if diskOfferName == "" {
-		diskOfferName = a.config.CloudStack.DefaultOffers.CustomDisk
+		diskOfferName = a.config.CloudStack.DefaultOffer.CustomDisk
 		a.logger.Info("create_disk", "Using default custom disk offering %s because there is no default disk offers", diskOfferName)
 	}
 

@@ -21,7 +21,7 @@ func (a CPI) ResizeDisk(cid apiv1.DiskCID, size int) error {
 	p := a.client.Volume.NewResizeVolumeParams(volume.Id)
 	p.SetSize(int64(size / 1024))
 	if !offer.Iscustomized {
-		offerCustom, err := a.findDiskOfferingByName(a.config.CloudStack.DefaultOffers.CustomDisk)
+		offerCustom, err := a.findDiskOfferingByName(a.config.CloudStack.DefaultOffer.CustomDisk)
 		if err != nil {
 			return bosherr.WrapErrorf(err, "Cannot resize disk %s", cid.AsString())
 		}

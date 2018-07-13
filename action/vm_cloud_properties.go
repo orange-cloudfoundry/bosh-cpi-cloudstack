@@ -40,3 +40,7 @@ type ResourceCloudProperties struct {
 	ComputeOffering string `json:"compute_offering"`
 	AffinityGroup   string `json:"affinity_group"`
 }
+
+type NetworkCloudProperties struct {
+	Name string `json:"name"`
+}

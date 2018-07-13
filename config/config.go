@@ -105,11 +105,11 @@ type CloudStackConfig struct {
 	PrivateKey     string
 
 	// Zone
-	DefaultZone   string
-	DefaultOffers DefaultOffers
+	DefaultZone  string
+	DefaultOffer DefaultOffer
 }
 
-type DefaultOffers struct {
+type DefaultOffer struct {
 	Disk          string
 	EphemeralDisk string
 	CustomDisk    string
@@ -122,13 +122,15 @@ type CalculateCloudProps struct {
 
 type Timeout struct {
 	Global       int64
-	Reboot       int64
+	RebootVm     int64
 	CreateVm     int64
 	DeleteVm     int64
 	CreateVolume int64
 	DeleteVolume int64
 	ResizeVolume int64
 	PollTemplate int64
+	AttachVolume int64
+	DetachVolume int64
 }
 
 type StemcellConfig struct {
@@ -162,19 +164,21 @@ func defaultConfig() Config {
 		Global:       1800,
 		CreateVolume: 1800,
 		DeleteVolume: 1800,
-		Reboot:       1800,
+		RebootVm:     1800,
 		CreateVm:     1800,
 		DeleteVm:     1800,
 		ResizeVolume: 1800,
 		PollTemplate: 1800,
+		AttachVolume: 1800,
+		DetachVolume: 1800,
 	}
-	defOffers := DefaultOffers{
+	defOffers := DefaultOffer{
 		CustomDisk: "shared.custom",
 	}
 	return Config{
 		CloudStack: CloudStackConfig{
-			Timeout:       timeout,
-			DefaultOffers: defOffers,
+			Timeout:      timeout,
+			DefaultOffer: defOffers,
 		},
 	}
 }

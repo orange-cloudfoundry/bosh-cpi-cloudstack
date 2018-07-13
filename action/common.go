@@ -163,3 +163,16 @@ func (a CPI) findOsTypeId(descr string) (string, error) {
 	}
 	return resp.OsTypes[0].Id, nil
 }
+
+func (a CPI) findPublicIpByIp(ip string) (*cloudstack.PublicIpAddress, error) {
+	p := a.client.Address.NewListPublicIpAddressesParams()
+	p.SetIpaddress(ip)
+	resp, err := a.client.Address.ListPublicIpAddresses(p)
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.PublicIpAddresses) == 0 {
+		return nil, fmt.Errorf("Cannot found public ip %s", ip)
+	}
+	return resp.PublicIpAddresses[0], nil
+}

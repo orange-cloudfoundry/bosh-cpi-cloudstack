@@ -6,7 +6,7 @@ import (
 )
 
 func (a CPI) RebootVM(cid apiv1.VMCID) error {
-	a.client.AsyncTimeout(a.config.CloudStack.Timeout.Reboot)
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.RebootVm)
 
 	vm, err := a.findVmByName(cid)
 	if err != nil {
