@@ -103,3 +103,24 @@ func (s registryAgentEnvService) Update(agentEnv apiv1.AgentEnv) error {
 
 	return nil
 }
+
+func (s registryAgentEnvService) Delete() error {
+	request, err := http.NewRequest("DELETE", s.endpoint, nil)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "Creating DELETE request to update registry at '%s'", s.endpoint)
+	}
+
+	httpClient := http.Client{}
+	httpResponse, err := httpClient.Do(request)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "Delete at registry endpoint '%s'", s.endpoint)
+	}
+
+	defer httpResponse.Body.Close()
+
+	if httpResponse.StatusCode != http.StatusOK && httpResponse.StatusCode != http.StatusCreated {
+		return bosherr.Errorf("Received non-2xx status code when contacting registry: '%d'", httpResponse.StatusCode)
+	}
+
+	return nil
+}

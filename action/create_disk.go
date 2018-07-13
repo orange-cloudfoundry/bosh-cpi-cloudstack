@@ -32,6 +32,24 @@ func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) 
 	return apiv1.NewDiskCID(diskName), nil
 }
 
+func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid *apiv1.VMCID) (apiv1.DiskCID, error) {
+
+	diskOfferName := diskProps.EphemeralDiskOffering
+	if diskOfferName == "" {
+		diskOfferName = a.config.CloudStack.DefaultOffers.EphemeralDisk
+		a.logger.Info("create_disk", "Using default disk offering %s because not set in properties", diskOfferName)
+	}
+
+	diskName := fmt.Sprintf("%s%s", config.EphemeralDiskPrefix, uuid.NewV4().String())
+
+	_, err := a.createVolume(diskName, size, diskOfferName, cid)
+	if err != nil {
+		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+	}
+
+	return apiv1.NewDiskCID(diskName), nil
+}
+
 func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid *apiv1.VMCID) (*cloudstack.CreateVolumeResponse, error) {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVolume)
 

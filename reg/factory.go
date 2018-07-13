@@ -19,6 +19,5 @@ func (f RegistryAgentFactory) Create(instanceID apiv1.VMCID) AgentEnvService {
 	if f.registryOptions.Host == "" {
 		return NewNullAgentEnvService()
 	}
-
 	return NewRegistryAgentEnvService(f.registryOptions, instanceID, f.logger)
 }
