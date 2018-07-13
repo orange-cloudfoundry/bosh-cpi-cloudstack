@@ -9,56 +9,6 @@ import (
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 )
 
-/*
-
-   @Value("${cloudstack.state_timeout}")
-   public int state_timeout;
-
-   @Value("${cloudstack.state_timeout_volume}")
-   public int state_timeout_volume;
-
-   @Value("${cloudstack.stemcell_publish_timeout}")
-   public int publishTemplateTimeoutMinutes;
-
-
-
-   @Value("${cloudstack.default_zone}")
-   public String default_zone;
-
-
-   @Value("${cpi.vm_create_delay}")
-   public int vmCreateDelaySeconds;
-
-
-   @Value("${cpi.vm_expunge_delay}")
-   public int vmExpungeDelaySeconds;
-
-   @Value("${cpi.force_expunge}")
-   public boolean forceVmExpunge;
-
-
-   @Value("${cpi.default_disk_offering}")
-   public String defaultDiskOffering;
-
-   @Value("${cpi.default_ephemeral_disk_offering}")
-   public String defaultEphemeralDiskOffering;
-
-   @Value("${cpi.lightstemcell.instance_type}")
-   public String light_stemcell_instance_type;//"CO1 - Small STD";
-
-   @Value("${cpi.lightstemcell.network_name}")
-   public String lightStemcellNetworkName; //"3112 - preprod - back";
-
-   public List<String> calculateDiskTags;
-   public List<String> calculateComputeTags;
-
-   @Value("${cpi.calculate_vm_cloud_properties.disk.tags:#{null}}")
-   private String calculateDiskTagsRaw;
-
-   @Value("${cpi.calculate_vm_cloud_properties.compute.tags:#{null}}")
-   private String calculateComputeTagsRaw;
-*/
-
 type RegistryOptions struct {
 	Host     string
 	Port     int
@@ -124,17 +74,19 @@ type CalculateCloudProps struct {
 }
 
 type Timeout struct {
-	Global       int64
-	RebootVm     int64
-	StopVm       int64
-	CreateVm     int64
-	DeleteVm     int64
-	CreateVolume int64
-	DeleteVolume int64
-	ResizeVolume int64
-	PollTemplate int64
-	AttachVolume int64
-	DetachVolume int64
+	Global               int64
+	RebootVm             int64
+	StopVm               int64
+	CreateVm             int64
+	DeleteVm             int64
+	CreateVolume         int64
+	DeleteVolume         int64
+	ResizeVolume         int64
+	PollTemplate         int64
+	AttachVolume         int64
+	DetachVolume         int64
+	SnapshotVolume       int64
+	DeleteSnapshotVolume int64
 }
 
 type StemcellConfig struct {
@@ -165,17 +117,19 @@ func NewConfigFromPath(path string, fs boshsys.FileSystem) (Config, error) {
 
 func defaultConfig() Config {
 	timeout := Timeout{
-		Global:       1800,
-		CreateVolume: 1800,
-		DeleteVolume: 1800,
-		RebootVm:     1800,
-		CreateVm:     1800,
-		DeleteVm:     1800,
-		ResizeVolume: 1800,
-		PollTemplate: 1800,
-		AttachVolume: 1800,
-		DetachVolume: 1800,
-		StopVm:       1800,
+		Global:               1800,
+		CreateVolume:         1800,
+		DeleteVolume:         1800,
+		RebootVm:             1800,
+		CreateVm:             1800,
+		DeleteVm:             1800,
+		ResizeVolume:         1800,
+		PollTemplate:         1800,
+		AttachVolume:         1800,
+		DetachVolume:         1800,
+		StopVm:               1800,
+		DeleteSnapshotVolume: 1800,
+		SnapshotVolume:       1800,
 	}
 	defOffers := DefaultOffer{
 		CustomDisk: "shared.custom",

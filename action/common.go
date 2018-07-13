@@ -16,7 +16,10 @@ func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal)
 
 	resp, _ := a.client.Resourcetags.ListTags(listParams)
 	if resp != nil && len(resp.Tags) > 0 {
-		return nil
+		_, err := a.client.Resourcetags.DeleteTags(a.client.Resourcetags.NewDeleteTagsParams([]string{cid}, string(tagType)))
+		if err != nil {
+			return bosherr.WrapErrorf(err, "Updating %s metadata '%s'", tagType, cid)
+		}
 	}
 
 	params := a.client.Resourcetags.NewCreateTagsParams([]string{cid}, string(tagType), util.ConvertMapToTags(meta))

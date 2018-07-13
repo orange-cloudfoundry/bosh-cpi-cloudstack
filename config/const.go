@@ -13,6 +13,7 @@ type VmState string
 const (
 	UserVm                Tags        = "UserVm"
 	Volume                Tags        = "Volume"
+	Snapshot              Tags        = "Snapshot"
 	Root                  DiskType    = "ROOT"
 	Datadisk              DiskType    = "DATADISK"
 	ManualNetwork         NetworkType = "manual"
