@@ -41,7 +41,7 @@ type Config struct {
 type CloudStackConfig struct {
 	Stemcell *StemcellConfig
 
-	CalculateCloudProps CalculateCloudProps
+	CalculateCloudProp CalculateCloudProp
 
 	// Access
 	Endpoint        string
@@ -68,7 +68,7 @@ type DefaultOffer struct {
 	CustomDisk    string
 }
 
-type CalculateCloudProps struct {
+type CalculateCloudProp struct {
 	NotDiskTags    []string
 	DiskTags       []string
 	ServiceTags    []string
@@ -127,7 +127,7 @@ func defaultConfig() Config {
 		DeleteVm:             1800,
 		ResizeVolume:         1800,
 		PollTemplate:         1800,
-		AttachVolume:         1800,
+		AttachVolume:         36000,
 		DetachVolume:         1800,
 		StopVm:               1800,
 		DeleteSnapshotVolume: 1800,
