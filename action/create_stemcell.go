@@ -63,7 +63,7 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 	}
 
 	a.logger.Debug("create_stemcell", "create_stemcell succes : template %s (%s)", uploadP.Id, name)
-	return apiv1.NewStemcellCID(uploadP.Id), nil
+	return apiv1.NewStemcellCID(name), nil
 }
 
 // getUploadParams -
