@@ -213,7 +213,7 @@ func (a CPI) checkNetworkConfig(networks apiv1.Networks) error {
 	if (nbDynamic + nbManual) > 1 {
 		return bosherr.Errorf("Only 1 nic is supported, mixing manual and dynamic network is not allowed")
 	}
-	if (nbDynamic + nbManual) == 1 {
+	if (nbDynamic + nbManual) == 0 {
 		return bosherr.Errorf("It must have one dynamic or one manual network defined")
 	}
 	return nil
