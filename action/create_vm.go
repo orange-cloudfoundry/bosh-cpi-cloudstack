@@ -7,6 +7,7 @@ import (
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/satori/go.uuid"
 	"encoding/json"
+	"encoding/base64"
 )
 
 func (a CPI) CreateVM(
@@ -26,6 +27,7 @@ func (a CPI) CreateVM(
 
 	userData := NewUserDataContents(vmName, a.config.Actions.Registry, networks)
 	userDataRaw, _ := json.Marshal(userData)
+	userDataStr := base64.StdEncoding.EncodeToString(userDataRaw)
 
 	err = a.checkNetworkConfig(networks)
 	if err != nil {
@@ -68,7 +70,7 @@ func (a CPI) CreateVM(
 	}
 
 	deplParams := a.client.VirtualMachine.NewDeployVirtualMachineParams(serviceOffering.Id, template.Id, zoneId)
-	deplParams.SetUserdata(string(userDataRaw))
+	deplParams.SetUserdata(userDataStr)
 	deplParams.SetName(vmName)
 	deplParams.SetNetworkids([]string{network.Id})
 	deplParams.SetKeypair(a.config.CloudStack.DefaultKeyName)
