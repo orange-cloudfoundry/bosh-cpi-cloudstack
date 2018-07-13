@@ -31,24 +31,8 @@ func (a CPI) findEphemeralDiskOffering(diskSize int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	offers := resp.DiskOfferings
 
-	if len(a.config.CloudStack.CalculateCloudProps.DiskTags) > 0 {
-		tmpOffers := make([]*cloudstack.DiskOffering, 0)
-		for _, offer := range offers {
-			if offer.Iscustomized {
-				continue
-			}
-			for _, tag := range a.config.CloudStack.CalculateCloudProps.DiskTags {
-				if strings.Contains(offer.Tags, tag) {
-					tmpOffers = append(tmpOffers, offer)
-					break
-				}
-			}
-		}
-		offers = tmpOffers
-	}
-
+	offers := a.filterDiskOffering(resp.DiskOfferings)
 	if len(offers) == 0 {
 		return "", fmt.Errorf("There is no offers corresponding to tags: %s", strings.Join(a.config.CloudStack.CalculateCloudProps.DiskTags, ","))
 	}
@@ -78,20 +62,7 @@ func (a CPI) findServiceOffering(ram, cpu int) (string, error) {
 		return "", err
 	}
 
-	offers := resp.ServiceOfferings
-	if len(a.config.CloudStack.CalculateCloudProps.ServiceTags) > 0 {
-		tmpOffers := make([]*cloudstack.ServiceOffering, 0)
-		for _, offer := range offers {
-			for _, tag := range a.config.CloudStack.CalculateCloudProps.ServiceTags {
-				if strings.Contains(offer.Tags, tag) {
-					tmpOffers = append(tmpOffers, offer)
-					break
-				}
-			}
-		}
-		offers = tmpOffers
-	}
-
+	offers := a.filterServiceOffering(resp.ServiceOfferings)
 	if len(offers) == 0 {
 		return "", fmt.Errorf("There is no offers corresponding to tags: %s", strings.Join(a.config.CloudStack.CalculateCloudProps.ServiceTags, ","))
 	}
@@ -125,4 +96,70 @@ func (a CPI) findServiceOffering(ram, cpu int) (string, error) {
 	}
 
 	return finalOffers[0].Name, nil
+}
+
+func (a CPI) filterServiceOffering(offers []*cloudstack.ServiceOffering) []*cloudstack.ServiceOffering {
+	if len(a.config.CloudStack.CalculateCloudProps.ServiceTags) == 0 &&
+		len(a.config.CloudStack.CalculateCloudProps.NotServiceTags) == 0 {
+		return offers
+	}
+	tmpOffers := make([]*cloudstack.ServiceOffering, 0)
+	for _, offer := range offers {
+		for _, tag := range a.config.CloudStack.CalculateCloudProps.ServiceTags {
+			if strings.Contains(offer.Tags, tag) {
+				tmpOffers = append(tmpOffers, offer)
+				break
+			}
+		}
+	}
+	if len(tmpOffers) > 0 {
+		offers = tmpOffers
+		tmpOffers = make([]*cloudstack.ServiceOffering, 0)
+	}
+	for _, offer := range offers {
+		contains := false
+		for _, tag := range a.config.CloudStack.CalculateCloudProps.NotServiceTags {
+			if strings.Contains(offer.Tags, tag) {
+				contains = true
+				break
+			}
+		}
+		if !contains {
+			tmpOffers = append(tmpOffers, offer)
+		}
+	}
+	return offers
+}
+
+func (a CPI) filterDiskOffering(offers []*cloudstack.DiskOffering) []*cloudstack.DiskOffering {
+	if len(a.config.CloudStack.CalculateCloudProps.DiskTags) == 0 &&
+		len(a.config.CloudStack.CalculateCloudProps.NotDiskTags) == 0 {
+		return offers
+	}
+	tmpOffers := make([]*cloudstack.DiskOffering, 0)
+	for _, offer := range offers {
+		for _, tag := range a.config.CloudStack.CalculateCloudProps.DiskTags {
+			if strings.Contains(offer.Tags, tag) {
+				tmpOffers = append(tmpOffers, offer)
+				break
+			}
+		}
+	}
+	if len(tmpOffers) > 0 {
+		offers = tmpOffers
+		tmpOffers = make([]*cloudstack.DiskOffering, 0)
+	}
+	for _, offer := range offers {
+		contains := false
+		for _, tag := range a.config.CloudStack.CalculateCloudProps.NotDiskTags {
+			if strings.Contains(offer.Tags, tag) {
+				contains = true
+				break
+			}
+		}
+		if !contains {
+			tmpOffers = append(tmpOffers, offer)
+		}
+	}
+	return offers
 }

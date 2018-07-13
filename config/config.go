@@ -69,8 +69,10 @@ type DefaultOffer struct {
 }
 
 type CalculateCloudProps struct {
-	DiskTags    []string
-	ServiceTags []string
+	NotDiskTags    []string
+	DiskTags       []string
+	ServiceTags    []string
+	NotServiceTags []string
 }
 
 type Timeout struct {
