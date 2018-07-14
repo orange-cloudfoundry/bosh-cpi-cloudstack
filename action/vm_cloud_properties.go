@@ -37,8 +37,9 @@ func (cc CloudStackCloudProperties) Validate() error {
 
 type ResourceCloudProperties struct {
 	DiskCloudProperties
-	ComputeOffering string `json:"compute_offering"`
-	AffinityGroup   string `json:"affinity_group"`
+	ComputeOffering   string `json:"compute_offering"`
+	AffinityGroup     string `json:"affinity_group"`
+	AffinityGroupType string `json:"affinity_group_type"`
 }
 
 type NetworkCloudProperties struct {

@@ -62,12 +62,12 @@ func (a CPI) CreateVM(
 
 	serviceOffering, err := a.findServiceOfferingByName(resProps.ComputeOffering)
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Could not compute offering %s when creating vm", resProps.ComputeOffering)
+		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Could not found compute offering %s when creating vm", resProps.ComputeOffering)
 	}
 
 	template, err := a.findTemplateByName(stemcellCID.AsString())
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Could not compute offering %s when creating vm", resProps.ComputeOffering)
+		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Could not found compute offering %s when creating vm", resProps.ComputeOffering)
 	}
 
 	a.logger.Info("create_vm", "Creating vm %s ...", vmName)
@@ -79,6 +79,21 @@ func (a CPI) CreateVM(
 
 	if !defaultNetwork.IsDynamic() {
 		deplParams.SetIpaddress(defaultNetwork.IP())
+	}
+
+	if resProps.AffinityGroup != "" {
+		affiType := resProps.AffinityGroupType
+		if affiType == "" {
+			affiType = "host anti-affinity"
+		}
+		affiId, err := a.findOrCreateAffinityGroup(resProps.AffinityGroup, affiType)
+		if err != nil {
+			return apiv1.VMCID{}, bosherr.WrapErrorf(
+				err,
+				"Could not find or create affinity group '%s' when creating vm",
+				resProps.AffinityGroup)
+		}
+		deplParams.SetAffinitygroupids([]string{affiId})
 	}
 
 	resp, err := a.client.VirtualMachine.DeployVirtualMachine(deplParams)

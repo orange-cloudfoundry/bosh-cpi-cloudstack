@@ -188,3 +188,22 @@ func (a CPI) findPublicIpByIp(ip string) (*cloudstack.PublicIpAddress, error) {
 	}
 	return resp.PublicIpAddresses[0], nil
 }
+
+func (a CPI) findOrCreateAffinityGroup(name, aType string) (string, error) {
+	lsP := a.client.AffinityGroup.NewListAffinityGroupsParams()
+	lsP.SetName(name)
+	lsResp, err := a.client.AffinityGroup.ListAffinityGroups(lsP)
+	if err != nil {
+		return "", err
+	}
+	if len(lsResp.AffinityGroups) > 0 {
+		return lsResp.AffinityGroups[0].Id, nil
+	}
+
+	p := a.client.AffinityGroup.NewCreateAffinityGroupParams(name, aType)
+	resp, err := a.client.AffinityGroup.CreateAffinityGroup(p)
+	if err != nil {
+		return "", err
+	}
+	return resp.Id, nil
+}
