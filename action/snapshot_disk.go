@@ -20,7 +20,7 @@ jobComplete.apply(async.getJobId());
 return null;
  */
 func (a CPI) SnapshotDisk(diskCID apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.SnapshotCID, error) {
-	a.client.AsyncTimeout(a.config.CloudStack.Timeout.AttachVolume)
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.SnapshotVolume)
 
 	volumes, err := a.findVolumesByName(diskCID)
 	if err != nil {

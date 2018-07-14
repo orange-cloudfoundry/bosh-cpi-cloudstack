@@ -6,6 +6,8 @@ import (
 )
 
 func (a CPI) DeleteSnapshot(cid apiv1.SnapshotCID) error {
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.DeleteSnapshotVolume)
+
 	p := a.client.Snapshot.NewDeleteSnapshotParams(cid.AsString())
 	_, err := a.client.Snapshot.DeleteSnapshot(p)
 	if err != nil {

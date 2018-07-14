@@ -8,6 +8,7 @@ import (
 )
 
 func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.DetachVolume)
 
 	volumes, err := a.findVolumesByName(diskCID)
 	if err != nil {

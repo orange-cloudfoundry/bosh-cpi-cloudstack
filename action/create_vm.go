@@ -110,6 +110,7 @@ func (a CPI) CreateVM(
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot create ephemeral disk when creating vm"), resp.Id)
 	}
 
+
 	err = a.AttachDisk(vmCID, diskCid)
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(
