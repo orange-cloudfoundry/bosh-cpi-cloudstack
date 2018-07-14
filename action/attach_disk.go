@@ -35,19 +35,23 @@ func (a CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 		return bosherr.WrapErrorf(err, "Error when finding vm %s", vmCID.AsString())
 	}
 
+	a.logger.Info("attach_disk", "Attaching disk %s ...", diskCID.AsString())
 	p := a.client.Volume.NewAttachVolumeParams(volume.Id, vm.Id)
 	resp, err := a.client.Volume.AttachVolume(p)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Error when attaching volume %s to vm %s", diskCID.AsString(), vmCID.AsString())
 	}
+	a.logger.Info("attach_disk", "Finished attaching disk %s .", diskCID.AsString())
 
 	// we skip registry registering if disk is an ephemeral one
 	if strings.HasPrefix(volume.Name, config.EphemeralDiskPrefix) {
 		return nil
 	}
 
+	a.logger.Info("attach_disk", "Registering disk %s to registry ...", diskCID.AsString())
 	err = a.registerDisk(vmCID, diskCID, resp)
 	if err == nil {
+		a.logger.Info("attach_disk", "Finished registering disk %s to registry.", diskCID.AsString())
 		return nil
 	}
 

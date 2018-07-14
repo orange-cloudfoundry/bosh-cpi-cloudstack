@@ -47,11 +47,14 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
 	}
 
+	a.logger.Info("create_stemcell", "Requesting upload to cloudstack for stemcell %s ...", name)
 	r, err := a.createUploadRequest(imagePath, uploadP.PostURL, uploadP.Expires, uploadP.Signature, uploadP.Metadata)
 	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
 	}
+	a.logger.Info("create_stemcell", "Finished requesting upload to cloudstack for stemcell %s .", name)
 
+	a.logger.Info("create_stemcell", "Uploading stemcell %s ...", name)
 	err = a.performUpload(r)
 	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
@@ -61,7 +64,7 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
 	}
-
+	a.logger.Info("create_stemcell", "Finished Uploading stemcell %s ...", name)
 	a.logger.Debug("create_stemcell", "create_stemcell succes : template %s (%s)", uploadP.Id, name)
 	return apiv1.NewStemcellCID(name), nil
 }

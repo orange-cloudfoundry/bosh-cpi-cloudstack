@@ -22,10 +22,12 @@ func (a CPI) DeleteDisk(cid apiv1.DiskCID) error {
 		return nil
 	}
 
+	a.logger.Info("delete_disk", "Deleting disk %s ...", cid.AsString())
 	p := a.client.Volume.NewDeleteVolumeParams(volumes[0].Id)
 	_, err = a.client.Volume.DeleteVolume(p)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Cannot delete disk %s", cid.AsString())
 	}
+	a.logger.Info("delete_disk", "Finished deleting disk %s .", cid.AsString())
 	return nil
 }

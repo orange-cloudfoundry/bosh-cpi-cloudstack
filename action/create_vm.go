@@ -70,6 +70,7 @@ func (a CPI) CreateVM(
 		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Could not compute offering %s when creating vm", resProps.ComputeOffering)
 	}
 
+	a.logger.Info("create_vm", "Creating vm %s ...", vmName)
 	deplParams := a.client.VirtualMachine.NewDeployVirtualMachineParams(serviceOffering.Id, template.Id, zoneId)
 	deplParams.SetUserdata(userDataStr)
 	deplParams.SetName(vmName)
@@ -88,7 +89,9 @@ func (a CPI) CreateVM(
 	if config.ToVmState(resp.State) != config.VmRunning {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.Errorf("Vm is not running, actual state is %s", resp.State), resp.Id)
 	}
+	a.logger.Info("create_vm", "Finished creating vm %s .", vmName)
 
+	a.logger.Info("create_vm", "Registering vm %s in registry...", vmName)
 	vmCID := apiv1.NewVMCID(vmName)
 
 	envSvc := a.regFactory.Create(vmCID)
@@ -100,17 +103,23 @@ func (a CPI) CreateVM(
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Error when creating vm"), resp.Id)
 	}
+	a.logger.Info("create_vm", "Finished registering vm %s in registry.", vmName)
 
+	a.logger.Info("create_vm", "Creating vip(s) for vm %s ...", vmName)
 	err = a.createVips(networks, resp.Id, zoneId, network)
 	if err != nil {
-		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapErrorf(err, "Could not create vips", resProps.ComputeOffering), resp.Id)
+		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapErrorf(err, "Could not create vips"), resp.Id)
 	}
+	a.logger.Info("create_vm", "Finished creating vip(s) for vm %s .", vmName)
 
+	a.logger.Info("create_vm", "Creating ephemeral disk for vm %s ...", vmName)
 	diskCid, err := a.createEphemeralDisk(resProps.EphemeralDiskSize, resProps.DiskCloudProperties, nil)
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot create ephemeral disk when creating vm"), resp.Id)
 	}
+	a.logger.Info("create_vm", "Finished creating ephemeral disk for vm %s .", vmName)
 
+	a.logger.Info("create_vm", "Attaching ephemeral disk for vm %s ...", vmName)
 	err = a.AttachDisk(vmCID, diskCid)
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(
@@ -123,6 +132,7 @@ func (a CPI) CreateVM(
 			},
 		)
 	}
+	a.logger.Info("create_vm", "Finished attaching ephemeral disk for vm %s .", vmName)
 
 	return vmCID, nil
 }

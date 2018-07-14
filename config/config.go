@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	boshsys "github.com/cloudfoundry/bosh-utils/system"
-
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	"io/ioutil"
 )
 
 type RegistryOptions struct {
@@ -101,9 +100,9 @@ type StemcellConfig struct {
 	OsType           string
 }
 
-func NewConfigFromPath(path string, fs boshsys.FileSystem) (Config, error) {
+func NewConfigFromPath(path string) (Config, error) {
 	config := defaultConfig()
-	bytes, err := fs.ReadFile(path)
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return config, bosherr.WrapErrorf(err, "Reading config '%s'", path)
 	}

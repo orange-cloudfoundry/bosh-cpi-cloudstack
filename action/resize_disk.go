@@ -38,9 +38,11 @@ func (a CPI) ResizeDisk(cid apiv1.DiskCID, size int) error {
 		p.SetDiskofferingid(offerCustom.Id)
 	}
 
+	a.logger.Info("resize_disk", "Resizing disk %s ...", cid.AsString())
 	_, err = a.client.Volume.ResizeVolume(p)
 	if err != nil {
 		return NewNotImplementedError(bosherr.WrapErrorf(err, "Cannot resize disk %s", cid.AsString()))
 	}
+	a.logger.Info("resize_disk", "Finished resizing disk %s .", cid.AsString())
 	return nil
 }

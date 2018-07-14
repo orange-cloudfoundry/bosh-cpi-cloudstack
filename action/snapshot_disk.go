@@ -39,11 +39,14 @@ func (a CPI) SnapshotDisk(diskCID apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.Sna
 		return apiv1.SnapshotCID{}, bosherr.Errorf("Volume found with name %s is not a persistent disk", diskCID.AsString())
 	}
 
+	a.logger.Info("resize_disk", "Snapshooting disk %s ...", diskCID.AsString())
 	p := a.client.Snapshot.NewCreateSnapshotParams(volume.Id)
 	resp, err := a.client.Snapshot.CreateSnapshot(p)
 	if err != nil {
 		return apiv1.SnapshotCID{}, bosherr.WrapErrorf(err, "Could not create snapshot for disk %s", diskCID.AsString())
 	}
+	a.logger.Info("resize_disk", "Finished snapshooting disk %s .", diskCID.AsString())
+
 	a.setMetadata(config.Snapshot, resp.Id, &meta)
 
 	return apiv1.NewSnapshotCID(resp.Id), nil

@@ -29,20 +29,24 @@ func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 		return nil
 	}
 
+	a.logger.Info("detach_disk", "Detaching disk %s ...", diskCID.AsString())
 	detachParams := a.client.Volume.NewDetachVolumeParams()
 	detachParams.SetId(volume.Id)
 	_, err = a.client.Volume.DetachVolume(detachParams)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Error when detaching volume %s to vm %s", diskCID.AsString(), vmCID.AsString())
 	}
+	a.logger.Info("detach_disk", "Finished detaching disk %s .", diskCID.AsString())
 
 	// we skip registry registering if disk is an ephemeral one
 	if strings.HasPrefix(volume.Name, config.EphemeralDiskPrefix) {
 		return nil
 	}
 
+	a.logger.Info("detach_disk", "Removing disk %s from registry ...", diskCID.AsString())
 	err = a.unregisterDisk(vmCID, diskCID)
 	if err == nil {
+		a.logger.Info("detach_disk", "Finished removing disk %s from registry.", diskCID.AsString())
 		return nil
 	}
 

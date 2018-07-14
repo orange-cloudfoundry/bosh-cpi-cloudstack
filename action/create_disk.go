@@ -24,10 +24,12 @@ func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) 
 
 	diskName := fmt.Sprintf("%s%s", config.PersistenceDiskPrefix, uuid.NewV4().String())
 
+	a.logger.Info("create_disk", "Creating disk %s ...", diskName)
 	_, err = a.createVolume(diskName, size, diskOfferName, cid)
 	if err != nil {
 		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
 	}
+	a.logger.Info("create_disk", "Finished creating disk %s .", diskName)
 
 	return apiv1.NewDiskCID(diskName), nil
 }
@@ -54,7 +56,10 @@ func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid *a
 		meta := apiv1.NewCloudKVs(map[string]interface{}{
 			"director": a.config.CloudStack.DirectorName,
 		})
-		a.setMetadata(config.Volume, diskName, &meta)
+		err := a.setMetadata(config.Volume, diskName, &meta)
+		if err != nil {
+			a.logger.Warn("create_ephemeral_disk", "Error occured when setting metadata on ephemeral disk %s: %s", diskName, err.Error())
+		}
 	}
 
 	return apiv1.NewDiskCID(diskName), nil

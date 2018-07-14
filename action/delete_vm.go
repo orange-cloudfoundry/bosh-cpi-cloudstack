@@ -22,25 +22,33 @@ func (a CPI) DeleteVM(cid apiv1.VMCID) error {
 	}
 	vm := vms[0]
 
+	a.logger.Info("delete_vm", "Liberating vip(s) for vm %s ...", cid.AsString())
 	err = a.liberateVIPs(vm.Id)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Error when liberating vips for vm %s", cid.AsString())
 	}
+	a.logger.Info("delete_vm", "Finished liberating vip(s) for vm %s .", cid.AsString())
 
+	a.logger.Info("delete_vm", "Stopping vm %s ...", cid.AsString())
 	err = a.stopVmById(vm.Id)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Error when stopping vm %s", cid.AsString())
 	}
+	a.logger.Info("delete_vm", "Finished stopping vm %s ...", cid.AsString())
 
+	a.logger.Info("delete_vm", "Detaching all disks for vm %s ...", cid.AsString())
 	err = a.detachAllDisks(vm.Id)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Error when detaching all volumes for vm %s", cid.AsString())
 	}
+	a.logger.Info("delete_vm", "Finished detaching all disks for vm %s .", cid.AsString())
 
+	a.logger.Info("delete_vm", "Deleting vm %s ...", cid.AsString())
 	err = a.deleteVMById(vm.Id)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Error when destroying vm %s", cid.AsString())
 	}
+	a.logger.Info("delete_vm", "Finished deleting vm %s ...", cid.AsString())
 
 	a.regFactory.Create(cid).Delete()
 
