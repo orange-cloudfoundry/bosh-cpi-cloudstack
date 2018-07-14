@@ -8,6 +8,7 @@ import (
 	"github.com/satori/go.uuid"
 	"encoding/json"
 	"encoding/base64"
+	"github.com/xanzy/go-cloudstack/cloudstack"
 )
 
 func (a CPI) CreateVM(
@@ -100,7 +101,7 @@ func (a CPI) CreateVM(
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Error when creating vm"), resp.Id)
 	}
 
-	err = a.createVips(networks, resp.Id, zoneId)
+	err = a.createVips(networks, resp.Id, zoneId, network)
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapErrorf(err, "Could not create vips", resProps.ComputeOffering), resp.Id)
 	}
@@ -109,7 +110,6 @@ func (a CPI) CreateVM(
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot create ephemeral disk when creating vm"), resp.Id)
 	}
-
 
 	err = a.AttachDisk(vmCID, diskCid)
 	if err != nil {
@@ -135,12 +135,12 @@ func (a CPI) destroyVmErrFallback(err error, vmId string, fs ...func()) error {
 	return err
 }
 
-func (a CPI) createVips(networks apiv1.Networks, vmId, zoneId string) error {
+func (a CPI) createVips(networks apiv1.Networks, vmId, zoneId string, defNetwork *cloudstack.Network) error {
 	for _, network := range networks {
 		if network.Type() != string(config.VipNetwork) {
 			continue
 		}
-		err := a.createVip(network, vmId, zoneId)
+		err := a.createVip(network, vmId, zoneId, defNetwork)
 		if err != nil {
 			return bosherr.WrapErrorf(err, "Error when creating vip %s", network.IP())
 		}
@@ -148,7 +148,7 @@ func (a CPI) createVips(networks apiv1.Networks, vmId, zoneId string) error {
 	return nil
 }
 
-func (a CPI) createVip(network apiv1.Network, vmId, zoneId string) error {
+func (a CPI) createVip(network apiv1.Network, vmId, zoneId string, defNetwork *cloudstack.Network) error {
 	if network.IP() == "" {
 		return bosherr.Errorf("Vip must have ip defined")
 	}
@@ -164,9 +164,12 @@ func (a CPI) createVip(network apiv1.Network, vmId, zoneId string) error {
 		return bosherr.WrapError(err, "Cannot get network properties")
 	}
 
-	networkCs, err := a.findNetworkByName(networkProps.Name, zoneId)
-	if err != nil {
-		return bosherr.WrapErrorf(err, "Could not found network %s", networkProps.Name)
+	networkCs := defNetwork
+	if networkProps.Name != "" {
+		networkCs, err = a.findNetworkByName(networkProps.Name, zoneId)
+		if err != nil {
+			return bosherr.WrapErrorf(err, "Could not found network %s", networkProps.Name)
+		}
 	}
 
 	p := a.client.NAT.NewEnableStaticNatParams(publicIp.Id, vmId)
