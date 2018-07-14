@@ -34,6 +34,7 @@ func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) 
 
 func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid *apiv1.VMCID) (apiv1.DiskCID, error) {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVolume)
+
 	diskOfferName := diskProps.EphemeralDiskOffering
 	if diskOfferName == "" {
 		diskOfferName = a.config.CloudStack.DefaultOffer.EphemeralDisk
@@ -45,6 +46,15 @@ func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid *a
 	_, err := a.createVolume(diskName, size, diskOfferName, cid)
 	if err != nil {
 		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+	}
+
+	// we tag ephemeral disk with director name
+	// this is useful for automatic cleaning
+	if a.config.CloudStack.DirectorName != "" {
+		meta := apiv1.NewCloudKVs(map[string]interface{}{
+			"director": a.config.CloudStack.DirectorName,
+		})
+		a.setMetadata(config.Volume, diskName, &meta)
 	}
 
 	return apiv1.NewDiskCID(diskName), nil
