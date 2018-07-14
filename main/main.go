@@ -15,6 +15,7 @@ import (
 
 var (
 	configPathOpt = flag.String("configPath", "", "Path to configuration file")
+	cleaning      = flag.Bool("cleaning", false, "Set to true to run job for deleting periodically ephemeral disk")
 )
 
 func main() {
@@ -30,6 +31,12 @@ func main() {
 	}
 
 	cpiFactory := bwcaction.NewFactory(c, logger)
+
+	if *cleaning {
+		cpi, _ := cpiFactory.New(nil)
+		cpi.(*bwcaction.CPI).PeriodicCleanDisk()
+		return
+	}
 
 	cli := rpc.NewFactory(logger).NewCLI(cpiFactory)
 

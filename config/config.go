@@ -60,6 +60,10 @@ type CloudStackConfig struct {
 
 	// VM
 	ExpungeVm bool
+
+	// PeriodicCleanDisk
+	DirectorName      string
+	IntervalCleanDisk int64
 }
 
 type DefaultOffer struct {
@@ -138,9 +142,10 @@ func defaultConfig() Config {
 	}
 	return Config{
 		CloudStack: CloudStackConfig{
-			ExpungeVm:    true,
-			Timeout:      timeout,
-			DefaultOffer: defOffers,
+			ExpungeVm:         true,
+			Timeout:           timeout,
+			DefaultOffer:      defOffers,
+			IntervalCleanDisk: 60,
 		},
 	}
 }
