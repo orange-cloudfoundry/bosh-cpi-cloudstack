@@ -13,18 +13,23 @@ type Factory struct {
 	logger boshlog.Logger
 }
 
+type Context struct {
+	DirectorUUID string `json:"director_uuid"`
+}
+
 type CPI struct {
 	client     *cloudstack.CloudStackClient
 	config     config.Config
 	logger     boshlog.Logger
 	regFactory reg.RegistryAgentFactory
+	ctx        Context
 }
 
 func NewFactory(config config.Config, logger boshlog.Logger) Factory {
 	return Factory{config, logger}
 }
 
-func (f Factory) New(_ apiv1.CallContext) (apiv1.CPI, error) {
+func (f Factory) New(callCtx apiv1.CallContext) (apiv1.CPI, error) {
 	csConfig := f.config.CloudStack
 	client := cloudstack.NewAsyncClient(csConfig.Endpoint, csConfig.ApiKey, csConfig.SecretAccessKey, csConfig.SkipVerifySSL)
 	if f.config.CloudStack.Timeout.Global > 0 {
@@ -33,5 +38,8 @@ func (f Factory) New(_ apiv1.CallContext) (apiv1.CPI, error) {
 
 	regFactory := reg.NewFactory(f.config.Actions.Registry, f.logger)
 
-	return &CPI{client, f.config, f.logger, regFactory}, nil
+	var ctx Context
+	callCtx.As(&ctx)
+
+	return &CPI{client, f.config, f.logger, regFactory, ctx}, nil
 }

@@ -15,7 +15,6 @@ func (a CPI) CreateVM(
 	agentID apiv1.AgentID, stemcellCID apiv1.StemcellCID,
 	cloudProps apiv1.VMCloudProps, networks apiv1.Networks,
 	associatedDiskCIDs []apiv1.DiskCID, env apiv1.VMEnv) (apiv1.VMCID, error) {
-
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVm)
 
 	var resProps ResourceCloudProperties
@@ -81,19 +80,12 @@ func (a CPI) CreateVM(
 		deplParams.SetIpaddress(defaultNetwork.IP())
 	}
 
-	if resProps.AffinityGroup != "" {
-		affiType := resProps.AffinityGroupType
-		if affiType == "" {
-			affiType = "host anti-affinity"
-		}
-		affiId, err := a.findOrCreateAffinityGroup(resProps.AffinityGroup, affiType)
-		if err != nil {
-			return apiv1.VMCID{}, bosherr.WrapErrorf(
-				err,
-				"Could not find or create affinity group '%s' when creating vm",
-				resProps.AffinityGroup)
-		}
-		deplParams.SetAffinitygroupids([]string{affiId})
+	affinId, err := a.generateAffinityGroup(resProps, env)
+	if err != nil {
+		return apiv1.VMCID{}, err
+	}
+	if affinId != "" {
+		deplParams.SetAffinitygroupids([]string{affinId})
 	}
 
 	resp, err := a.client.VirtualMachine.DeployVirtualMachine(deplParams)
@@ -248,4 +240,38 @@ func (a CPI) checkNetworkConfig(networks apiv1.Networks) error {
 		return bosherr.Errorf("It must have one dynamic or one manual network defined")
 	}
 	return nil
+}
+
+func (a CPI) generateAffinityGroup(resProps ResourceCloudProperties, env apiv1.VMEnv) (string, error) {
+	if a.config.CloudStack.EnableAutoAntiAffinity {
+		return a.generateAutoAffinityGroup(env)
+	}
+	if resProps.AffinityGroup == "" {
+		return "", nil
+	}
+	affiType := resProps.AffinityGroupType
+	if affiType == "" {
+		affiType = "host anti-affinity"
+	}
+	affiId, err := a.findOrCreateAffinityGroup(resProps.AffinityGroup, affiType)
+	if err != nil {
+		return "", bosherr.WrapErrorf(
+			err,
+			"Could not find or create affinity group '%s' when creating vm",
+			resProps.AffinityGroup)
+	}
+	return affiId, nil
+}
+
+func (a CPI) generateAutoAffinityGroup(env apiv1.VMEnv) (string, error) {
+	vmEnv := NewVMEnv(env)
+	name := fmt.Sprintf("%s-%s", a.ctx.DirectorUUID, vmEnv.Bosh.Group)
+	affiId, err := a.findOrCreateAffinityGroup(name, "host anti-affinity")
+	if err != nil {
+		return "", bosherr.WrapErrorf(
+			err,
+			"Could not find or create affinity group '%s' when creating vm",
+			name)
+	}
+	return affiId, nil
 }

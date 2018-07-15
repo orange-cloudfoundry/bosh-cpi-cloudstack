@@ -63,6 +63,8 @@ type CloudStackConfig struct {
 	// PeriodicCleanDisk
 	DirectorName      string
 	IntervalCleanDisk int64
+
+	EnableAutoAntiAffinity bool
 }
 
 type DefaultOffer struct {
