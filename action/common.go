@@ -21,8 +21,9 @@ func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal)
 			return bosherr.WrapErrorf(err, "Updating %s metadata '%s'", tagType, cid)
 		}
 	}
-
-	params := a.client.Resourcetags.NewCreateTagsParams([]string{cid}, string(tagType), util.ConvertMapToTags(meta))
+	tags := util.ConvertMapToTags(meta)
+	tags["director_uuid"] = a.ctx.DirectorUUID
+	params := a.client.Resourcetags.NewCreateTagsParams([]string{cid}, string(tagType), tags)
 	_, err := a.client.Resourcetags.CreateTags(params)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Setting %s metadata '%s'", tagType, cid)
