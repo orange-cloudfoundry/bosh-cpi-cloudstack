@@ -39,7 +39,9 @@ func (f Factory) New(callCtx apiv1.CallContext) (apiv1.CPI, error) {
 	regFactory := reg.NewFactory(f.config.Actions.Registry, f.logger)
 
 	var ctx Context
-	callCtx.As(&ctx)
+	if callCtx != nil {
+		callCtx.As(&ctx)
+	}
 
 	return &CPI{client, f.config, f.logger, regFactory, ctx}, nil
 }
