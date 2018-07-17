@@ -49,6 +49,8 @@ type CloudStackConfig struct {
 	SkipVerifySSL   bool
 	Timeout         Timeout
 
+	DataDiskOffering string
+
 	// Key
 	DefaultKeyName string
 	PrivateKey     string
