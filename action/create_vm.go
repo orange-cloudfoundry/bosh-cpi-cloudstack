@@ -88,12 +88,8 @@ func (a CPI) CreateVM(
 		deplParams.SetAffinitygroupids([]string{affinId})
 	}
 
-	if a.config.CloudStack.DataDiskOffering != "" {
-		offer, err := a.findDiskOfferingByName(a.config.CloudStack.DataDiskOffering)
-		if err != nil {
-			return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Cannot create data disk when creating vm")
-		}
-		deplParams.SetDiskofferingid(offer.Id)
+	if a.config.CloudStack.RootDiskSize > 0 {
+		deplParams.SetRootdisksize(a.config.CloudStack.RootDiskSize / 1024)
 	}
 
 	resp, err := a.client.VirtualMachine.DeployVirtualMachine(deplParams)
