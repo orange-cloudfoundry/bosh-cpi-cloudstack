@@ -49,8 +49,6 @@ type CloudStackConfig struct {
 	SkipVerifySSL   bool
 	Timeout         Timeout
 
-	RootDiskSize int64
-
 	// Key
 	DefaultKeyName string
 	PrivateKey     string

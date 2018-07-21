@@ -88,8 +88,8 @@ func (a CPI) CreateVM(
 		deplParams.SetAffinitygroupids([]string{affinId})
 	}
 
-	if a.config.CloudStack.RootDiskSize > 0 {
-		deplParams.SetRootdisksize(a.config.CloudStack.RootDiskSize / 1024)
+	if resProps.RootDiskSize > 0 {
+		deplParams.SetRootdisksize(int64(resProps.RootDiskSize / 1024))
 	}
 
 	resp, err := a.client.VirtualMachine.DeployVirtualMachine(deplParams)
