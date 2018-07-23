@@ -33,6 +33,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"strconv"
 )
 
 // UnlimitedResourceID is a special ID to define an unlimited resource
@@ -141,6 +142,22 @@ type CloudStackClient struct {
 	VirtualMachine      *VirtualMachineService
 	Volume              *VolumeService
 	Zone                *ZoneService
+}
+
+type CSBool bool
+
+func (c CSBool) MarshalJSON() ([]byte, error) {
+	return json.Marshal(bool(c))
+}
+
+func (c *CSBool) UnmarshalJSON(data []byte) error {
+	value := strings.Replace(strings.ToLower(string(data)), "\"", "", -1)
+	b, err := strconv.ParseBool(value)
+	if err != nil {
+		return err
+	}
+	*c = CSBool(b)
+	return nil
 }
 
 // Creates a new client for communicating with CloudStack
