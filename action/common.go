@@ -164,6 +164,20 @@ func (a CPI) findTemplateByName(name string) (*cloudstack.Template, error) {
 	return resp.Templates[0], nil
 }
 
+func (a CPI) findLBRuleByName(name string) (*cloudstack.LoadBalancerRule, error) {
+	p := a.client.LoadBalancer.NewListLoadBalancerRulesParams()
+	p.SetName(name)
+
+	resp, err := a.client.LoadBalancer.ListLoadBalancerRules(p)
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.LoadBalancerRules) == 0 {
+		return nil, nil
+	}
+	return resp.LoadBalancerRules[0], nil
+}
+
 func (a CPI) findOsTypeId(descr string) (string, error) {
 	p := a.client.GuestOS.NewListOsTypesParams()
 	p.SetDescription(descr)

@@ -22,7 +22,6 @@ func (a CPI) CreateVM(
 	if err != nil {
 		return apiv1.VMCID{}, bosherr.WrapError(err, "Cannot create vm")
 	}
-
 	vmName := fmt.Sprintf("%s%s", config.VMPrefix, uuid.NewV4().String())
 
 	userData := NewUserDataContents(vmName, a.config.Actions.Registry, networks)
@@ -129,6 +128,15 @@ func (a CPI) CreateVM(
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot create ephemeral disk when creating vm"), resp.Id)
 	}
 	a.logger.Info("create_vm", "Finished creating ephemeral disk for vm %s .", vmName)
+
+	if len(resProps.Lbs) > 0 {
+		a.logger.Info("create_vm", "Assigning vm %s to loadbalancers ...", vmName)
+		err = a.setLoadBalancers(resProps.LBCloudProperties, resp.Id, zoneId, network.Id)
+		if err != nil {
+			return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot assign loadbalancers to vm"), resp.Id)
+		}
+		a.logger.Info("create_vm", "Finished assigning vm %s to loadbalancers.", vmName)
+	}
 
 	a.logger.Info("create_vm", "Attaching ephemeral disk for vm %s ...", vmName)
 	err = a.AttachDisk(vmCID, diskCid)
