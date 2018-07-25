@@ -124,7 +124,7 @@ func (a CPI) CreateVM(
 	a.logger.Info("create_vm", "Finished creating vip(s) for vm %s .", vmName)
 
 	a.logger.Info("create_vm", "Creating ephemeral disk for vm %s ...", vmName)
-	diskCid, err := a.createEphemeralDisk(resProps.EphemeralDiskSize, resProps.DiskCloudProperties, nil)
+	diskCid, err := a.createEphemeralDisk(resProps.EphemeralDiskSize, resProps.DiskCloudProperties, "")
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot create ephemeral disk when creating vm"), resp.Id)
 	}

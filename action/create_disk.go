@@ -10,10 +10,14 @@ import (
 )
 
 func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) (apiv1.DiskCID, error) {
+	cidStr := "'not used'"
+	if cid != nil {
+		cidStr = cid.AsString()
+	}
 	var diskProps DiskCloudProperties
 	err := props.As(&diskProps)
 	if err != nil {
-		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cidStr)
 	}
 
 	diskOfferName := diskProps.DiskOffering
@@ -25,16 +29,16 @@ func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) 
 	diskName := fmt.Sprintf("%s%s", config.PersistenceDiskPrefix, uuid.NewV4().String())
 
 	a.logger.Info("create_disk", "Creating disk %s ...", diskName)
-	_, err = a.createVolume(diskName, size, diskOfferName, cid)
+	_, err = a.createVolume(diskName, size, diskOfferName, cidStr)
 	if err != nil {
-		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cidStr)
 	}
 	a.logger.Info("create_disk", "Finished creating disk %s .", diskName)
 
 	return apiv1.NewDiskCID(diskName), nil
 }
 
-func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid *apiv1.VMCID) (apiv1.DiskCID, error) {
+func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid string) (apiv1.DiskCID, error) {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVolume)
 
 	diskOfferName := diskProps.EphemeralDiskOffering
@@ -47,7 +51,7 @@ func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid *a
 
 	_, err := a.createVolume(diskName, size, diskOfferName, cid)
 	if err != nil {
-		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+		return apiv1.DiskCID{}, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid)
 	}
 
 	// we tag ephemeral disk with director name
@@ -65,7 +69,7 @@ func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid *a
 	return apiv1.NewDiskCID(diskName), nil
 }
 
-func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid *apiv1.VMCID) (*cloudstack.CreateVolumeResponse, error) {
+func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid string) (*cloudstack.CreateVolumeResponse, error) {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVolume)
 
 	if diskOfferName == "" {
@@ -75,12 +79,12 @@ func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid *
 
 	zoneId, err := a.findZoneId()
 	if err != nil {
-		return nil, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+		return nil, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid)
 	}
 
 	offer, err := a.findDiskOfferingByName(diskOfferName)
 	if err != nil {
-		return nil, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+		return nil, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid)
 	}
 
 	p := a.client.Volume.NewCreateVolumeParams()
@@ -95,7 +99,7 @@ func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid *
 
 	resp, err := a.client.Volume.CreateVolume(p)
 	if err != nil {
-		return nil, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid.AsString())
+		return nil, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid)
 	}
 
 	return resp, nil
