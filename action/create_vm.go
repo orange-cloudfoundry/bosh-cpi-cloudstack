@@ -155,12 +155,26 @@ func (a CPI) CreateVM(
 }
 
 func (a CPI) attachEphemeralDisk(vmCID apiv1.VMCID, diskCid apiv1.DiskCID) error {
-	err := a.AttachDisk(vmCID, diskCid)
-	if err != nil && strings.Contains(err.Error(), pvDriverErr) {
-		time.Sleep(2 * time.Second)
-		return a.attachEphemeralDisk(vmCID, diskCid)
+	var timer time.Duration
+	currentTime := time.Now().Unix()
+	timeout := 5 * time.Minute
+	for {
+		err := a.AttachDisk(vmCID, diskCid)
+		if err == nil {
+			return nil
+		}
+		if err != nil && !strings.Contains(err.Error(), pvDriverErr) {
+			return err
+		}
+		if time.Now().Unix()-currentTime > int64(timeout) {
+			return err
+		}
+		if timer < 15 {
+			timer++
+		}
+		time.Sleep(timer)
 	}
-	return err
+	return nil
 }
 
 func (a CPI) destroyVmErrFallback(err error, vmId string, fs ...func()) error {

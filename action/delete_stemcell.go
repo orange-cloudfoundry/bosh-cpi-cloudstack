@@ -14,7 +14,7 @@ func (a CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
 
 	template, _, err := a.client.Template.GetTemplateByName(cid.AsString(), "executable", zoneid)
 	if err != nil {
-		return bosherr.WrapErrorf(err, "[delete_stemcell] could not find template '%s'", cid.AsString())
+		return nil
 	}
 
 	deleteP := a.client.Template.NewDeleteTemplateParams(template.Id)
