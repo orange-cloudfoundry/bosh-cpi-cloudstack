@@ -18,7 +18,7 @@ func (a CPI) DeleteVM(cid apiv1.VMCID) error {
 	}
 
 	if len(vms) == 0 {
-		return bosherr.Errorf("No vm found with name %s", cid.AsString())
+		return nil
 	}
 	vm := vms[0]
 
