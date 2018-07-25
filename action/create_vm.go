@@ -9,6 +9,12 @@ import (
 	"encoding/json"
 	"encoding/base64"
 	"github.com/xanzy/go-cloudstack/cloudstack"
+	"time"
+	"strings"
+)
+
+const (
+	pvDriverErr = "VM which requires PV drivers to be installed"
 )
 
 func (a CPI) CreateVM(
@@ -131,7 +137,7 @@ func (a CPI) CreateVM(
 	a.logger.Info("create_vm", "Finished creating ephemeral disk for vm %s .", vmName)
 
 	a.logger.Info("create_vm", "Attaching ephemeral disk for vm %s ...", vmName)
-	err = a.AttachDisk(vmCID, diskCid)
+	err = a.attachEphemeralDisk(vmCID, diskCid)
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(
 			bosherr.WrapError(
@@ -146,6 +152,15 @@ func (a CPI) CreateVM(
 	a.logger.Info("create_vm", "Finished attaching ephemeral disk for vm %s .", vmName)
 
 	return vmCID, nil
+}
+
+func (a CPI) attachEphemeralDisk(vmCID apiv1.VMCID, diskCid apiv1.DiskCID) error {
+	err := a.AttachDisk(vmCID, diskCid)
+	if err != nil && strings.Contains(err.Error(), pvDriverErr) {
+		time.Sleep(2 * time.Second)
+		return a.attachEphemeralDisk(vmCID, diskCid)
+	}
+	return err
 }
 
 func (a CPI) destroyVmErrFallback(err error, vmId string, fs ...func()) error {
