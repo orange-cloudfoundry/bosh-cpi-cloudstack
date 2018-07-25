@@ -35,8 +35,22 @@ func (cc CloudStackCloudProperties) Validate() error {
 	return nil
 }
 
+type LBCloudProperties struct {
+	Lbs []LBConfig `json:"lbs"`
+}
+
+type LBConfig struct {
+	Name         string `json:"name"`
+	Algorithm    string `json:"algorithm"`
+	PrivatePort  int    `json:"private_port"`
+	PublicPort   int    `json:"public_port"`
+	OpenFirewall bool   `json:"open_firewall"`
+	PublicIp     string `json:"public_ip"`
+}
+
 type ResourceCloudProperties struct {
 	DiskCloudProperties
+	LBCloudProperties
 	ComputeOffering   string `json:"compute_offering"`
 	AffinityGroup     string `json:"affinity_group"`
 	AffinityGroupType string `json:"affinity_group_type"`
