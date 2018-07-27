@@ -4,6 +4,7 @@ import (
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"strings"
 )
 
 func (a CPI) DeleteVM(cid apiv1.VMCID) error {
@@ -36,6 +37,21 @@ func (a CPI) DeleteVM(cid apiv1.VMCID) error {
 	}
 	a.logger.Info("delete_vm", "Finished stopping vm %s ...", cid.AsString())
 
+	listParams := a.client.Volume.NewListVolumesParams()
+	listParams.SetVirtualmachineid(vm.Id)
+	listParams.SetType(string(config.Datadisk))
+	resp, err := a.client.Volume.ListVolumes(listParams)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "Cannot get volumes for vm %s", cid.AsString())
+	}
+
+	ephemDisks := make([]string, 0)
+	for _, disk := range resp.Volumes {
+		if strings.HasPrefix(disk.Name, config.EphemeralDiskPrefix) {
+			ephemDisks = append(ephemDisks, disk.Id)
+		}
+	}
+
 	a.logger.Info("delete_vm", "Detaching all disks for vm %s ...", cid.AsString())
 	err = a.detachAllDisks(vm.Id)
 	if err != nil {
@@ -48,6 +64,13 @@ func (a CPI) DeleteVM(cid apiv1.VMCID) error {
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Error when destroying vm %s", cid.AsString())
 	}
+
+	a.logger.Info("delete_vm", "Removing all ephemeral disks for vm %s ...", cid.AsString())
+	for _, diskId := range ephemDisks {
+		a.client.Volume.DeleteVolume(a.client.Volume.NewDeleteVolumeParams(diskId))
+	}
+	a.logger.Info("delete_vm", "Finished removing all ephemeral disks for vm %s ...", cid.AsString())
+
 	a.logger.Info("delete_vm", "Finished deleting vm %s ...", cid.AsString())
 
 	a.regFactory.Create(cid).Delete()
