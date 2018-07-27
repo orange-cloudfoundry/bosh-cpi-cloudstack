@@ -78,11 +78,15 @@ func (a CPI) CreateVM(
 	deplParams := a.client.VirtualMachine.NewDeployVirtualMachineParams(serviceOffering.Id, template.Id, zoneId)
 	deplParams.SetUserdata(userDataStr)
 	deplParams.SetName(vmName)
-	deplParams.SetNetworkids([]string{network.Id})
 	deplParams.SetKeypair(a.config.CloudStack.DefaultKeyName)
+	deplParams.AddIptonetworklist(a.networkToMap(network, defaultNetwork.Type(), defaultNetwork.IP()))
 
-	if !defaultNetwork.IsDynamic() {
-		deplParams.SetIpaddress(defaultNetwork.IP())
+	netParams, err := a.generateNetworksMap(networks, networkProps.Name, zoneId)
+	if err != nil {
+		return apiv1.VMCID{}, err
+	}
+	for _, netParam := range netParams {
+		deplParams.AddIptonetworklist(netParam)
 	}
 
 	affinId, err := a.generateAffinityGroup(resProps, env)
@@ -274,11 +278,8 @@ func (a CPI) checkNetworkConfig(networks apiv1.Networks) error {
 	if nbVip > 1 {
 		return bosherr.Errorf("Only 1 vip is supported")
 	}
-	if (nbDynamic + nbManual) > 1 {
-		return bosherr.Errorf("Only 1 nic is supported, mixing manual and dynamic network is not allowed")
-	}
 	if (nbDynamic + nbManual) == 0 {
-		return bosherr.Errorf("It must have one dynamic or one manual network defined")
+		return bosherr.Errorf("It must have, at least, one dynamic or one manual network defined")
 	}
 	return nil
 }
@@ -315,4 +316,36 @@ func (a CPI) generateAutoAffinityGroup(env apiv1.VMEnv) (string, error) {
 			name)
 	}
 	return affiId, nil
+}
+
+func (a CPI) generateNetworksMap(networks apiv1.Networks, defNetName, zoneId string) ([]map[string]string, error) {
+	netList := make([]map[string]string, 0)
+	for _, network := range networks {
+		if network.Type() == string(config.VipNetwork) {
+			continue
+		}
+		var networkProps NetworkCloudProperties
+		err := network.CloudProps().As(&networkProps)
+		if err != nil {
+			return netList, err
+		}
+		if networkProps.Name == defNetName {
+			continue
+		}
+		netCs, err := a.findNetworkByName(networkProps.Name, zoneId)
+		if err != nil {
+			return netList, bosherr.WrapErrorf(err, "Could not found network %s when creating vm", networkProps.Name)
+		}
+		netList = append(netList, a.networkToMap(netCs, network.Type(), network.IP()))
+	}
+	return netList, nil
+}
+
+func (a CPI) networkToMap(net *cloudstack.Network, netType, ip string) map[string]string {
+	m := make(map[string]string)
+	m["networkid"] = net.Id
+	if netType != string(config.DynamicNetwork) {
+		m["ip"] = ip
+	}
+	return m
 }

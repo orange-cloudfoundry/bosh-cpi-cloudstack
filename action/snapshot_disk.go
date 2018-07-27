@@ -7,18 +7,6 @@ import (
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
-/*
-logger.info("snapshot disk");
-//TODO: only for persistent disk
-String csDiskId = api.getVolumeApi().getVolume(disk_id).getId();
-AsyncCreateResponse async = api.getSnapshotApi().createSnapshot(csDiskId, CreateSnapshotOptions.Builder.domainId("domain"));
-
-jobComplete = retry(new JobComplete(api), 1200, 3, 5, SECONDS);
-jobComplete.apply(async.getJobId());
-
-//FIXME
-return null;
- */
 func (a CPI) SnapshotDisk(diskCID apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.SnapshotCID, error) {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.SnapshotVolume)
 
@@ -39,7 +27,7 @@ func (a CPI) SnapshotDisk(diskCID apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.Sna
 		return apiv1.SnapshotCID{}, bosherr.Errorf("Volume found with name %s is not a persistent disk", diskCID.AsString())
 	}
 
-	a.logger.Info("resize_disk", "Snapshooting disk %s ...", diskCID.AsString())
+	a.logger.Info("resize_disk", "Snapshoting disk %s ...", diskCID.AsString())
 	p := a.client.Snapshot.NewCreateSnapshotParams(volume.Id)
 	resp, err := a.client.Snapshot.CreateSnapshot(p)
 	if err != nil {
