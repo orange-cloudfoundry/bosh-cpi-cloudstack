@@ -31,9 +31,9 @@ import (
 	"net/url"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 )
 
 // UnlimitedResourceID is a special ID to define an unlimited resource
@@ -275,6 +275,12 @@ func NewAsyncClient(apiurl string, apikey string, secret string, verifyssl bool)
 // seconds, to check if the async job is finished.
 func (cs *CloudStackClient) AsyncTimeout(timeoutInSeconds int64) {
 	cs.timeout = timeoutInSeconds
+}
+
+// Set timeout for synchronous api calls. The default is to poll for 60 seconds
+// seconds, to wait for the response.
+func (cs *CloudStackClient) Timeout(timeoutInSeconds int64) {
+	cs.client.Timeout = time.Duration(timeoutInSeconds * time.Second)
 }
 
 // Set any default options that would be added to all API calls that support it.
