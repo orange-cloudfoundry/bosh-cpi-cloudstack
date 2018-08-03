@@ -31,9 +31,9 @@ import (
 	"net/url"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 )
 
 // UnlimitedResourceID is a special ID to define an unlimited resource
@@ -170,7 +170,7 @@ func newClient(apiurl string, apikey string, secret string, async bool, verifyss
 				Proxy:           http.ProxyFromEnvironment,
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: !verifyssl}, // If verifyssl is true, skipping the verify should be false and vice versa
 			},
-			Timeout: time.Duration(60 * time.Second),
+			Timeout: time.Duration(5 * time.Minute),
 		},
 		baseURL: apiurl,
 		apiKey:  apikey,
