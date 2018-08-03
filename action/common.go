@@ -1,12 +1,13 @@
 package action
 
 import (
+	"fmt"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
 	"github.com/xanzy/go-cloudstack/cloudstack"
-	"fmt"
+	"strings"
 )
 
 func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal) error {
@@ -204,7 +205,7 @@ func (a CPI) findPublicIpByIp(ip string) (*cloudstack.PublicIpAddress, error) {
 	return resp.PublicIpAddresses[0], nil
 }
 
-func (a CPI) findOrCreateAffinityGroup(name, aType string) (string, error) {
+func (a CPI) findAffinityGroup(name, aType string) (string, error) {
 	lsP := a.client.AffinityGroup.NewListAffinityGroupsParams()
 	lsP.SetName(name)
 	lsResp, err := a.client.AffinityGroup.ListAffinityGroups(lsP)
@@ -214,10 +215,24 @@ func (a CPI) findOrCreateAffinityGroup(name, aType string) (string, error) {
 	if len(lsResp.AffinityGroups) > 0 {
 		return lsResp.AffinityGroups[0].Id, nil
 	}
+	return "", nil
+}
+
+func (a CPI) findOrCreateAffinityGroup(name, aType string) (string, error) {
+	afId, err := a.findAffinityGroup(name, aType)
+	if err != nil {
+		return "", err
+	}
+	if afId != "" {
+		return afId, nil
+	}
 
 	p := a.client.AffinityGroup.NewCreateAffinityGroupParams(name, aType)
 	resp, err := a.client.AffinityGroup.CreateAffinityGroup(p)
 	if err != nil {
+		if strings.Contains(err.Error(), "already exists") {
+			return a.findAffinityGroup(name, aType)
+		}
 		return "", err
 	}
 	return resp.Id, nil
