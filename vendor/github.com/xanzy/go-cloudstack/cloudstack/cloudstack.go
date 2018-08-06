@@ -277,6 +277,12 @@ func (cs *CloudStackClient) AsyncTimeout(timeoutInSeconds int64) {
 	cs.timeout = timeoutInSeconds
 }
 
+// Set timeout for synchronous api calls. The default is to poll for 60 seconds
+// seconds, to wait for the response.
+func (cs *CloudStackClient) Timeout(timeoutInSeconds int64) {
+	cs.client.Timeout = time.Duration(timeoutInSeconds * time.Second)
+}
+
 // Set any default options that would be added to all API calls that support it.
 func (cs *CloudStackClient) DefaultOptions(options ...OptionFunc) {
 	if options != nil {

@@ -22,6 +22,7 @@ func (a CPI) CreateVM(
 	cloudProps apiv1.VMCloudProps, networks apiv1.Networks,
 	associatedDiskCIDs []apiv1.DiskCID, env apiv1.VMEnv) (apiv1.VMCID, error) {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVm)
+	a.client.Timeout(a.config.CloudStack.Timeout.CreateVm)
 
 	var resProps ResourceCloudProperties
 	err := cloudProps.As(&resProps)
