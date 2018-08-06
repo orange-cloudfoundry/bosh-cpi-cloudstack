@@ -8,6 +8,7 @@ import (
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
 	"github.com/xanzy/go-cloudstack/cloudstack"
 	"strings"
+	"time"
 )
 
 func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal) error {
@@ -236,4 +237,27 @@ func (a CPI) findOrCreateAffinityGroup(name, aType string) (string, error) {
 		return "", err
 	}
 	return resp.Id, nil
+}
+
+func retryable(timeout time.Duration, cmd func() error, checkRetry func(err error) bool) error {
+	var timer time.Duration
+	var err error
+	currentTime := time.Now().Unix()
+	for {
+		err = cmd()
+		if err == nil {
+			return nil
+		}
+		if !checkRetry(err) {
+			return err
+		}
+		if time.Now().Unix()-currentTime > int64(timeout) {
+			return err
+		}
+		if timer < 15 {
+			timer++
+		}
+		time.Sleep(timer)
+	}
+	return err
 }

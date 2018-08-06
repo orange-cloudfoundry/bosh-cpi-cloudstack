@@ -1,16 +1,16 @@
 package action
 
 import (
-	"github.com/cppforlife/bosh-cpi-go/apiv1"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/satori/go.uuid"
-	"encoding/json"
-	"encoding/base64"
 	"github.com/xanzy/go-cloudstack/cloudstack"
-	"time"
 	"strings"
+	"time"
 )
 
 const (
@@ -167,26 +167,13 @@ func (a CPI) CreateVM(
 }
 
 func (a CPI) attachEphemeralDisk(vmCID apiv1.VMCID, diskCid apiv1.DiskCID) error {
-	var timer time.Duration
-	currentTime := time.Now().Unix()
-	timeout := 5 * time.Minute
-	for {
-		err := a.AttachDisk(vmCID, diskCid)
-		if err == nil {
-			return nil
-		}
-		if err != nil && !strings.Contains(err.Error(), pvDriverErr) {
-			return err
-		}
-		if time.Now().Unix()-currentTime > int64(timeout) {
-			return err
-		}
-		if timer < 15 {
-			timer++
-		}
-		time.Sleep(timer)
-	}
-	return nil
+	return retryable(5*time.Minute,
+		func() error {
+			return a.AttachDisk(vmCID, diskCid)
+		},
+		func(err error) bool {
+			return strings.Contains(err.Error(), pvDriverErr)
+		})
 }
 
 func (a CPI) destroyVmErrFallback(err error, vmId string, fs ...func()) error {
@@ -237,8 +224,15 @@ func (a CPI) createVip(network apiv1.Network, vmId, zoneId string, defNetwork *c
 	p := a.client.NAT.NewEnableStaticNatParams(publicIp.Id, vmId)
 	p.SetNetworkid(networkCs.Id)
 
-	_, err = a.client.NAT.EnableStaticNat(p)
-	return err
+	return retryable(16*time.Minute,
+		func() error {
+			_, err := a.client.NAT.EnableStaticNat(p)
+			return err
+		},
+		func(err error) bool {
+			_, ok := err.(*json.SyntaxError)
+			return ok
+		})
 }
 
 func (a CPI) findDefaultNetwork(networks apiv1.Networks) apiv1.Network {
