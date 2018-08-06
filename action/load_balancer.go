@@ -1,5 +1,7 @@
 package action
 
+import "strings"
+
 func (a CPI) setLoadBalancers(lbProps LBCloudProperties, vmID, zoneId, networkId string) error {
 	for _, lbConf := range lbProps.Lbs {
 		err := a.setLoadBalancer(lbConf, vmID, zoneId, networkId)
@@ -9,7 +11,6 @@ func (a CPI) setLoadBalancers(lbProps LBCloudProperties, vmID, zoneId, networkId
 	}
 	return nil
 }
-
 func (a CPI) setLoadBalancer(lbConf LBConfig, vmID, zoneId, networkId string) error {
 	lbId := ""
 	lb, err := a.findLBRuleByName(lbConf.Name)
@@ -22,7 +23,17 @@ func (a CPI) setLoadBalancer(lbConf LBConfig, vmID, zoneId, networkId string) er
 	if lbId == "" {
 		lbId, err = a.createLoadBalancer(lbConf, zoneId, networkId)
 		if err != nil {
-			return err
+			if strings.Contains(err.Error(), "already exists") {
+				lb, err := a.findLBRuleByName(lbConf.Name)
+				if err != nil {
+					return err
+				}
+				if lb != nil {
+					lbId = lb.Id
+				}
+			} else {
+				return err
+			}
 		}
 	}
 	p := a.client.LoadBalancer.NewAssignToLoadBalancerRuleParams(lbId)
