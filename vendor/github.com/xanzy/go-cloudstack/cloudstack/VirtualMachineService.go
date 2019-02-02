@@ -852,6 +852,10 @@ type DeployVirtualMachineParams struct {
 	iptonetlist []map[string]string
 }
 
+func (p *DeployVirtualMachineParams) Debug() url.Values {
+	return p.toURLValues()
+}
+
 func (p *DeployVirtualMachineParams) toURLValues() url.Values {
 	u := url.Values{}
 	if p.p == nil {
