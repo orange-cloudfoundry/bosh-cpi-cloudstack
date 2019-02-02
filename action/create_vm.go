@@ -18,9 +18,13 @@ const (
 )
 
 func (a CPI) CreateVM(
-	agentID apiv1.AgentID, stemcellCID apiv1.StemcellCID,
-	cloudProps apiv1.VMCloudProps, networks apiv1.Networks,
-	associatedDiskCIDs []apiv1.DiskCID, env apiv1.VMEnv) (apiv1.VMCID, error) {
+	agentID apiv1.AgentID,
+	stemcellCID apiv1.StemcellCID,
+	cloudProps apiv1.VMCloudProps,
+	networks apiv1.Networks,
+	associatedDiskCIDs []apiv1.DiskCID,
+	env apiv1.VMEnv) (apiv1.VMCID, error) {
+
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVm)
 
 	var resProps ResourceCloudProperties
@@ -80,6 +84,23 @@ func (a CPI) CreateVM(
 	deplParams.SetName(vmName)
 	deplParams.SetKeypair(a.config.CloudStack.DefaultKeyName)
 	deplParams.AddIptonetworklist(a.networkToMap(network, defaultNetwork.Type(), defaultNetwork.IP()))
+
+	if serviceOffering.Iscustomized {
+		cpu := resProps.CPUNumber
+		cpuSpeed := resProps.CPUSpeed
+		ram := resProps.RAM
+		if 0 == cpuSpeed {
+			cpuSpeed = 2000
+		}
+		if (0 == cpu) || (0 == ram) {
+			return apiv1.VMCID{}, bosherr.Errorf("Could not find `cpu` and `memory` cloud_properties mandatory for compute offering %s when creating vm", resProps.ComputeOffering)
+		}
+		deplParams.AddDetails(map[string]string{
+			"cpuNumber": fmt.Sprintf("%d", cpu),
+			"cpuSpeed":  fmt.Sprintf("%d", cpuSpeed),
+			"memory":    fmt.Sprintf("%d", ram),
+		})
+	}
 
 	netParams, err := a.generateNetworksMap(networks, networkProps.Name, zoneId)
 	if err != nil {

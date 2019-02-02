@@ -48,9 +48,16 @@ type LBConfig struct {
 	PublicIp     string `json:"public_ip"`
 }
 
+type ComputeCloudProperties struct {
+	CPUNumber int `json:"cpu"`
+	CPUSpeed  int `json:"cpu_speed"`
+	RAM       int `json:"ram"`
+}
+
 type ResourceCloudProperties struct {
 	DiskCloudProperties
 	LBCloudProperties
+	ComputeCloudProperties
 	ComputeOffering   string `json:"compute_offering"`
 	AffinityGroup     string `json:"affinity_group"`
 	AffinityGroupType string `json:"affinity_group_type"`
