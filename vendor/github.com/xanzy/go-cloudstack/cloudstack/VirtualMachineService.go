@@ -115,8 +115,8 @@ func (s *VirtualMachineService) AddNicToVirtualMachine(p *AddNicToVirtualMachine
 }
 
 type AddNicToVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -166,7 +166,7 @@ type AddNicToVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -183,7 +183,7 @@ type AddNicToVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -200,12 +200,12 @@ type AddNicToVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -215,7 +215,7 @@ type AddNicToVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -228,7 +228,7 @@ type AddNicToVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -239,7 +239,7 @@ type AddNicToVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -255,7 +255,7 @@ type AddNicToVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -380,7 +380,7 @@ func (s *VirtualMachineService) AssignVirtualMachine(p *AssignVirtualMachinePara
 }
 
 type AssignVirtualMachineResponse struct {
-	Account string `json:"account"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -430,7 +430,7 @@ type AssignVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -447,7 +447,7 @@ type AssignVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -464,12 +464,12 @@ type AssignVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -479,7 +479,7 @@ type AssignVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -492,7 +492,7 @@ type AssignVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -503,7 +503,7 @@ type AssignVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -519,7 +519,7 @@ type AssignVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -623,7 +623,7 @@ func (s *VirtualMachineService) ChangeServiceForVirtualMachine(p *ChangeServiceF
 }
 
 type ChangeServiceForVirtualMachineResponse struct {
-	Account string `json:"account"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -673,7 +673,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -690,7 +690,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -707,12 +707,12 @@ type ChangeServiceForVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -722,7 +722,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -735,7 +735,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -746,7 +746,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -762,7 +762,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -875,10 +875,10 @@ func (p *DeployVirtualMachineParams) toURLValues() url.Values {
 		u.Set("deploymentplanner", v.(string))
 	}
 	if v, found := p.p["details"]; found {
-		i := 0
-		for k, vv := range v.(map[string]string) {
-			u.Set(fmt.Sprintf("details[%d].%s", i, k), vv)
-			i++
+		for index, item := range v.([]map[string]string) {
+			for key, val := range item {
+				u.Set(fmt.Sprintf("details[%d].%s", index, key), val)
+			}
 		}
 	}
 	if v, found := p.p["diskofferingid"]; found {
@@ -1007,12 +1007,17 @@ func (p *DeployVirtualMachineParams) SetDeploymentplanner(v string) {
 	return
 }
 
-func (p *DeployVirtualMachineParams) SetDetails(v map[string]string) {
+func (p *DeployVirtualMachineParams) AddDetails(v map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	p.p["details"] = v
-	return
+	if _, found := p.p["details"]; !found {
+		p.p["details"] = []map[string]string{}
+	}
+
+	value := p.p["details"].([]map[string]string)
+	value = append(value, v)
+	p.p["details"] = value
 }
 
 func (p *DeployVirtualMachineParams) SetDiskofferingid(v string) {
@@ -1254,8 +1259,8 @@ func (s *VirtualMachineService) DeployVirtualMachine(p *DeployVirtualMachinePara
 }
 
 type DeployVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -1305,7 +1310,7 @@ type DeployVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -1322,7 +1327,7 @@ type DeployVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -1339,12 +1344,12 @@ type DeployVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -1354,7 +1359,7 @@ type DeployVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -1367,7 +1372,7 @@ type DeployVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -1378,7 +1383,7 @@ type DeployVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -1394,7 +1399,7 @@ type DeployVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -1503,8 +1508,8 @@ func (s *VirtualMachineService) DestroyVirtualMachine(p *DestroyVirtualMachinePa
 }
 
 type DestroyVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -1554,7 +1559,7 @@ type DestroyVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -1571,7 +1576,7 @@ type DestroyVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -1588,12 +1593,12 @@ type DestroyVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -1603,7 +1608,7 @@ type DestroyVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -1616,7 +1621,7 @@ type DestroyVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -1627,7 +1632,7 @@ type DestroyVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -1643,7 +1648,7 @@ type DestroyVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -2267,7 +2272,7 @@ type ListVirtualMachinesResponse struct {
 }
 
 type VirtualMachine struct {
-	Account string `json:"account"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -2317,7 +2322,7 @@ type VirtualMachine struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -2334,7 +2339,7 @@ type VirtualMachine struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -2351,12 +2356,12 @@ type VirtualMachine struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -2366,7 +2371,7 @@ type VirtualMachine struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -2379,7 +2384,7 @@ type VirtualMachine struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -2390,7 +2395,7 @@ type VirtualMachine struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -2406,7 +2411,7 @@ type VirtualMachine struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -2525,8 +2530,8 @@ func (s *VirtualMachineService) MigrateVirtualMachine(p *MigrateVirtualMachinePa
 }
 
 type MigrateVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -2576,7 +2581,7 @@ type MigrateVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -2593,7 +2598,7 @@ type MigrateVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -2610,12 +2615,12 @@ type MigrateVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -2625,7 +2630,7 @@ type MigrateVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -2638,7 +2643,7 @@ type MigrateVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -2649,7 +2654,7 @@ type MigrateVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -2665,7 +2670,7 @@ type MigrateVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -2790,8 +2795,8 @@ func (s *VirtualMachineService) MigrateVirtualMachineWithVolume(p *MigrateVirtua
 }
 
 type MigrateVirtualMachineWithVolumeResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -2841,7 +2846,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -2858,7 +2863,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -2875,12 +2880,12 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -2890,7 +2895,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -2903,7 +2908,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -2914,7 +2919,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -2930,7 +2935,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -3027,8 +3032,8 @@ func (s *VirtualMachineService) RebootVirtualMachine(p *RebootVirtualMachinePara
 }
 
 type RebootVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -3078,7 +3083,7 @@ type RebootVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -3095,7 +3100,7 @@ type RebootVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -3112,12 +3117,12 @@ type RebootVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -3127,7 +3132,7 @@ type RebootVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -3140,7 +3145,7 @@ type RebootVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -3151,7 +3156,7 @@ type RebootVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -3167,7 +3172,7 @@ type RebootVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -3244,7 +3249,7 @@ func (s *VirtualMachineService) RecoverVirtualMachine(p *RecoverVirtualMachinePa
 }
 
 type RecoverVirtualMachineResponse struct {
-	Account string `json:"account"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -3294,7 +3299,7 @@ type RecoverVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -3311,7 +3316,7 @@ type RecoverVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -3328,12 +3333,12 @@ type RecoverVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -3343,7 +3348,7 @@ type RecoverVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -3356,7 +3361,7 @@ type RecoverVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -3367,7 +3372,7 @@ type RecoverVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -3383,7 +3388,7 @@ type RecoverVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -3492,8 +3497,8 @@ func (s *VirtualMachineService) RemoveNicFromVirtualMachine(p *RemoveNicFromVirt
 }
 
 type RemoveNicFromVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -3543,7 +3548,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -3560,7 +3565,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -3577,12 +3582,12 @@ type RemoveNicFromVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -3592,7 +3597,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -3605,7 +3610,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -3616,7 +3621,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -3632,7 +3637,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -3729,8 +3734,8 @@ func (s *VirtualMachineService) ResetPasswordForVirtualMachine(p *ResetPasswordF
 }
 
 type ResetPasswordForVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -3780,7 +3785,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -3797,7 +3802,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -3814,12 +3819,12 @@ type ResetPasswordForVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -3829,7 +3834,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -3842,7 +3847,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -3853,7 +3858,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -3869,7 +3874,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -3977,8 +3982,8 @@ func (s *VirtualMachineService) RestoreVirtualMachine(p *RestoreVirtualMachinePa
 }
 
 type RestoreVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -4028,7 +4033,7 @@ type RestoreVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -4045,7 +4050,7 @@ type RestoreVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -4062,12 +4067,12 @@ type RestoreVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -4077,7 +4082,7 @@ type RestoreVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -4090,7 +4095,7 @@ type RestoreVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -4101,7 +4106,7 @@ type RestoreVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -4117,7 +4122,7 @@ type RestoreVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -4331,8 +4336,8 @@ func (s *VirtualMachineService) StartVirtualMachine(p *StartVirtualMachineParams
 }
 
 type StartVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -4382,7 +4387,7 @@ type StartVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -4399,7 +4404,7 @@ type StartVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -4416,12 +4421,12 @@ type StartVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -4431,7 +4436,7 @@ type StartVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -4444,7 +4449,7 @@ type StartVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -4455,7 +4460,7 @@ type StartVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -4471,7 +4476,7 @@ type StartVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -4580,8 +4585,8 @@ func (s *VirtualMachineService) StopVirtualMachine(p *StopVirtualMachineParams) 
 }
 
 type StopVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -4631,7 +4636,7 @@ type StopVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -4648,7 +4653,7 @@ type StopVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -4665,12 +4670,12 @@ type StopVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -4680,7 +4685,7 @@ type StopVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -4693,7 +4698,7 @@ type StopVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -4704,7 +4709,7 @@ type StopVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -4720,7 +4725,7 @@ type StopVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -4829,8 +4834,8 @@ func (s *VirtualMachineService) UpdateDefaultNicForVirtualMachine(p *UpdateDefau
 }
 
 type UpdateDefaultNicForVirtualMachineResponse struct {
-	JobID   string `json:"jobid"`
-	Account string `json:"account"`
+	JobID         string `json:"jobid"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -4880,7 +4885,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -4897,7 +4902,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -4914,12 +4919,12 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -4929,7 +4934,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -4942,7 +4947,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -4953,7 +4958,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -4969,7 +4974,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
@@ -5198,7 +5203,7 @@ func (s *VirtualMachineService) UpdateVirtualMachine(p *UpdateVirtualMachinePara
 }
 
 type UpdateVirtualMachineResponse struct {
-	Account string `json:"account"`
+	Account       string `json:"account"`
 	Affinitygroup []struct {
 		Account           string   `json:"account"`
 		Description       string   `json:"description"`
@@ -5248,7 +5253,7 @@ type UpdateVirtualMachineResponse struct {
 	Name                  string            `json:"name"`
 	Networkkbsread        int64             `json:"networkkbsread"`
 	Networkkbswrite       int64             `json:"networkkbswrite"`
-	Nic []struct {
+	Nic                   []struct {
 		Broadcasturi         string `json:"broadcasturi"`
 		Deviceid             string `json:"deviceid"`
 		Gateway              string `json:"gateway"`
@@ -5265,7 +5270,7 @@ type UpdateVirtualMachineResponse struct {
 		Networkname          string `json:"networkname"`
 		Nsxlogicalswitch     string `json:"nsxlogicalswitch"`
 		Nsxlogicalswitchport string `json:"nsxlogicalswitchport"`
-		Secondaryip []struct {
+		Secondaryip          []struct {
 			Id        string `json:"id"`
 			Ipaddress string `json:"ipaddress"`
 		} `json:"secondaryip"`
@@ -5282,12 +5287,12 @@ type UpdateVirtualMachineResponse struct {
 	Publicipid      string `json:"publicipid"`
 	Rootdeviceid    int64  `json:"rootdeviceid"`
 	Rootdevicetype  string `json:"rootdevicetype"`
-	Securitygroup []struct {
+	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
 		Domain      string `json:"domain"`
 		Domainid    string `json:"domainid"`
-		Egressrule []struct {
+		Egressrule  []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
 			Endport           int    `json:"endport"`
@@ -5297,7 +5302,7 @@ type UpdateVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -5310,7 +5315,7 @@ type UpdateVirtualMachineResponse struct {
 				Value        string `json:"value"`
 			} `json:"tags"`
 		} `json:"egressrule"`
-		Id string `json:"id"`
+		Id          string `json:"id"`
 		Ingressrule []struct {
 			Account           string `json:"account"`
 			Cidr              string `json:"cidr"`
@@ -5321,7 +5326,7 @@ type UpdateVirtualMachineResponse struct {
 			Ruleid            string `json:"ruleid"`
 			Securitygroupname string `json:"securitygroupname"`
 			Startport         int    `json:"startport"`
-			Tags []struct {
+			Tags              []struct {
 				Account      string `json:"account"`
 				Customer     string `json:"customer"`
 				Domain       string `json:"domain"`
@@ -5337,7 +5342,7 @@ type UpdateVirtualMachineResponse struct {
 		Name      string `json:"name"`
 		Project   string `json:"project"`
 		Projectid string `json:"projectid"`
-		Tags []struct {
+		Tags      []struct {
 			Account      string `json:"account"`
 			Customer     string `json:"customer"`
 			Domain       string `json:"domain"`
