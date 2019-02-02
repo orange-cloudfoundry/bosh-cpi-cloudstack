@@ -101,7 +101,6 @@ func (a CPI) CreateVM(
 			"memory":    fmt.Sprintf("%d", ram),
 		})
 	}
-	a.logger.Info("create_vm", "deploy param: \n%#v", deplParams.Debug())
 
 	netParams, err := a.generateNetworksMap(networks, networkProps.Name, zoneId)
 	if err != nil {
