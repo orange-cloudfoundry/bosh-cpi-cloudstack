@@ -96,9 +96,9 @@ func (a CPI) CreateVM(
 			return apiv1.VMCID{}, bosherr.Errorf("Could not find `cpu` and `memory` cloud_properties mandatory for compute offering %s when creating vm", resProps.ComputeOffering)
 		}
 		deplParams.AddDetails(map[string]string{
-			"cpuNumber": fmt.Sprintf("%s", cpu),
-			"cpuSpeed":  fmt.Sprintf("%s", cpuSpeed),
-			"memory":    fmt.Sprintf("%s", ram),
+			"cpuNumber": fmt.Sprintf("%d", cpu),
+			"cpuSpeed":  fmt.Sprintf("%d", cpuSpeed),
+			"memory":    fmt.Sprintf("%d", ram),
 		})
 	}
 	a.logger.Info("create_vm", "deploy param: \n%#v", deplParams.Debug())
