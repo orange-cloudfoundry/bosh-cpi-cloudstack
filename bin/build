@@ -2,6 +2,12 @@
 
 set -e
 
-bin=$(dirname $0)
+bin=$(dirname "$0")
 
-go build -o $bin/cpi github.com/orange-cloudfoundry/bosh-cpi-cloudstack/main
+export CGO_ENABLED=0
+
+go build \
+	-a -ldflags "-s -w" \
+	-gcflags="all=-trimpath=$GOPATH" \
+	-o "${bin:-.}/cpi" \
+	github.com/orange-cloudfoundry/bosh-cpi-cloudstack/main
