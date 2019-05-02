@@ -82,6 +82,7 @@ func (a CPI) stopVmById(vmId string) error {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.StopVm)
 
 	p := a.client.VirtualMachine.NewStopVirtualMachineParams(vmId)
+	p.SetForced(true)
 	_, err := a.client.VirtualMachine.StopVirtualMachine(p)
 	return err
 }
