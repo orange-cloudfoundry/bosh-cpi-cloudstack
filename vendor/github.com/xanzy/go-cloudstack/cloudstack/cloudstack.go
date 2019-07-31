@@ -160,6 +160,18 @@ func (c *CSBool) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type CSOsType string
+
+func (c CSOsType) MarshalJSON() ([]byte, error) {
+	return json.Marshal(string(c))
+}
+
+func (c *CSOsType) UnmarshalJSON(data []byte) error {
+	value := strings.Trim(string(data), "\"")
+	*c = CSOsType(value)
+	return nil
+}
+
 // Creates a new client for communicating with CloudStack
 func newClient(apiurl string, apikey string, secret string, async bool, verifyssl bool) *CloudStackClient {
 	jar, _ := cookiejar.New(nil)

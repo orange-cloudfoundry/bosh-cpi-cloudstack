@@ -191,15 +191,15 @@ type AddNicToVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -455,15 +455,15 @@ type AssignVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -698,15 +698,15 @@ type ChangeServiceForVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -1336,15 +1336,15 @@ type DeployVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -1585,15 +1585,15 @@ type DestroyVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -2348,15 +2348,15 @@ type VirtualMachine struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -2607,15 +2607,15 @@ type MigrateVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -2872,15 +2872,15 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -3109,15 +3109,15 @@ type RebootVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -3325,15 +3325,15 @@ type RecoverVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -3574,15 +3574,15 @@ type RemoveNicFromVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -3811,15 +3811,15 @@ type ResetPasswordForVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -4059,15 +4059,15 @@ type RestoreVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -4413,15 +4413,15 @@ type StartVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -4662,15 +4662,15 @@ type StopVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -4911,15 +4911,15 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
@@ -5279,15 +5279,15 @@ type UpdateVirtualMachineResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`

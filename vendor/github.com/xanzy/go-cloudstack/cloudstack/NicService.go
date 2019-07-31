@@ -479,15 +479,15 @@ type UpdateVmNicIpResponse struct {
 		Type             string `json:"type"`
 		Virtualmachineid string `json:"virtualmachineid"`
 	} `json:"nic"`
-	Ostypeid        int64  `json:"ostypeid"`
-	Password        string `json:"password"`
-	Passwordenabled bool   `json:"passwordenabled"`
-	Project         string `json:"project"`
-	Projectid       string `json:"projectid"`
-	Publicip        string `json:"publicip"`
-	Publicipid      string `json:"publicipid"`
-	Rootdeviceid    int64  `json:"rootdeviceid"`
-	Rootdevicetype  string `json:"rootdevicetype"`
+	Ostypeid        CSOsType `json:"ostypeid"`
+	Password        string   `json:"password"`
+	Passwordenabled bool     `json:"passwordenabled"`
+	Project         string   `json:"project"`
+	Projectid       string   `json:"projectid"`
+	Publicip        string   `json:"publicip"`
+	Publicipid      string   `json:"publicipid"`
+	Rootdeviceid    int64    `json:"rootdeviceid"`
+	Rootdevicetype  string   `json:"rootdevicetype"`
 	Securitygroup   []struct {
 		Account     string `json:"account"`
 		Description string `json:"description"`
