@@ -40,8 +40,8 @@ func (f AgentEnvFactory) ForVM(
 
 			DNS:     typedNet.spec.DNS,
 			Default: typedNet.spec.Default,
-
-			MAC: typedNet.mac,
+			Routes:  typedNet.spec.Routes,
+			MAC:     typedNet.mac,
 
 			Preconfigured: typedNet.preconfigured,
 		}

@@ -1,12 +1,12 @@
 package action
 
 import (
-	"github.com/cppforlife/bosh-cpi-go/apiv1"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"fmt"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
 	"github.com/satori/go.uuid"
-	"github.com/xanzy/go-cloudstack/cloudstack"
 )
 
 func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) (apiv1.DiskCID, error) {
@@ -77,7 +77,7 @@ func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid s
 		a.logger.Info("create_disk", "Using default custom disk offering %s because there is no default disk offers", diskOfferName)
 	}
 
-	zoneId, err := a.findZoneId()
+	zoneId, err := a.findZoneID()
 	if err != nil {
 		return nil, bosherr.WrapErrorf(err, "Cannot create disk for vm %s", cid)
 	}

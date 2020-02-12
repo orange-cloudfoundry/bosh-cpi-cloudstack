@@ -7,7 +7,7 @@ import (
 
 // DeleteStemcell - Delete CS template matching given stemcell name
 func (a CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
-	zoneid, err := a.findZoneId()
+	zoneid, err := a.findZoneID()
 	if err != nil {
 		return err
 	}

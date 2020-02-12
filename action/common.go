@@ -6,7 +6,7 @@ import (
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
-	"github.com/xanzy/go-cloudstack/cloudstack"
+	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
 	"strings"
 	"time"
 )
@@ -76,15 +76,15 @@ func (a CPI) findVolumeByName(cid apiv1.DiskCID) (*cloudstack.Volume, error) {
 	return volumes[0], nil
 }
 
-func (a CPI) findZoneId() (string, error) {
+func (a CPI) findZoneID() (string, error) {
 	p := a.client.Zone.NewListZonesParams()
 	p.SetName(a.config.CloudStack.DefaultZone)
 	resp, err := a.client.Zone.ListZones(p)
 	if err != nil {
-		return "", bosherr.WrapErrorf(err, "Can't find zone name '%s'", a.config.CloudStack.DefaultZone)
+		return "", err
 	}
 	if len(resp.Zones) == 0 {
-		return "", bosherr.Errorf("Can't find zone name '%s'", a.config.CloudStack.DefaultZone)
+		return "", bosherr.Errorf("zone '%s' not found", a.config.CloudStack.DefaultZone)
 	}
 	return resp.Zones[0].Id, nil
 }
@@ -112,14 +112,14 @@ func (a CPI) findServiceOfferingByName(name string) (*cloudstack.ServiceOffering
 		return nil, err
 	}
 	if len(resp.ServiceOfferings) == 0 {
-		return nil, fmt.Errorf("Cannot found service offering %s", name)
+		return nil, fmt.Errorf("service offering '%s' not found", name)
 	}
 	return resp.ServiceOfferings[0], nil
 }
 
-func (a CPI) findNetworkOfferingByNetwork(networkId, zoneId string) (*cloudstack.NetworkOffering, error) {
+func (a CPI) findNetworkOfferingByNetwork(networkId, zoneID string) (*cloudstack.NetworkOffering, error) {
 	p := a.client.NetworkOffering.NewListNetworkOfferingsParams()
-	p.SetZoneid(zoneId)
+	p.SetZoneid(zoneID)
 	p.SetNetworkid(networkId)
 
 	resp, err := a.client.NetworkOffering.ListNetworkOfferings(p)
@@ -132,9 +132,9 @@ func (a CPI) findNetworkOfferingByNetwork(networkId, zoneId string) (*cloudstack
 	return resp.NetworkOfferings[0], nil
 }
 
-func (a CPI) findNetworkByName(name string, zoneId string) (*cloudstack.Network, error) {
+func (a CPI) findNetworkByName(name string, zoneID string) (*cloudstack.Network, error) {
 	p := a.client.Network.NewListNetworksParams()
-	p.SetZoneid(zoneId)
+	p.SetZoneid(zoneID)
 
 	resp, err := a.client.Network.ListNetworks(p)
 	if err != nil {
@@ -161,7 +161,7 @@ func (a CPI) findTemplateByName(name string) (*cloudstack.Template, error) {
 		return nil, err
 	}
 	if len(resp.Templates) == 0 {
-		return nil, fmt.Errorf("Cannot found template %s", name)
+		return nil, fmt.Errorf("template '%s' not found", name)
 	}
 	return resp.Templates[0], nil
 }

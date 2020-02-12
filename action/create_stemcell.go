@@ -7,8 +7,8 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
 	"github.com/satori/go.uuid"
-	"github.com/xanzy/go-cloudstack/cloudstack"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -71,7 +71,7 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 
 // getUploadParams -
 func (a CPI) getUploadParams(name string) (*cloudstack.GetUploadParamsForTemplateResponse, error) {
-	zoneid, err := a.findZoneId()
+	zoneid, err := a.findZoneID()
 	if err != nil {
 		return nil, err
 	}

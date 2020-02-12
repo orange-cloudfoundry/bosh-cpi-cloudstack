@@ -7,8 +7,10 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
 	"github.com/satori/go.uuid"
-	"github.com/xanzy/go-cloudstack/cloudstack"
+	"net"
+	"sort"
 	"strings"
 	"time"
 )
@@ -16,6 +18,17 @@ import (
 const (
 	pvDriverErr = "VM which requires PV drivers to be installed"
 )
+
+func (a CPI) CreateVMV2(
+	agentID apiv1.AgentID,
+	stemcellCID apiv1.StemcellCID,
+	cloudProps apiv1.VMCloudProps,
+	networks apiv1.Networks,
+	associatedDiskCIDs []apiv1.DiskCID,
+	env apiv1.VMEnv) (apiv1.VMCID, apiv1.Networks, error) {
+	id, err := a.CreateVM(agentID, stemcellCID, cloudProps, networks, associatedDiskCIDs, env)
+	return id, networks, err
+}
 
 func (a CPI) CreateVM(
 	agentID apiv1.AgentID,
@@ -38,52 +51,31 @@ func (a CPI) CreateVM(
 	userDataRaw, _ := json.Marshal(userData)
 	userDataStr := base64.StdEncoding.EncodeToString(userDataRaw)
 
-	err = a.checkNetworkConfig(networks)
+	zoneID, err := a.findZoneID()
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "Error when creating vm")
-	}
-
-	defaultNetwork := a.findDefaultNetwork(networks)
-	if defaultNetwork == nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "Cannot found default network when creating vm")
-	}
-
-	if defaultNetwork.Type() == string(config.ManualNetwork) && defaultNetwork.IP() == "" {
-		return apiv1.VMCID{}, bosherr.Errorf("Ip must be defined on a manual network")
-	}
-
-	var networkProps NetworkCloudProperties
-	err = defaultNetwork.CloudProps().As(&networkProps)
-	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "Error when creating vm")
-	}
-
-	zoneId, err := a.findZoneId()
-	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "Could not found zone when creating vm")
-	}
-
-	network, err := a.findNetworkByName(networkProps.Name, zoneId)
-	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Could not found network %s when creating vm", networkProps.Name)
+		return apiv1.VMCID{}, bosherr.WrapError(err, "could not found zone")
 	}
 
 	serviceOffering, err := a.findServiceOfferingByName(resProps.ComputeOffering)
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Could not found compute offering %s when creating vm", resProps.ComputeOffering)
+		return apiv1.VMCID{}, bosherr.WrapError(err, "could not found compute offering")
 	}
 
 	template, err := a.findTemplateByName(stemcellCID.AsString())
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "Could not found compute offering %s when creating vm", resProps.ComputeOffering)
+		return apiv1.VMCID{}, bosherr.WrapError(err, "could not found template")
 	}
 
-	a.logger.Info("create_vm", "Creating vm %s ...", vmName)
-	deplParams := a.client.VirtualMachine.NewDeployVirtualMachineParams(serviceOffering.Id, template.Id, zoneId)
+	if err = a.checkNetworkConfig(networks); err != nil {
+		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "invalid network configuration")
+	}
+
+	// computing create vm paramters
+	a.logger.Info("create_vm", "Computing vm deploy parameters %s ...", vmName)
+	deplParams := a.client.VirtualMachine.NewDeployVirtualMachineParams(serviceOffering.Id, template.Id, zoneID)
 	deplParams.SetUserdata(userDataStr)
 	deplParams.SetName(vmName)
 	deplParams.SetKeypair(a.config.CloudStack.DefaultKeyName)
-	deplParams.AddIptonetworklist(a.networkToMap(network, defaultNetwork.Type(), defaultNetwork.IP()))
 
 	if serviceOffering.Iscustomized {
 		cpu := resProps.CPUNumber
@@ -102,57 +94,70 @@ func (a CPI) CreateVM(
 		})
 	}
 
-	netParams, err := a.generateNetworksMap(networks, networkProps.Name, zoneId)
+	networkDefault, networkMaps, err := a.generateNetworksMap(networks, zoneID)
+	if err != nil {
+		return apiv1.VMCID{}, bosherr.WrapError(err, "unable to generate network configuration")
+	}
+	for _, network := range networkMaps {
+		deplParams.AddIptonetworklist(network)
+	}
+
+	affinID, err := a.generateAffinityGroup(resProps, env)
 	if err != nil {
 		return apiv1.VMCID{}, err
 	}
-	for _, netParam := range netParams {
-		deplParams.AddIptonetworklist(netParam)
+	if affinID != "" {
+		deplParams.SetAffinitygroupids([]string{affinID})
 	}
-
-	affinId, err := a.generateAffinityGroup(resProps, env)
-	if err != nil {
-		return apiv1.VMCID{}, err
-	}
-	if affinId != "" {
-		deplParams.SetAffinitygroupids([]string{affinId})
-	}
-
 	if resProps.RootDiskSize > 0 {
 		deplParams.SetRootdisksize(int64(resProps.RootDiskSize / 1024))
 	}
+	a.logger.Debug("create_vm", "deploy parameters %#v", deplParams)
+	a.logger.Info("create_vm", "Finished computing vm deploy parameters %s ...", vmName)
 
+	// creating virtual machine
+	a.logger.Info("create_vm", "Creating vm %s ...", vmName)
 	resp, err := a.client.VirtualMachine.DeployVirtualMachine(deplParams)
 	if err != nil {
 		return apiv1.VMCID{}, bosherr.WrapError(err, "Error when creating vm")
 	}
-
+	a.logger.Debug("create_vm", "DeployVirtualMachine response: %#v", resp)
 	if config.ToVmState(resp.State) != config.VmRunning {
-		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.Errorf("Vm is not running, actual state is %s", resp.State), resp.Id)
+		err = bosherr.Errorf("vm is not running after creation, actual state is %s", resp.State)
+		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
 	}
 	a.logger.Info("create_vm", "Finished creating vm %s .", vmName)
 
+	// populate registry
 	a.logger.Info("create_vm", "Registering vm %s in registry...", vmName)
 	vmCID := apiv1.NewVMCID(vmName)
-
-	envSvc := a.regFactory.Create(vmCID)
+	if err = a.applyMacToNetworks(resp, networks); err != nil {
+		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
+	}
+	if err = a.addRouteToNetworks(resProps.Routes, networks); err != nil {
+		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
+	}
 	agentEnv := apiv1.NewAgentEnvFactory().ForVM(agentID, vmCID, networks, env, a.config.Actions.Agent)
-	agentEnv.AttachSystemDisk("/dev/xvda")
-	agentEnv.AttachEphemeralDisk("/dev/xvdb")
-
-	err = envSvc.Update(agentEnv)
-	if err != nil {
-		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Error when creating vm"), resp.Id)
+	agentEnv.AttachSystemDisk(apiv1.NewDiskHintFromString("/dev/xvda"))
+	agentEnv.AttachEphemeralDisk(apiv1.NewDiskHintFromString("/dev/xvdb"))
+	envSvc := a.regFactory.Create(vmCID)
+	val, _ := agentEnv.AsBytes()
+	a.logger.Debug("create_vm", "Sending to registry %s", string(val))
+	if err = envSvc.Update(agentEnv); err != nil {
+		err := bosherr.WrapError(err, "unable to send data to registry")
+		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
 	}
 	a.logger.Info("create_vm", "Finished registering vm %s in registry.", vmName)
 
+	// creating virtual IPs
 	a.logger.Info("create_vm", "Creating vip(s) for vm %s ...", vmName)
-	err = a.createVips(networks, resp.Id, zoneId, network)
+	err = a.createVips(networks, resp.Id, zoneID, networkDefault)
 	if err != nil {
 		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapErrorf(err, "Could not create vips"), resp.Id)
 	}
 	a.logger.Info("create_vm", "Finished creating vip(s) for vm %s .", vmName)
 
+	// creating ephemeral disks
 	a.logger.Info("create_vm", "Creating ephemeral disk for vm %s ...", vmName)
 	diskCid, err := a.createEphemeralDisk(resProps.EphemeralDiskSize, resProps.DiskCloudProperties, "")
 	if err != nil {
@@ -160,15 +165,17 @@ func (a CPI) CreateVM(
 	}
 	a.logger.Info("create_vm", "Finished creating ephemeral disk for vm %s .", vmName)
 
+	// creating load-balancers
 	if len(resProps.Lbs) > 0 {
 		a.logger.Info("create_vm", "Assigning vm %s to loadbalancers ...", vmName)
-		err = a.setLoadBalancers(resProps.LBCloudProperties, resp.Id, zoneId, network.Id)
+		err = a.setLoadBalancers(resProps.LBCloudProperties, resp.Id, zoneID, networkDefault.Id)
 		if err != nil {
 			return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot assign loadbalancers to vm"), resp.Id)
 		}
 		a.logger.Info("create_vm", "Finished assigning vm %s to loadbalancers.", vmName)
 	}
 
+	// attaching disks
 	a.logger.Info("create_vm", "Attaching ephemeral disk for vm %s ...", vmName)
 	err = a.attachEphemeralDisk(vmCID, diskCid)
 	if err != nil {
@@ -185,6 +192,46 @@ func (a CPI) CreateVM(
 	a.logger.Info("create_vm", "Finished attaching ephemeral disk for vm %s .", vmName)
 
 	return vmCID, nil
+}
+
+func (a CPI) applyMacToNetworks(resp *cloudstack.DeployVirtualMachineResponse, boshNetworks apiv1.Networks) error {
+	for _, nic := range resp.Nic {
+		for name, network := range boshNetworks {
+			if nic.Ipaddress == network.IP() {
+				a.logger.Debug("create_vm", "setting mac address '%s' for network %s", nic.Macaddress, name)
+				network.SetMAC(nic.Macaddress)
+			}
+		}
+	}
+	return nil
+}
+
+func (a CPI) parseCIDR(cidr string) (string, string, error) {
+	addr, net, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return "", "", err
+	}
+	mask := fmt.Sprintf("%d.%d.%d.%d", net.Mask[0], net.Mask[1], net.Mask[2], net.Mask[3])
+	return addr.String(), mask, nil
+}
+
+func (a CPI) addRouteToNetworks(routes RoutesMap, boshNetworks apiv1.Networks) error {
+	a.logger.Debug("create_vm", "routes from cloud config: %#v", routes)
+	for networkName, routeList := range routes {
+		targetNet, ok := boshNetworks[networkName]
+		if !ok {
+			return bosherr.Errorf("Invalid vm_extension: attempt to map route on unkown network '%s'", networkName)
+		}
+		for _, route := range routeList {
+			ip, mask, err := a.parseCIDR(route)
+			if err != nil {
+				return bosherr.Errorf("Invalid vm_extension: malformed CIDR '%s'", route)
+			}
+			targetNet.AddRoute(ip, mask)
+		}
+		boshNetworks[networkName] = targetNet
+	}
+	return nil
 }
 
 func (a CPI) attachEphemeralDisk(vmCID apiv1.VMCID, diskCid apiv1.DiskCID) error {
@@ -205,12 +252,12 @@ func (a CPI) destroyVmErrFallback(err error, vmId string, fs ...func()) error {
 	return err
 }
 
-func (a CPI) createVips(networks apiv1.Networks, vmId, zoneId string, defNetwork *cloudstack.Network) error {
+func (a CPI) createVips(networks apiv1.Networks, vmId, zoneID string, defNetwork *cloudstack.Network) error {
 	for _, network := range networks {
 		if network.Type() != string(config.VipNetwork) {
 			continue
 		}
-		err := a.createVip(network, vmId, zoneId, defNetwork)
+		err := a.createVip(network, vmId, zoneID, defNetwork)
 		if err != nil {
 			return bosherr.WrapErrorf(err, "Error when creating vip %s", network.IP())
 		}
@@ -218,7 +265,7 @@ func (a CPI) createVips(networks apiv1.Networks, vmId, zoneId string, defNetwork
 	return nil
 }
 
-func (a CPI) createVip(network apiv1.Network, vmId, zoneId string, defNetwork *cloudstack.Network) error {
+func (a CPI) createVip(network apiv1.Network, vmId, zoneID string, defNetwork *cloudstack.Network) error {
 	if network.IP() == "" {
 		return bosherr.Errorf("Vip must have ip defined")
 	}
@@ -236,7 +283,7 @@ func (a CPI) createVip(network apiv1.Network, vmId, zoneId string, defNetwork *c
 
 	networkCs := defNetwork
 	if networkProps.Name != "" {
-		networkCs, err = a.findNetworkByName(networkProps.Name, zoneId)
+		networkCs, err = a.findNetworkByName(networkProps.Name, zoneID)
 		if err != nil {
 			return bosherr.WrapErrorf(err, "Could not found network %s", networkProps.Name)
 		}
@@ -256,24 +303,6 @@ func (a CPI) createVip(network apiv1.Network, vmId, zoneId string, defNetwork *c
 		})
 }
 
-func (a CPI) findDefaultNetwork(networks apiv1.Networks) apiv1.Network {
-	if networks.Default().IP() != "" {
-		return networks.Default()
-	}
-	for _, network := range networks {
-		if network.Type() == string(config.ManualNetwork) {
-			return network
-		}
-	}
-	for _, network := range networks {
-		if network.IsDynamic() {
-			return network
-		}
-	}
-
-	return nil
-}
-
 func (a CPI) checkNetworkConfig(networks apiv1.Networks) error {
 	var nbManual int
 	var nbDynamic int
@@ -291,10 +320,10 @@ func (a CPI) checkNetworkConfig(networks apiv1.Networks) error {
 		}
 	}
 	if nbVip > 1 {
-		return bosherr.Errorf("Only 1 vip is supported")
+		return bosherr.Errorf("invalid network configuration: only 1 vip is supported")
 	}
 	if (nbDynamic + nbManual) == 0 {
-		return bosherr.Errorf("It must have, at least, one dynamic or one manual network defined")
+		return bosherr.Errorf("invalid network configuration: must have at least one dynamic or one manual network")
 	}
 	return nil
 }
@@ -333,27 +362,68 @@ func (a CPI) generateAutoAffinityGroup(env apiv1.VMEnv) (string, error) {
 	return affiId, nil
 }
 
-func (a CPI) generateNetworksMap(networks apiv1.Networks, defNetName, zoneId string) ([]map[string]string, error) {
-	netList := make([]map[string]string, 0)
-	for _, network := range networks {
-		if network.Type() == string(config.VipNetwork) {
-			continue
+type NetworkElem struct {
+	Name       string
+	Network    apiv1.Network
+	Properties NetworkCloudProperties
+}
+
+// generateNetworksMap - create structure to populate CS create_vm parameters
+//
+// On CS stemcell, it is important that eth0 (ie: first interface) holds the
+// metadata hdcp discovery
+// We sort available network to make sure `cloud_properties: {"default":true}`
+// networks are given as first interface to cloudstack create_vm parameters
+//
+// 1. create sortable structure
+// 2. sort network, default first, the by name
+// 3. create CS network list
+//    - vip network not given to cloudstack
+func (a CPI) generateNetworksMap(networks apiv1.Networks, zoneID string) (*cloudstack.Network, []map[string]string, error) {
+	result := make([]map[string]string, 0)
+	var defaultNetwork *cloudstack.Network
+
+	// 1.
+	data := make([]NetworkElem, 0)
+	for name, network := range networks {
+		var properties NetworkCloudProperties
+		if err := network.CloudProps().As(&properties); err != nil {
+			return nil, nil, bosherr.Errorf("invalid cloud_properties for network '%s'", name)
 		}
-		var networkProps NetworkCloudProperties
-		err := network.CloudProps().As(&networkProps)
-		if err != nil {
-			return netList, err
-		}
-		if networkProps.Name == defNetName {
-			continue
-		}
-		netCs, err := a.findNetworkByName(networkProps.Name, zoneId)
-		if err != nil {
-			return netList, bosherr.WrapErrorf(err, "Could not found network %s when creating vm", networkProps.Name)
-		}
-		netList = append(netList, a.networkToMap(netCs, network.Type(), network.IP()))
+		data = append(data, NetworkElem{
+			Name:       name,
+			Network:    network,
+			Properties: properties,
+		})
 	}
-	return netList, nil
+
+	// 2.
+	sort.SliceStable(data, func(i, j int) bool {
+		usableFirst := (false == data[i].Properties.UnDiscoverable) && (data[i].Network.Type() != string(config.VipNetwork))
+		usableSecond := (false == data[j].Properties.UnDiscoverable) && (data[j].Network.Type() != string(config.VipNetwork))
+		if usableFirst && !usableSecond {
+			return true
+		} else if !usableFirst && usableSecond {
+			return false
+		}
+		return data[i].Name < data[j].Name
+	})
+
+	// 3.
+	for _, item := range data {
+		if item.Network.Type() == string(config.VipNetwork) {
+			continue
+		}
+		csNet, err := a.findNetworkByName(item.Properties.Name, zoneID)
+		if err != nil {
+			return nil, nil, err
+		}
+		if defaultNetwork == nil {
+			defaultNetwork = csNet
+		}
+		result = append(result, a.networkToMap(csNet, item.Network.Type(), item.Network.IP()))
+	}
+	return defaultNetwork, result, nil
 }
 
 func (a CPI) networkToMap(net *cloudstack.Network, netType, ip string) map[string]string {
@@ -364,3 +434,7 @@ func (a CPI) networkToMap(net *cloudstack.Network, netType, ip string) map[strin
 	}
 	return m
 }
+
+// Local Variables:
+// ispell-local-dictionary: "american"
+// End:

@@ -5,5 +5,8 @@ import (
 )
 
 func (a CPI) Info() (apiv1.Info, error) {
-	return apiv1.Info{StemcellFormats: []string{"cloudstack-vhdx"}}, nil
+	return apiv1.Info{
+		APIVersion:      2,
+		StemcellFormats: []string{"cloudstack-vhdx"},
+	}, nil
 }
