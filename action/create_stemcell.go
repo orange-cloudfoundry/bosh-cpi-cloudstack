@@ -71,7 +71,7 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 
 // getUploadParams -
 func (a CPI) getUploadParams(name string) (*cloudstack.GetUploadParamsForTemplateResponse, error) {
-	zoneid, err := a.findZoneId()
+	zoneid, err := a.findZoneID()
 	if err != nil {
 		return nil, err
 	}

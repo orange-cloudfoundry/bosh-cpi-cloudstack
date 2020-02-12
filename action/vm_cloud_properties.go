@@ -54,15 +54,27 @@ type ComputeCloudProperties struct {
 	RAM       int `json:"ram"`
 }
 
+type Route struct {
+	Network     string
+	Destination string
+	Gateway     string
+	Netmask     string
+}
+
+type Routes []string
+type RoutesMap map[string]Routes
+
 type ResourceCloudProperties struct {
 	DiskCloudProperties
 	LBCloudProperties
 	ComputeCloudProperties
-	ComputeOffering   string `json:"compute_offering"`
-	AffinityGroup     string `json:"affinity_group"`
-	AffinityGroupType string `json:"affinity_group_type"`
+	Routes            RoutesMap `json:"routes"`
+	ComputeOffering   string    `json:"compute_offering"`
+	AffinityGroup     string    `json:"affinity_group"`
+	AffinityGroupType string    `json:"affinity_group_type"`
 }
 
 type NetworkCloudProperties struct {
-	Name string `json:"name"`
+	Name           string `json:"name"`
+	UnDiscoverable bool   `json:"undiscoverable"`
 }

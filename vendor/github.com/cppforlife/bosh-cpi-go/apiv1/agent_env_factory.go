@@ -32,17 +32,14 @@ func (f AgentEnvFactory) ForVM(
 		typedNet := network.(*NetworkImpl)
 
 		networksSpec[netName] = NetworkSpec{
-			Type: typedNet.spec.Type,
-
-			IP:      typedNet.IP(),
-			Netmask: typedNet.Netmask(),
-			Gateway: typedNet.Gateway(),
-
-			DNS:     typedNet.spec.DNS,
-			Default: typedNet.spec.Default,
-
-			MAC: typedNet.mac,
-
+			Type:          typedNet.spec.Type,
+			IP:            typedNet.IP(),
+			Netmask:       typedNet.Netmask(),
+			Gateway:       typedNet.Gateway(),
+			DNS:           typedNet.spec.DNS,
+			Default:       typedNet.spec.Default,
+			Routes:        typedNet.spec.Routes,
+			MAC:           typedNet.mac,
 			Preconfigured: typedNet.preconfigured,
 		}
 	}
