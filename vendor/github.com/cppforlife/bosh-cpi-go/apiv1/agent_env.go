@@ -7,9 +7,9 @@ import (
 )
 
 type AgentEnv interface {
-	AttachSystemDisk(interface{})
-	AttachEphemeralDisk(interface{})
-	AttachPersistentDisk(DiskCID, interface{})
+	AttachSystemDisk(DiskHint)
+	AttachEphemeralDisk(DiskHint)
+	AttachPersistentDisk(DiskCID, DiskHint)
 	DetachPersistentDisk(DiskCID)
 	AsBytes() ([]byte, error)
 	_final() // interface unimplementable from outside
@@ -54,6 +54,8 @@ type NetworkSpec struct {
 
 	DNS     []string `json:"dns"`
 	Default []string `json:"default"`
+	Routes  []Route  `json:"routes"`
+	Alias   string   `json:"alias,omitempty"`
 
 	MAC string `json:"mac"`
 
@@ -61,12 +63,12 @@ type NetworkSpec struct {
 }
 
 type DisksSpec struct {
-	System     interface{}    `json:"system"`
-	Ephemeral  interface{}    `json:"ephemeral"`
+	System     DiskHint       `json:"system"`
+	Ephemeral  DiskHint       `json:"ephemeral"`
 	Persistent PersistentSpec `json:"persistent"`
 }
 
-type PersistentSpec map[string]interface{}
+type PersistentSpec map[string]DiskHint
 
 type EnvSpec map[string]interface{}
 
@@ -75,16 +77,16 @@ type BlobstoreSpec struct {
 	Options  map[string]interface{} `json:"options"`
 }
 
-func (ae *AgentEnvImpl) AttachSystemDisk(hint interface{}) {
+func (ae *AgentEnvImpl) AttachSystemDisk(hint DiskHint) {
 	ae.spec.Disks.System = hint
 }
 
-func (ae *AgentEnvImpl) AttachEphemeralDisk(hint interface{}) {
+func (ae *AgentEnvImpl) AttachEphemeralDisk(hint DiskHint) {
 	ae.spec.Disks.Ephemeral = hint
 }
 
 // todo better type for hint
-func (ae *AgentEnvImpl) AttachPersistentDisk(cid DiskCID, hint interface{}) {
+func (ae *AgentEnvImpl) AttachPersistentDisk(cid DiskCID, hint DiskHint) {
 	spec := PersistentSpec{}
 
 	if ae.spec.Disks.Persistent != nil {

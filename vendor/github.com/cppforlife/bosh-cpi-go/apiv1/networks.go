@@ -10,6 +10,8 @@ import (
 
 type Networks map[string]Network
 
+var _ json.Unmarshaler = &Networks{}
+
 type Network interface {
 	Type() string
 
@@ -23,6 +25,8 @@ type Network interface {
 	SetMAC(string)
 	SetDNS([]string)
 	SetPreconfigured()
+	SetAlias(a string)
+	AddRoute(string, string)
 
 	CloudProps() NetworkCloudProps
 
@@ -38,6 +42,12 @@ type NetworkCloudProps interface {
 	As(interface{}) error
 }
 
+type Route struct {
+	Destination string
+	Gateway     string
+	Netmask     string
+}
+
 type NetworkImpl struct {
 	spec networkSpec2
 
@@ -45,16 +55,19 @@ type NetworkImpl struct {
 	preconfigured bool
 }
 
+var _ json.Marshaler = NetworkImpl{}
+
 type networkSpec2 struct {
-	Type string
+	Type string `json:"type"`
 
-	IP      string
-	Netmask string
-	Gateway string
+	IP      string `json:"ip,omitempty"`
+	Netmask string `json:"netmask,omitempty"`
+	Gateway string `json:"gateway,omitempty"`
 
-	DNS     []string
-	Default []string
-
+	DNS        []string       `json:"dns"`
+	Default    []string       `json:"default"`
+	Routes     []Route        `json:"routes"`
+	Alias      string         `json:"alias,omitempty"`
 	CloudProps CloudPropsImpl `json:"cloud_properties"`
 }
 
@@ -82,6 +95,8 @@ func NewNetwork(opts NetworkOpts) Network {
 
 			DNS:     opts.DNS,
 			Default: opts.Default,
+			Routes:  []Route{},
+			Alias:   "",
 		},
 	}
 }
@@ -98,10 +113,22 @@ func (n NetworkImpl) Default() []string { return n.spec.Default }
 func (n *NetworkImpl) SetMAC(mac string)           { n.mac = mac }
 func (n *NetworkImpl) SetDNS(nameservers []string) { n.spec.DNS = nameservers }
 func (n *NetworkImpl) SetPreconfigured()           { n.preconfigured = true }
+func (n *NetworkImpl) SetAlias(a string)           { n.spec.Alias = a }
+func (n *NetworkImpl) AddRoute(ip, netmask string) {
+	n.spec.Routes = append(n.spec.Routes, Route{
+		Destination: ip,
+		Gateway:     n.Gateway(),
+		Netmask:     netmask,
+	})
+}
 
 func (n NetworkImpl) CloudProps() NetworkCloudProps { return n.spec.CloudProps }
 
 func (n *NetworkImpl) _final() {}
+
+func (n NetworkImpl) MarshalJSON() ([]byte, error) {
+	return json.Marshal(n.spec)
+}
 
 func (ns *Networks) UnmarshalJSON(data []byte) error {
 	var newNets map[string]networkSpec2

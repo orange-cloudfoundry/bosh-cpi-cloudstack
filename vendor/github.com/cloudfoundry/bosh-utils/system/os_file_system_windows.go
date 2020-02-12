@@ -7,19 +7,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
-
-func (fs *osFileSystem) currentHomeDir() (string, error) {
-	t, err := syscall.OpenCurrentProcessToken()
-	if err != nil {
-		return "", err
-	}
-	defer t.Close()
-	return t.GetUserProfileDirectory()
-}
 
 func (fs *osFileSystem) homeDir(username string) (string, error) {
 	u, err := user.Current()
@@ -35,7 +25,7 @@ func (fs *osFileSystem) homeDir(username string) (string, error) {
 }
 
 func (fs *osFileSystem) chown(path, username string) error {
-	return bosherr.WrapError(error(syscall.EWINDOWS), "Chown not supported on Windows")
+	return nil
 }
 
 func isSlash(c uint8) bool { return c == '\\' || c == '/' }

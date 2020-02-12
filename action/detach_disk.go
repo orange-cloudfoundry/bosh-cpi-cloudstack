@@ -1,10 +1,10 @@
 package action
 
 import (
-	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"strings"
+	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"strings"
 )
 
 func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
@@ -43,16 +43,18 @@ func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 		return nil
 	}
 
-	a.logger.Info("detach_disk", "Removing disk %s from registry ...", diskCID.AsString())
-	err = a.unregisterDisk(vmCID, diskCID)
-	if err == nil {
-		a.logger.Info("detach_disk", "Finished removing disk %s from registry.", diskCID.AsString())
-		return nil
+	if a.ctx.APIVersion == 1 {
+		a.logger.Info("detach_disk", "Removing disk %s from registry ...", diskCID.AsString())
+		err = a.unregisterDisk(vmCID, diskCID)
+		if err != nil {
+			p := a.client.Volume.NewAttachVolumeParams(volume.Id, volume.Virtualmachineid)
+			a.client.Volume.AttachVolume(p)
+			return err
+		}
 	}
 
-	p := a.client.Volume.NewAttachVolumeParams(volume.Id, volume.Virtualmachineid)
-	a.client.Volume.AttachVolume(p)
-	return err
+	a.logger.Info("detach_disk", "Finished removing disk %s from registry.", diskCID.AsString())
+	return nil
 }
 
 func (a CPI) unregisterDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
