@@ -388,10 +388,12 @@ func (a CPI) generateNetworksMap(networks apiv1.Networks, zoneID string) (*cloud
 
 	// 2.
 	sort.SliceStable(data, func(i, j int) bool {
-		if data[i].Properties.UnDiscoverable && !data[j].Properties.UnDiscoverable {
-			return false
-		} else if !data[i].Properties.UnDiscoverable && data[j].Properties.UnDiscoverable {
+		usableFirst := (false == data[i].Properties.UnDiscoverable) && (data[i].Network.Type() != string(config.VipNetwork))
+		usableSecond := (false == data[j].Properties.UnDiscoverable) && (data[j].Network.Type() != string(config.VipNetwork))
+		if usableFirst && !usableSecond {
 			return true
+		} else if !usableFirst && usableSecond {
+			return false
 		}
 		return data[i].Name < data[j].Name
 	})
