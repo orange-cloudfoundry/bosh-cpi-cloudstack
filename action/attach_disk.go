@@ -1,84 +1,85 @@
 package action
 
 import (
-	"github.com/cppforlife/bosh-cpi-go/apiv1"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"strings"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"github.com/xanzy/go-cloudstack/cloudstack"
 	"fmt"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
+	"strings"
 )
 
 func (a CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
+	_, err := a.AttachDiskV2(vmCID, diskCID)
+	return err
+}
+
+func (a CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.AttachVolume)
 
 	volumes, err := a.findVolumesByName(diskCID)
 	if err != nil {
-		return bosherr.WrapErrorf(err, "Error when finding disk %s on vm %s", diskCID.AsString(), vmCID.AsString())
+		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "Error when finding disk %s on vm %s", diskCID.AsString(), vmCID.AsString())
 	}
 
 	if len(volumes) > 1 {
-		return bosherr.Errorf("Too much volume with name %s", diskCID.AsString())
+		return apiv1.DiskHint{}, bosherr.Errorf("Too much volume with name %s", diskCID.AsString())
 	}
 
 	if len(volumes) == 0 {
-		return bosherr.Errorf("No volume found with name %s", diskCID.AsString())
+		return apiv1.DiskHint{}, bosherr.Errorf("No volume found with name %s", diskCID.AsString())
 	}
 
 	volume := volumes[0]
 	if volume.Vmname != "" {
-		return bosherr.Errorf("Volume with name %s already attached to vm %s", diskCID.AsString(), volume.Vmname)
+		return apiv1.DiskHint{}, bosherr.Errorf("Volume with name %s already attached to vm %s", diskCID.AsString(), volume.Vmname)
 	}
 
 	vm, err := a.findVmByName(vmCID)
 	if err != nil {
-		return bosherr.WrapErrorf(err, "Error when finding vm %s", vmCID.AsString())
+		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "Error when finding vm %s", vmCID.AsString())
 	}
 
 	a.logger.Info("attach_disk", "Attaching disk %s ...", diskCID.AsString())
 	p := a.client.Volume.NewAttachVolumeParams(volume.Id, vm.Id)
 	resp, err := a.client.Volume.AttachVolume(p)
 	if err != nil {
-		return bosherr.WrapErrorf(err, "Error when attaching volume %s to vm %s", diskCID.AsString(), vmCID.AsString())
+		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "Error when attaching volume %s to vm %s", diskCID.AsString(), vmCID.AsString())
 	}
 	a.logger.Info("attach_disk", "Finished attaching disk %s .", diskCID.AsString())
 
 	// we skip registry registering if disk is an ephemeral one
 	if strings.HasPrefix(volume.Name, config.EphemeralDiskPrefix) {
-		return nil
+		return apiv1.DiskHint{}, nil
 	}
 
 	a.logger.Info("attach_disk", "Registering disk %s to registry ...", diskCID.AsString())
-	err = a.registerDisk(vmCID, diskCID, resp)
-	if err == nil {
-		a.logger.Info("attach_disk", "Finished registering disk %s to registry.", diskCID.AsString())
-		return nil
+	hint, err := a.registerDisk(vmCID, diskCID, resp)
+	if err != nil {
+		detachParams := a.client.Volume.NewDetachVolumeParams()
+		detachParams.SetId(volume.Id)
+		a.client.Volume.DetachVolume(detachParams)
+		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "unable to register disk into registry")
 	}
 
-	detachParams := a.client.Volume.NewDetachVolumeParams()
-	detachParams.SetId(volume.Id)
-	a.client.Volume.DetachVolume(detachParams)
-	return err
+	a.logger.Info("attach_disk", "Finished registering disk %s to registry.", diskCID.AsString())
+	return hint, nil
 }
 
-func (a CPI) registerDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID, volumeResp *cloudstack.AttachVolumeResponse) error {
+func (a CPI) registerDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID, volumeResp *cloudstack.AttachVolumeResponse) (apiv1.DiskHint, error) {
 	nvSvc := a.regFactory.Create(vmCID)
 	agentEnv, err := nvSvc.Fetch()
 	if err != nil {
-		return bosherr.WrapErrorf(err, "Error when fetching registry for vm %s", vmCID.AsString())
+		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "Error when fetching registry for vm %s", vmCID.AsString())
 	}
 	indexVol := byte('a') + byte(volumeResp.Deviceid)
-	agentEnv.AttachPersistentDisk(diskCID, struct {
-		Path     string `json:"path"`
-		VolumeId string `json:"volume_id"`
-	}{
-		Path:     "/dev/xvd" + string(indexVol),
-		VolumeId: fmt.Sprintf("%d", volumeResp.Deviceid),
+	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{
+		"path":      "/dev/xvd" + string(indexVol),
+		"volumd_id": fmt.Sprintf("%d", volumeResp.Deviceid),
 	})
-
-	err = nvSvc.Update(agentEnv)
-	if err != nil {
-		return bosherr.WrapErrorf(err, "Error when updating registry for vm %s", vmCID.AsString())
+	agentEnv.AttachPersistentDisk(diskCID, diskHint)
+	if err = nvSvc.Update(agentEnv); err != nil {
+		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "Error when updating registry for vm %s", vmCID.AsString())
 	}
-	return nil
+	return diskHint, nil
 }

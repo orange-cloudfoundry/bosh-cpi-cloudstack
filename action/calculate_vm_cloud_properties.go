@@ -4,7 +4,7 @@ import (
 	"fmt"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
-	"github.com/xanzy/go-cloudstack/cloudstack"
+	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
 	"sort"
 	"strings"
 )

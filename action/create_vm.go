@@ -7,8 +7,8 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
 	"github.com/satori/go.uuid"
-	"github.com/xanzy/go-cloudstack/cloudstack"
 	"net"
 	"sort"
 	"strings"
@@ -18,6 +18,17 @@ import (
 const (
 	pvDriverErr = "VM which requires PV drivers to be installed"
 )
+
+func (a CPI) CreateVMV2(
+	agentID apiv1.AgentID,
+	stemcellCID apiv1.StemcellCID,
+	cloudProps apiv1.VMCloudProps,
+	networks apiv1.Networks,
+	associatedDiskCIDs []apiv1.DiskCID,
+	env apiv1.VMEnv) (apiv1.VMCID, apiv1.Networks, error) {
+	id, err := a.CreateVM(agentID, stemcellCID, cloudProps, networks, associatedDiskCIDs, env)
+	return id, networks, err
+}
 
 func (a CPI) CreateVM(
 	agentID apiv1.AgentID,
@@ -127,8 +138,8 @@ func (a CPI) CreateVM(
 		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
 	}
 	agentEnv := apiv1.NewAgentEnvFactory().ForVM(agentID, vmCID, networks, env, a.config.Actions.Agent)
-	agentEnv.AttachSystemDisk("/dev/xvda")
-	agentEnv.AttachEphemeralDisk("/dev/xvdb")
+	agentEnv.AttachSystemDisk(apiv1.NewDiskHintFromString("/dev/xvda"))
+	agentEnv.AttachEphemeralDisk(apiv1.NewDiskHintFromString("/dev/xvdb"))
 	envSvc := a.regFactory.Create(vmCID)
 	val, _ := agentEnv.AsBytes()
 	a.logger.Debug("create_vm", "Sending to registry %s", string(val))

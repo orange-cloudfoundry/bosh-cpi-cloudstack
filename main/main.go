@@ -17,7 +17,7 @@ var (
 )
 
 func main() {
-	logger := boshlog.NewWriterLogger(boshlog.LevelDebug, os.Stderr, os.Stderr)
+	logger := boshlog.NewWriterLogger(boshlog.LevelDebug, os.Stderr)
 	defer logger.HandlePanic("Main")
 	flag.Parse()
 

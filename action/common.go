@@ -6,7 +6,7 @@ import (
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
-	"github.com/xanzy/go-cloudstack/cloudstack"
+	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
 	"strings"
 	"time"
 )
