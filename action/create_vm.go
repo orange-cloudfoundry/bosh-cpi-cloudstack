@@ -94,6 +94,7 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 	deplParams.SetName(vmName)
 	deplParams.SetKeypair(a.config.CloudStack.DefaultKeyName)
 	userDataService := NewUserDataService(a.logger, vmName, a.config.Actions.Registry, p.networks, isV2)
+	userDataService.SetAgentSettings(p.agentID, vmCID, p.networks, p.env, a.config.Actions.Agent)
 	deplParams.SetUserdata(userDataService.ToBase64())
 
 	if serviceOffering.Iscustomized {

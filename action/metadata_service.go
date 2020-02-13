@@ -15,13 +15,22 @@ type UserDataService struct {
 	data   UserData
 }
 
+type AgentSettings struct {
+	AgentID   string              `json:"agent_id"`
+	VM        apiv1.VMSpec        `json:"vm"`
+	Mbus      string              `json:"mbus"`
+	NTP       []string            `json:"ntp"`
+	Blobstore apiv1.BlobstoreSpec `json:"blobstore"`
+	Networks  apiv1.NetworksSpec  `json:"networks"`
+	Disks     apiv1.DisksSpec     `json:"disks"`
+	Env       apiv1.EnvSpec       `json:"env"`
+}
+
 type UserData struct {
-	Registry *UserDataRegistry `json:"registry,omitempty"`
-	Server   *UserDataServer   `json:"server,omitempty"`
-	DNS      *UserDataDNS      `json:"dns,omitempty"`
-	Networks apiv1.Networks    `json:"networks,omitempty"`
-	Disks    *apiv1.DisksSpec  `json:"disks,omitempty"`
-	VM       *UserDataVM       `json:"vm,omitempty"`
+	AgentSettings
+	Registry UserDataRegistry `json:"registry"`
+	Server   UserDataServer   `json:"server"`
+	DNS      UserDataDNS      `json:"dns"`
 }
 
 type UserDataRegistry struct {
@@ -55,12 +64,7 @@ func NewUserDataService(
 	}
 
 	res.setDNS(networks)
-	if isV2 {
-		res.setDisks()
-		res.setNetworks(networks)
-	} else {
-		res.setRegistry(regOpts)
-	}
+	res.setRegistry(regOpts)
 	res.setVM(vmName)
 	return res
 }
@@ -72,30 +76,58 @@ func (u *UserDataService) ToBase64() string {
 	return base64Str
 }
 
+func (u *UserDataService) SetAgentSettings(
+	agentID apiv1.AgentID,
+	cid apiv1.VMCID,
+	networks apiv1.Networks,
+	env apiv1.VMEnv,
+	agentOptions apiv1.AgentOptions) {
+
+	networksSpec := apiv1.NetworksSpec{}
+	for netName, network := range networks {
+		jsonStr, _ := json.Marshal(network)
+		var spec apiv1.NetworkSpec
+		_ = json.Unmarshal(jsonStr, &spec)
+		networksSpec[netName] = spec
+	}
+
+	u.data.AgentSettings = AgentSettings{
+		AgentID: agentID.AsString(),
+		VM: apiv1.VMSpec{
+			Name: cid.AsString(),
+			ID:   cid.AsString(),
+		},
+		Mbus: agentOptions.Mbus,
+		NTP:  agentOptions.NTP,
+		Blobstore: apiv1.BlobstoreSpec{
+			Provider: agentOptions.Blobstore.Type,
+			Options:  agentOptions.Blobstore.Options,
+		},
+		Networks: networksSpec,
+		Env:      apiv1.EnvSpec{},
+	}
+}
+
 func (u *UserDataService) setVM(vmName string) {
-	if u.isV2 {
-		u.data.VM = &UserDataVM{Name: vmName}
-	} else {
-		u.data.Server = &UserDataServer{Name: vmName}
-	}
+	u.data.Server = UserDataServer{Name: vmName}
 }
 
-func (u *UserDataService) setNetworks(networks apiv1.Networks) {
-	u.data.Networks = apiv1.Networks{}
-	for name, network := range networks {
-		if network.Type() != string(config.ManualNetwork) && network.Type() != string(config.DynamicNetwork) {
-			continue
-		}
-		u.data.Networks[name] = network
-	}
-}
+// func (u *UserDataService) setNetworks(networks apiv1.Networks) {
+// 	u.data.Networks = apiv1.Networks{}
+// 	for name, network := range networks {
+// 		if network.Type() != string(config.ManualNetwork) && network.Type() != string(config.DynamicNetwork) {
+// 			continue
+// 		}
+// 		u.data.Networks[name] = network
+// 	}
+// }
 
-func (u *UserDataService) setDisks() {
-	u.data.Disks = &apiv1.DisksSpec{
-		System:    apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/xvda"}),
-		Ephemeral: apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/xvdb"}),
-	}
-}
+// func (u *UserDataService) setDisks() {
+// 	u.data.Disks = &apiv1.DisksSpec{
+// 		System:    apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/xvda"}),
+// 		Ephemeral: apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/xvdb"}),
+// 	}
+// }
 
 func (u *UserDataService) setDNS(networks apiv1.Networks) {
 	list := make([]string, 0)
@@ -105,7 +137,7 @@ func (u *UserDataService) setDNS(networks apiv1.Networks) {
 			list = append(list, dns)
 		}
 	}
-	u.data.DNS = &UserDataDNS{Nameserver: list}
+	u.data.DNS = UserDataDNS{Nameserver: list}
 }
 
 func (u *UserDataService) setRegistry(opts config.RegistryOptions) {
@@ -122,7 +154,7 @@ func (u *UserDataService) setRegistry(opts config.RegistryOptions) {
 		host = fmt.Sprintf("%s@%s", userInfo, host)
 	}
 
-	u.data.Registry = &UserDataRegistry{
+	u.data.Registry = UserDataRegistry{
 		Endpoint: fmt.Sprintf("http://%s", host),
 	}
 }
