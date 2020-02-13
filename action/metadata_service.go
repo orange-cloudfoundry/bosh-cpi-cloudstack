@@ -85,9 +85,6 @@ func (u *UserDataService) SetAgentSettings(
 
 	networksSpec := apiv1.NetworksSpec{}
 	for netName, network := range networks {
-		if network.Type() == string(config.VipNetwork) {
-			continue
-		}
 		jsonStr, _ := json.Marshal(network)
 		var spec apiv1.NetworkSpec
 		_ = json.Unmarshal(jsonStr, &spec)
