@@ -37,7 +37,7 @@ func (a CPI) CreateVM(
 ) (apiv1.VMCID, error) {
 
 	args := CreateArgs{agentID, stemcellCID, cloudProps, networks, associatedDiskCIDs, env}
-	vmCID, _, err := a.CreateBase(args, true)
+	vmCID, _, err := a.CreateBase(args, false)
 	return vmCID, err
 }
 
@@ -50,7 +50,7 @@ func (a CPI) CreateVMV2(
 	env apiv1.VMEnv) (apiv1.VMCID, apiv1.Networks, error) {
 
 	args := CreateArgs{agentID, stemcellCID, cloudProps, networks, associatedDiskCIDs, env}
-	return a.CreateBase(args, false)
+	return a.CreateBase(args, true)
 }
 
 func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, error) {
