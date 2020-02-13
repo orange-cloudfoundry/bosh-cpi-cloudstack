@@ -94,6 +94,10 @@ func (u *UserDataService) SetAgentSettings(
 		networksSpec[netName] = spec
 	}
 
+	var envSpec apiv1.EnvSpec
+	jsonStr, _ := json.Marshal(env)
+	_ = json.Unmarshal(jsonStr, &envSpec)
+
 	u.data.AgentSettings = AgentSettings{
 		AgentID: agentID.AsString(),
 		VM: apiv1.VMSpec{
@@ -107,7 +111,7 @@ func (u *UserDataService) SetAgentSettings(
 			Options:  agentOptions.Blobstore.Options,
 		},
 		Networks: networksSpec,
-		Env:      apiv1.EnvSpec{},
+		Env:      envSpec,
 	}
 }
 
