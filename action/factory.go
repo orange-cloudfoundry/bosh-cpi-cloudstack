@@ -15,6 +15,7 @@ type Factory struct {
 
 type Context struct {
 	DirectorUUID string `json:"director_uuid"`
+	APIVersion   int    `json:"api_version"`
 }
 
 type CPI struct {
