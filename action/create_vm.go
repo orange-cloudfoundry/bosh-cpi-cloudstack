@@ -1,7 +1,6 @@
 package action
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -19,15 +18,13 @@ const (
 	pvDriverErr = "VM which requires PV drivers to be installed"
 )
 
-func (a CPI) CreateVMV2(
-	agentID apiv1.AgentID,
-	stemcellCID apiv1.StemcellCID,
-	cloudProps apiv1.VMCloudProps,
-	networks apiv1.Networks,
-	associatedDiskCIDs []apiv1.DiskCID,
-	env apiv1.VMEnv) (apiv1.VMCID, apiv1.Networks, error) {
-	id, err := a.CreateVM(agentID, stemcellCID, cloudProps, networks, associatedDiskCIDs, env)
-	return id, networks, err
+type CreateArgs struct {
+	agentID            apiv1.AgentID
+	stemcellCID        apiv1.StemcellCID
+	cloudProps         apiv1.VMCloudProps
+	networks           apiv1.Networks
+	associatedDiskCIDs []apiv1.DiskCID
+	env                apiv1.VMEnv
 }
 
 func (a CPI) CreateVM(
@@ -36,46 +33,68 @@ func (a CPI) CreateVM(
 	cloudProps apiv1.VMCloudProps,
 	networks apiv1.Networks,
 	associatedDiskCIDs []apiv1.DiskCID,
-	env apiv1.VMEnv) (apiv1.VMCID, error) {
+	env apiv1.VMEnv,
+) (apiv1.VMCID, error) {
+
+	args := CreateArgs{agentID, stemcellCID, cloudProps, networks, associatedDiskCIDs, env}
+	vmCID, _, err := a.CreateBase(args, true)
+	return vmCID, err
+}
+
+func (a CPI) CreateVMV2(
+	agentID apiv1.AgentID,
+	stemcellCID apiv1.StemcellCID,
+	cloudProps apiv1.VMCloudProps,
+	networks apiv1.Networks,
+	associatedDiskCIDs []apiv1.DiskCID,
+	env apiv1.VMEnv) (apiv1.VMCID, apiv1.Networks, error) {
+
+	args := CreateArgs{agentID, stemcellCID, cloudProps, networks, associatedDiskCIDs, env}
+	return a.CreateBase(args, false)
+}
+
+func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, error) {
+	var resProps ResourceCloudProperties
 
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVm)
 
-	var resProps ResourceCloudProperties
-	err := cloudProps.As(&resProps)
-	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "Cannot create vm")
-	}
 	vmName := fmt.Sprintf("%s%s", config.VMPrefix, uuid.NewV4().String())
+	vmCID := apiv1.NewVMCID(vmName)
 
-	userData := NewUserDataContents(vmName, a.config.Actions.Registry, networks)
-	userDataRaw, _ := json.Marshal(userData)
-	userDataStr := base64.StdEncoding.EncodeToString(userDataRaw)
+	if err := p.cloudProps.As(&resProps); err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "Cannot create vm")
+	}
 
 	zoneID, err := a.findZoneID()
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "could not found zone")
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "could not found zone")
 	}
 
 	serviceOffering, err := a.findServiceOfferingByName(resProps.ComputeOffering)
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "could not found compute offering")
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "could not found compute offering")
 	}
 
-	template, err := a.findTemplateByName(stemcellCID.AsString())
+	template, err := a.findTemplateByName(p.stemcellCID.AsString())
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "could not found template")
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "could not found template")
 	}
 
-	if err = a.checkNetworkConfig(networks); err != nil {
-		return apiv1.VMCID{}, bosherr.WrapErrorf(err, "invalid network configuration")
+	if err = a.checkNetworkConfig(p.networks); err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "invalid network configuration")
+	}
+
+	if err = a.addRouteToNetworks(resProps.Routes, p.networks); err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "invalid network configuration")
 	}
 
 	// computing create vm paramters
 	a.logger.Info("create_vm", "Computing vm deploy parameters %s ...", vmName)
 	deplParams := a.client.VirtualMachine.NewDeployVirtualMachineParams(serviceOffering.Id, template.Id, zoneID)
-	deplParams.SetUserdata(userDataStr)
 	deplParams.SetName(vmName)
 	deplParams.SetKeypair(a.config.CloudStack.DefaultKeyName)
+	userDataService := NewUserDataService(a.logger, vmName, a.config.Actions.Registry, p.networks, isV2)
+	deplParams.SetUserdata(userDataService.ToBase64())
 
 	if serviceOffering.Iscustomized {
 		cpu := resProps.CPUNumber
@@ -85,7 +104,7 @@ func (a CPI) CreateVM(
 			cpuSpeed = 2000
 		}
 		if (0 == cpu) || (0 == ram) {
-			return apiv1.VMCID{}, bosherr.Errorf("Could not find `cpu` and `memory` cloud_properties mandatory for compute offering %s when creating vm", resProps.ComputeOffering)
+			return apiv1.VMCID{}, apiv1.Networks{}, bosherr.Errorf("Could not find `cpu` and `memory` cloud_properties mandatory for compute offering %s when creating vm", resProps.ComputeOffering)
 		}
 		deplParams.AddDetails(map[string]string{
 			"cpuNumber": fmt.Sprintf("%d", cpu),
@@ -94,17 +113,17 @@ func (a CPI) CreateVM(
 		})
 	}
 
-	networkDefault, networkMaps, err := a.generateNetworksMap(networks, zoneID)
+	networkDefault, networkMaps, err := a.generateNetworksMap(p.networks, zoneID)
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "unable to generate network configuration")
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "unable to generate network configuration")
 	}
 	for _, network := range networkMaps {
 		deplParams.AddIptonetworklist(network)
 	}
 
-	affinID, err := a.generateAffinityGroup(resProps, env)
+	affinID, err := a.generateAffinityGroup(resProps, p.env)
 	if err != nil {
-		return apiv1.VMCID{}, err
+		return apiv1.VMCID{}, apiv1.Networks{}, err
 	}
 	if affinID != "" {
 		deplParams.SetAffinitygroupids([]string{affinID})
@@ -119,41 +138,43 @@ func (a CPI) CreateVM(
 	a.logger.Info("create_vm", "Creating vm %s ...", vmName)
 	resp, err := a.client.VirtualMachine.DeployVirtualMachine(deplParams)
 	if err != nil {
-		return apiv1.VMCID{}, bosherr.WrapError(err, "Error when creating vm")
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "Error when creating vm")
 	}
 	a.logger.Debug("create_vm", "DeployVirtualMachine response: %#v", resp)
 	if config.ToVmState(resp.State) != config.VmRunning {
 		err = bosherr.Errorf("vm is not running after creation, actual state is %s", resp.State)
-		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
+		return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(err, resp.Id)
 	}
 	a.logger.Info("create_vm", "Finished creating vm %s .", vmName)
 
+	// process networks
+	a.logger.Info("create_vm", "Post-processing networks...", vmName)
+	if err = a.applyMacToNetworks(resp, p.networks); err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(err, resp.Id)
+	}
+	a.logger.Info("create_vm", "Finished post-processing networks...", vmName)
+
 	// populate registry
-	a.logger.Info("create_vm", "Registering vm %s in registry...", vmName)
-	vmCID := apiv1.NewVMCID(vmName)
-	if err = a.applyMacToNetworks(resp, networks); err != nil {
-		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
+	if !isV2 {
+		a.logger.Info("create_vm", "Registering vm %s in registry...", vmName)
+		agentEnv := apiv1.NewAgentEnvFactory().ForVM(p.agentID, vmCID, p.networks, p.env, a.config.Actions.Agent)
+		agentEnv.AttachSystemDisk(apiv1.NewDiskHintFromString("/dev/xvda"))
+		agentEnv.AttachEphemeralDisk(apiv1.NewDiskHintFromString("/dev/xvdb"))
+		envSvc := a.regFactory.Create(vmCID)
+		val, _ := agentEnv.AsBytes()
+		a.logger.Debug("create_vm", "Sending to registry %s", string(val))
+		if err = envSvc.Update(agentEnv); err != nil {
+			err := bosherr.WrapError(err, "unable to send data to registry")
+			return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(err, resp.Id)
+		}
+		a.logger.Info("create_vm", "Finished registering vm %s in registry.", vmName)
 	}
-	if err = a.addRouteToNetworks(resProps.Routes, networks); err != nil {
-		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
-	}
-	agentEnv := apiv1.NewAgentEnvFactory().ForVM(agentID, vmCID, networks, env, a.config.Actions.Agent)
-	agentEnv.AttachSystemDisk(apiv1.NewDiskHintFromString("/dev/xvda"))
-	agentEnv.AttachEphemeralDisk(apiv1.NewDiskHintFromString("/dev/xvdb"))
-	envSvc := a.regFactory.Create(vmCID)
-	val, _ := agentEnv.AsBytes()
-	a.logger.Debug("create_vm", "Sending to registry %s", string(val))
-	if err = envSvc.Update(agentEnv); err != nil {
-		err := bosherr.WrapError(err, "unable to send data to registry")
-		return apiv1.VMCID{}, a.destroyVmErrFallback(err, resp.Id)
-	}
-	a.logger.Info("create_vm", "Finished registering vm %s in registry.", vmName)
 
 	// creating virtual IPs
 	a.logger.Info("create_vm", "Creating vip(s) for vm %s ...", vmName)
-	err = a.createVips(networks, resp.Id, zoneID, networkDefault)
+	err = a.createVips(p.networks, resp.Id, zoneID, networkDefault)
 	if err != nil {
-		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapErrorf(err, "Could not create vips"), resp.Id)
+		return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(bosherr.WrapErrorf(err, "Could not create vips"), resp.Id)
 	}
 	a.logger.Info("create_vm", "Finished creating vip(s) for vm %s .", vmName)
 
@@ -161,7 +182,7 @@ func (a CPI) CreateVM(
 	a.logger.Info("create_vm", "Creating ephemeral disk for vm %s ...", vmName)
 	diskCid, err := a.createEphemeralDisk(resProps.EphemeralDiskSize, resProps.DiskCloudProperties, "")
 	if err != nil {
-		return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot create ephemeral disk when creating vm"), resp.Id)
+		return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot create ephemeral disk when creating vm"), resp.Id)
 	}
 	a.logger.Info("create_vm", "Finished creating ephemeral disk for vm %s .", vmName)
 
@@ -170,7 +191,7 @@ func (a CPI) CreateVM(
 		a.logger.Info("create_vm", "Assigning vm %s to loadbalancers ...", vmName)
 		err = a.setLoadBalancers(resProps.LBCloudProperties, resp.Id, zoneID, networkDefault.Id)
 		if err != nil {
-			return apiv1.VMCID{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot assign loadbalancers to vm"), resp.Id)
+			return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot assign loadbalancers to vm"), resp.Id)
 		}
 		a.logger.Info("create_vm", "Finished assigning vm %s to loadbalancers.", vmName)
 	}
@@ -179,7 +200,7 @@ func (a CPI) CreateVM(
 	a.logger.Info("create_vm", "Attaching ephemeral disk for vm %s ...", vmName)
 	err = a.attachEphemeralDisk(vmCID, diskCid)
 	if err != nil {
-		return apiv1.VMCID{}, a.destroyVmErrFallback(
+		return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(
 			bosherr.WrapError(
 				err,
 				"Cannot attach ephemeral disk when creating vm"),
@@ -191,7 +212,7 @@ func (a CPI) CreateVM(
 	}
 	a.logger.Info("create_vm", "Finished attaching ephemeral disk for vm %s .", vmName)
 
-	return vmCID, nil
+	return vmCID, p.networks, nil
 }
 
 func (a CPI) applyMacToNetworks(resp *cloudstack.DeployVirtualMachineResponse, boshNetworks apiv1.Networks) error {
