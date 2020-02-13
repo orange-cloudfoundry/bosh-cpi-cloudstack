@@ -93,10 +93,8 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 	deplParams := a.client.VirtualMachine.NewDeployVirtualMachineParams(serviceOffering.Id, template.Id, zoneID)
 	deplParams.SetName(vmName)
 	deplParams.SetKeypair(a.config.CloudStack.DefaultKeyName)
-	userDataService := NewUserDataService(a.logger, vmName, a.config.Actions.Registry, p.networks, isV2)
-	userDataService.SetAgentSettings(p.agentID, vmCID, p.networks, p.env, a.config.Actions.Agent)
-	deplParams.SetUserdata(userDataService.ToBase64())
 
+	// [params] create
 	if serviceOffering.Iscustomized {
 		cpu := resProps.CPUNumber
 		cpuSpeed := resProps.CPUSpeed
@@ -114,6 +112,7 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 		})
 	}
 
+	// [params] create networks
 	networkDefault, networkMaps, err := a.generateNetworksMap(p.networks, zoneID)
 	if err != nil {
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "unable to generate network configuration")
@@ -121,6 +120,11 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 	for _, network := range networkMaps {
 		deplParams.AddIptonetworklist(network)
 	}
+
+	// [params] create user-data
+	userDataService := NewUserDataService(a.logger, vmName, a.config.Actions.Registry, p.networks, isV2)
+	userDataService.SetAgentSettings(p.agentID, vmCID, p.networks, p.env, a.config.Actions.Agent)
+	deplParams.SetUserdata(userDataService.ToBase64())
 
 	affinID, err := a.generateAffinityGroup(resProps, p.env)
 	if err != nil {
@@ -421,8 +425,8 @@ func (a CPI) generateNetworksMap(networks apiv1.Networks, zoneID string) (*cloud
 
 	// 2.
 	sort.SliceStable(data, func(i, j int) bool {
-		usableFirst := (false == data[i].Properties.UnDiscoverable) && (data[i].Network.Type() != string(config.VipNetwork))
-		usableSecond := (false == data[j].Properties.UnDiscoverable) && (data[j].Network.Type() != string(config.VipNetwork))
+		usableFirst := (!data[i].Properties.UnDiscoverable) && (data[i].Network.Type() != string(config.VipNetwork))
+		usableSecond := (!data[j].Properties.UnDiscoverable) && (data[j].Network.Type() != string(config.VipNetwork))
 		if usableFirst && !usableSecond {
 			return true
 		} else if !usableFirst && usableSecond {
@@ -432,10 +436,18 @@ func (a CPI) generateNetworksMap(networks apiv1.Networks, zoneID string) (*cloud
 	})
 
 	// 3.
+	index := 0
 	for _, item := range data {
 		if item.Network.Type() == string(config.VipNetwork) {
 			continue
 		}
+		alias := fmt.Sprintf("eth%d", index)
+		index += 1
+
+		network := networks[item.Name]
+		network.SetAlias(alias)
+		networks[item.Name] = network
+
 		csNet, err := a.findNetworkByName(item.Properties.Name, zoneID)
 		if err != nil {
 			return nil, nil, err

@@ -25,6 +25,7 @@ type Network interface {
 	SetMAC(string)
 	SetDNS([]string)
 	SetPreconfigured()
+	SetAlias(a string)
 	AddRoute(string, string)
 
 	CloudProps() NetworkCloudProps
@@ -66,6 +67,7 @@ type networkSpec2 struct {
 	DNS        []string       `json:"dns"`
 	Default    []string       `json:"default"`
 	Routes     []Route        `json:"routes"`
+	Alias      string         `json:"alias,omitempty"`
 	CloudProps CloudPropsImpl `json:"cloud_properties"`
 }
 
@@ -94,6 +96,7 @@ func NewNetwork(opts NetworkOpts) Network {
 			DNS:     opts.DNS,
 			Default: opts.Default,
 			Routes:  []Route{},
+			Alias:   "",
 		},
 	}
 }
@@ -110,6 +113,7 @@ func (n NetworkImpl) Default() []string { return n.spec.Default }
 func (n *NetworkImpl) SetMAC(mac string)           { n.mac = mac }
 func (n *NetworkImpl) SetDNS(nameservers []string) { n.spec.DNS = nameservers }
 func (n *NetworkImpl) SetPreconfigured()           { n.preconfigured = true }
+func (n *NetworkImpl) SetAlias(a string)           { n.spec.Alias = a }
 func (n *NetworkImpl) AddRoute(ip, netmask string) {
 	n.spec.Routes = append(n.spec.Routes, Route{
 		Destination: ip,
