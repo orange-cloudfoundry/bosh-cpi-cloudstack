@@ -103,6 +103,10 @@ func (u *UserDataService) SetAgentSettings(
 		},
 		Mbus: agentOptions.Mbus,
 		NTP:  agentOptions.NTP,
+		Disks: apiv1.DisksSpec{
+			System:    apiv1.NewDiskHintFromString("/dev/xvda"),
+			Ephemeral: apiv1.NewDiskHintFromString("/dev/xvdb"),
+		},
 		Blobstore: apiv1.BlobstoreSpec{
 			Provider: agentOptions.Blobstore.Type,
 			Options:  agentOptions.Blobstore.Options,
