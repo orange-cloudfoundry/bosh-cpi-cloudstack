@@ -85,6 +85,9 @@ func (u *UserDataService) SetAgentSettings(
 
 	networksSpec := apiv1.NetworksSpec{}
 	for netName, network := range networks {
+		if network.Type() == string(config.VipNetwork) {
+			continue
+		}
 		jsonStr, _ := json.Marshal(network)
 		var spec apiv1.NetworkSpec
 		_ = json.Unmarshal(jsonStr, &spec)
@@ -111,23 +114,6 @@ func (u *UserDataService) SetAgentSettings(
 func (u *UserDataService) setVM(vmName string) {
 	u.data.Server = UserDataServer{Name: vmName}
 }
-
-// func (u *UserDataService) setNetworks(networks apiv1.Networks) {
-// 	u.data.Networks = apiv1.Networks{}
-// 	for name, network := range networks {
-// 		if network.Type() != string(config.ManualNetwork) && network.Type() != string(config.DynamicNetwork) {
-// 			continue
-// 		}
-// 		u.data.Networks[name] = network
-// 	}
-// }
-
-// func (u *UserDataService) setDisks() {
-// 	u.data.Disks = &apiv1.DisksSpec{
-// 		System:    apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/xvda"}),
-// 		Ephemeral: apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/xvdb"}),
-// 	}
-// }
 
 func (u *UserDataService) setDNS(networks apiv1.Networks) {
 	list := make([]string, 0)
