@@ -2,10 +2,10 @@ package config
 
 import (
 	"encoding/json"
+	"io/ioutil"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
-	"io/ioutil"
 )
 
 type RegistryOptions struct {
@@ -65,6 +65,7 @@ type CloudStackConfig struct {
 	IntervalCleanDisk int64
 
 	EnableAutoAntiAffinity bool
+	AutoAntiAffinityType   string
 }
 
 type DefaultOffer struct {

@@ -3,19 +3,21 @@ package action
 import (
 	"encoding/json"
 	"fmt"
+	"net"
+	"sort"
+	"strings"
+	"time"
+
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
 	"github.com/satori/go.uuid"
-	"net"
-	"sort"
-	"strings"
-	"time"
 )
 
 const (
-	pvDriverErr = "VM which requires PV drivers to be installed"
+	pvDriverErr         = "VM which requires PV drivers to be installed"
+	defaultAffinityType = "host anti-affinity"
 )
 
 type CreateArgs struct {
@@ -378,7 +380,11 @@ func (a CPI) generateAffinityGroup(resProps ResourceCloudProperties, env apiv1.V
 func (a CPI) generateAutoAffinityGroup(env apiv1.VMEnv) (string, error) {
 	vmEnv := NewVMEnv(env)
 	name := fmt.Sprintf("%s-%s", a.ctx.DirectorUUID, vmEnv.Bosh.Group)
-	affiId, err := a.findOrCreateAffinityGroup(name, "host anti-affinity")
+	affinityType := a.config.CloudStack.AutoAntiAffinityType
+	if affinityType == "" {
+		affinityType = defaultAffinityType
+	}
+	affiId, err := a.findOrCreateAffinityGroup(name, affinityType)
 	if err != nil {
 		return "", bosherr.WrapErrorf(
 			err,
