@@ -4,6 +4,8 @@ github.com/charlievieth/fs v0.0.0-20170613215519-7dc373669fa1 h1:vTlpHKxJqykyKdW
 github.com/charlievieth/fs v0.0.0-20170613215519-7dc373669fa1/go.mod h1:sAoA1zHCH4FJPE2gne5iBiiVG66U7Nyp6JqlOo+FEyg=
 github.com/cloudfoundry/bosh-utils v0.0.0-20200208100126-881640b2d0a6 h1:JpMiTZskpAAV9+Yy07UfD5QkdGeNQHAvCXCd7kMzLik=
 github.com/cloudfoundry/bosh-utils v0.0.0-20200208100126-881640b2d0a6/go.mod h1:JCrKwetZGjxbfq1U139TZuXDBfdGLtjOEAfxMWKV/QM=
+github.com/cloudfoundry/bosh-utils v0.0.0-20200404100238-add7921dad2d h1:1Te7z1FvXvfu5Bl4lmEbVnGTD8/a9X//U0xUL4yB1Mc=
+github.com/cloudfoundry/bosh-utils v0.0.0-20200404100238-add7921dad2d/go.mod h1:JCrKwetZGjxbfq1U139TZuXDBfdGLtjOEAfxMWKV/QM=
 github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7DoTY=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
@@ -29,6 +31,8 @@ github.com/orange-cloudfoundry/bosh-cpi-go v1.0.0-ora h1:ApuPnKLVhGASQzIWYwUQlte
 github.com/orange-cloudfoundry/bosh-cpi-go v1.0.0-ora/go.mod h1:NQ5ULIVesWFBqIIWM0+fgdPIF4k32W+HM7PXxvXZPtY=
 github.com/orange-cloudfoundry/bosh-cpi-go v1.1.0-ora h1:cVkT6pm2AjYd0DAr6zDPP0S6Kw/A7xx3OZR/vErNXcM=
 github.com/orange-cloudfoundry/bosh-cpi-go v1.1.0-ora/go.mod h1:9SvJMwYO53sB4NsGlnA/oFQloVpYrGEza4mjPnfRgbk=
+github.com/orange-cloudfoundry/bosh-cpi-go v1.1.1-ora h1:+5+oHEc3MmOr3S700nX4nveGOmH+oFvdv6otCnm8+uk=
+github.com/orange-cloudfoundry/bosh-cpi-go v1.1.1-ora/go.mod h1:H+70yP+MyXcman1LByOKlDsL9jWFYq8T6mtyaTbpu3M=
 github.com/orange-cloudfoundry/go-cloudstack v0.0.0-20200212123653-26214ea343b6 h1:qcunAEhbDDHONHsY4gjpiBEKYcjLkRqiiUOUoUnHa44=
 github.com/orange-cloudfoundry/go-cloudstack v0.0.0-20200212123653-26214ea343b6/go.mod h1:ILNGzDasN30viqU5anKYgyBnGAthG2MSJ4ZLp1vpWMA=
 github.com/orange-cloudfoundry/go-cloudstack v0.0.0-20200212124408-b501b4d69836 h1:h0dYzlGc4xYM1mBv9RhVGbQxM4HaUYWURuEbJxBBpA0=
