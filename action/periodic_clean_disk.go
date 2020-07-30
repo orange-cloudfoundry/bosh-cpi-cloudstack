@@ -33,7 +33,7 @@ func (a CPI) cleanDisk() {
 		if !strings.HasPrefix(vol.Name, config.EphemeralDiskPrefix) ||
 			vol.Vmname != "" ||
 			vol.Destroyed {
-			return
+			continue
 		}
 
 		t, err := time.Parse(time.RFC3339, vol.Created)
