@@ -26,7 +26,7 @@ type Network interface {
 	SetDNS([]string)
 	SetPreconfigured()
 	SetAlias(a string)
-	AddRoute(string, string)
+	AddRoute(string, string, string)
 
 	CloudProps() NetworkCloudProps
 
@@ -114,10 +114,10 @@ func (n *NetworkImpl) SetMAC(mac string)           { n.mac = mac }
 func (n *NetworkImpl) SetDNS(nameservers []string) { n.spec.DNS = nameservers }
 func (n *NetworkImpl) SetPreconfigured()           { n.preconfigured = true }
 func (n *NetworkImpl) SetAlias(a string)           { n.spec.Alias = a }
-func (n *NetworkImpl) AddRoute(ip, netmask string) {
+func (n *NetworkImpl) AddRoute(ip, netmask, gw string) {
 	n.spec.Routes = append(n.spec.Routes, Route{
 		Destination: ip,
-		Gateway:     n.Gateway(),
+		Gateway:     gw,
 		Netmask:     netmask,
 	})
 }

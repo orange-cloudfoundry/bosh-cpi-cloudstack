@@ -10,7 +10,7 @@ github.com/cloudfoundry/bosh-utils/errors
 github.com/cloudfoundry/bosh-utils/logger
 github.com/cloudfoundry/bosh-utils/system
 github.com/cloudfoundry/bosh-utils/system/fakes
-# github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.1-ora
+# github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.2-ora
 ## explicit
 github.com/cppforlife/bosh-cpi-go/apiv1
 github.com/cppforlife/bosh-cpi-go/rpc
@@ -94,4 +94,4 @@ gopkg.in/fsnotify.v1
 gopkg.in/tomb.v1
 # gopkg.in/yaml.v2 v2.2.4
 gopkg.in/yaml.v2
-# github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.1-ora
+# github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.2-ora

@@ -2,7 +2,7 @@ module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
 go 1.14
 
-replace github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.1-ora
+replace github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.2-ora
 
 require (
 	github.com/bmatcuk/doublestar v1.2.2 // indirect

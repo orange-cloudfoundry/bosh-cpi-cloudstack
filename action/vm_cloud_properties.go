@@ -61,17 +61,21 @@ type Route struct {
 	Netmask     string
 }
 
-type Routes []string
-type RoutesMap map[string]Routes
+type VMExtRoute struct {
+	CIDR    string
+	Gateway string
+}
+type VMExtRoutes []VMExtRoute
+type VMExtRouteMap map[string]VMExtRoutes
 
 type ResourceCloudProperties struct {
 	DiskCloudProperties
 	LBCloudProperties
 	ComputeCloudProperties
-	Routes            RoutesMap `json:"routes"`
-	ComputeOffering   string    `json:"compute_offering"`
-	AffinityGroup     string    `json:"affinity_group"`
-	AffinityGroupType string    `json:"affinity_group_type"`
+	Routes            VMExtRouteMap `json:"routes"`
+	ComputeOffering   string        `json:"compute_offering"`
+	AffinityGroup     string        `json:"affinity_group"`
+	AffinityGroupType string        `json:"affinity_group_type"`
 }
 
 type NetworkCloudProperties struct {

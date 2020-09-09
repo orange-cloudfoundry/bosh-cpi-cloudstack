@@ -33,6 +33,8 @@ github.com/orange-cloudfoundry/bosh-cpi-go v1.1.0-ora h1:cVkT6pm2AjYd0DAr6zDPP0S
 github.com/orange-cloudfoundry/bosh-cpi-go v1.1.0-ora/go.mod h1:9SvJMwYO53sB4NsGlnA/oFQloVpYrGEza4mjPnfRgbk=
 github.com/orange-cloudfoundry/bosh-cpi-go v1.1.1-ora h1:+5+oHEc3MmOr3S700nX4nveGOmH+oFvdv6otCnm8+uk=
 github.com/orange-cloudfoundry/bosh-cpi-go v1.1.1-ora/go.mod h1:H+70yP+MyXcman1LByOKlDsL9jWFYq8T6mtyaTbpu3M=
+github.com/orange-cloudfoundry/bosh-cpi-go v1.1.2-ora h1:9oEwhdCU3Y/UXEecrEugcDg1eAyf8gIjibHS7ZoE1RE=
+github.com/orange-cloudfoundry/bosh-cpi-go v1.1.2-ora/go.mod h1:H+70yP+MyXcman1LByOKlDsL9jWFYq8T6mtyaTbpu3M=
 github.com/orange-cloudfoundry/go-cloudstack v0.0.0-20200212123653-26214ea343b6 h1:qcunAEhbDDHONHsY4gjpiBEKYcjLkRqiiUOUoUnHa44=
 github.com/orange-cloudfoundry/go-cloudstack v0.0.0-20200212123653-26214ea343b6/go.mod h1:ILNGzDasN30viqU5anKYgyBnGAthG2MSJ4ZLp1vpWMA=
 github.com/orange-cloudfoundry/go-cloudstack v0.0.0-20200212124408-b501b4d69836 h1:h0dYzlGc4xYM1mBv9RhVGbQxM4HaUYWURuEbJxBBpA0=

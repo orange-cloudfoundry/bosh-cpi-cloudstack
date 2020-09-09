@@ -243,7 +243,7 @@ func (a CPI) parseCIDR(cidr string) (string, string, error) {
 	return addr.String(), mask, nil
 }
 
-func (a CPI) addRouteToNetworks(routes RoutesMap, boshNetworks apiv1.Networks) error {
+func (a CPI) addRouteToNetworks(routes VMExtRouteMap, boshNetworks apiv1.Networks) error {
 	a.logger.Debug("create_vm", "routes from cloud config: %#v", routes)
 	for networkName, routeList := range routes {
 		targetNet, ok := boshNetworks[networkName]
@@ -251,11 +251,14 @@ func (a CPI) addRouteToNetworks(routes RoutesMap, boshNetworks apiv1.Networks) e
 			return bosherr.Errorf("Invalid vm_extension: attempt to map route on unkown network '%s'", networkName)
 		}
 		for _, route := range routeList {
-			ip, mask, err := a.parseCIDR(route)
+			ip, mask, err := a.parseCIDR(route.CIDR)
 			if err != nil {
 				return bosherr.Errorf("Invalid vm_extension: malformed CIDR '%s'", route)
 			}
-			targetNet.AddRoute(ip, mask)
+			if route.Gateway == "" {
+				route.Gateway = targetNet.Gateway()
+			}
+			targetNet.AddRoute(ip, mask, route.Gateway)
 		}
 		boshNetworks[networkName] = targetNet
 	}
