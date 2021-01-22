@@ -14,6 +14,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	. "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/reg"
+	. "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
 var _ = Describe("RegistryAgentEnvService", func() {
