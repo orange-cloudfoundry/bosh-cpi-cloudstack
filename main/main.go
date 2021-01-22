@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"os"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -9,17 +8,22 @@ import (
 
 	bwcaction "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/action"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/prometheus/common/version"
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 var (
-	configPathOpt = flag.String("configPath", "", "Path to configuration file")
-	cleaning      = flag.Bool("cleaning", false, "Set to true to run job for deleting periodically ephemeral disk")
+	configPathOpt = kingpin.Flag("configPath", "Configuration file path").Required().String()
+	cleaning      = kingpin.Flag("cleaning", "Set to true to run job for deleting periodically ephemeral disk").Bool()
 )
 
 func main() {
 	logger := boshlog.NewWriterLogger(boshlog.LevelDebug, os.Stderr)
 	defer logger.HandlePanic("Main")
-	flag.Parse()
+
+	kingpin.Version(version.Print("bosh-cpi-cloudstack"))
+	kingpin.HelpFlag.Short('h')
+	kingpin.Parse()
 
 	c, err := config.NewConfigFromPath(*configPathOpt)
 	if err != nil {

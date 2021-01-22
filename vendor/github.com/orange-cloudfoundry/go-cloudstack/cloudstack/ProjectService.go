@@ -44,7 +44,6 @@ func (p *ActivateProjectParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 // You should always use this function to get a new ActivateProjectParams instance,
@@ -169,7 +168,6 @@ func (p *CreateProjectParams) SetAccount(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["account"] = v
-	return
 }
 
 func (p *CreateProjectParams) SetDisplaytext(v string) {
@@ -177,7 +175,6 @@ func (p *CreateProjectParams) SetDisplaytext(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["displaytext"] = v
-	return
 }
 
 func (p *CreateProjectParams) SetDomainid(v string) {
@@ -185,7 +182,6 @@ func (p *CreateProjectParams) SetDomainid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["domainid"] = v
-	return
 }
 
 func (p *CreateProjectParams) SetName(v string) {
@@ -193,7 +189,6 @@ func (p *CreateProjectParams) SetName(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["name"] = v
-	return
 }
 
 // You should always use this function to get a new CreateProjectParams instance,
@@ -310,7 +305,6 @@ func (p *DeleteProjectParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 // You should always use this function to get a new DeleteProjectParams instance,
@@ -379,7 +373,6 @@ func (p *DeleteProjectInvitationParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 // You should always use this function to get a new DeleteProjectInvitationParams instance,
@@ -483,7 +476,6 @@ func (p *ListProjectInvitationsParams) SetAccount(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["account"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetActiveonly(v bool) {
@@ -491,7 +483,6 @@ func (p *ListProjectInvitationsParams) SetActiveonly(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["activeonly"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetDomainid(v string) {
@@ -499,7 +490,6 @@ func (p *ListProjectInvitationsParams) SetDomainid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["domainid"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetId(v string) {
@@ -507,7 +497,6 @@ func (p *ListProjectInvitationsParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetIsrecursive(v bool) {
@@ -515,7 +504,6 @@ func (p *ListProjectInvitationsParams) SetIsrecursive(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["isrecursive"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetKeyword(v string) {
@@ -523,7 +511,6 @@ func (p *ListProjectInvitationsParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetListall(v bool) {
@@ -531,7 +518,6 @@ func (p *ListProjectInvitationsParams) SetListall(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["listall"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetPage(v int) {
@@ -539,7 +525,6 @@ func (p *ListProjectInvitationsParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetPagesize(v int) {
@@ -547,7 +532,6 @@ func (p *ListProjectInvitationsParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetProjectid(v string) {
@@ -555,7 +539,6 @@ func (p *ListProjectInvitationsParams) SetProjectid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["projectid"] = v
-	return
 }
 
 func (p *ListProjectInvitationsParams) SetState(v string) {
@@ -563,7 +546,6 @@ func (p *ListProjectInvitationsParams) SetState(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["state"] = v
-	return
 }
 
 // You should always use this function to get a new ListProjectInvitationsParams instance,
@@ -687,11 +669,10 @@ func (p *ListProjectsParams) toURLValues() url.Values {
 		u.Set("state", v.(string))
 	}
 	if v, found := p.p["tags"]; found {
-		i := 0
-		for k, vv := range v.(map[string]string) {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
 			u.Set(fmt.Sprintf("tags[%d].key", i), k)
-			u.Set(fmt.Sprintf("tags[%d].value", i), vv)
-			i++
+			u.Set(fmt.Sprintf("tags[%d].value", i), m[k])
 		}
 	}
 	return u
@@ -702,7 +683,6 @@ func (p *ListProjectsParams) SetAccount(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["account"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetDisplaytext(v string) {
@@ -710,7 +690,6 @@ func (p *ListProjectsParams) SetDisplaytext(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["displaytext"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetDomainid(v string) {
@@ -718,7 +697,6 @@ func (p *ListProjectsParams) SetDomainid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["domainid"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetId(v string) {
@@ -726,7 +704,6 @@ func (p *ListProjectsParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetIsrecursive(v bool) {
@@ -734,7 +711,6 @@ func (p *ListProjectsParams) SetIsrecursive(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["isrecursive"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetKeyword(v string) {
@@ -742,7 +718,6 @@ func (p *ListProjectsParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetListall(v bool) {
@@ -750,7 +725,6 @@ func (p *ListProjectsParams) SetListall(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["listall"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetName(v string) {
@@ -758,7 +732,6 @@ func (p *ListProjectsParams) SetName(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["name"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetPage(v int) {
@@ -766,7 +739,6 @@ func (p *ListProjectsParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetPagesize(v int) {
@@ -774,7 +746,6 @@ func (p *ListProjectsParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetState(v string) {
@@ -782,7 +753,6 @@ func (p *ListProjectsParams) SetState(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["state"] = v
-	return
 }
 
 func (p *ListProjectsParams) SetTags(v map[string]string) {
@@ -790,7 +760,6 @@ func (p *ListProjectsParams) SetTags(v map[string]string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["tags"] = v
-	return
 }
 
 // You should always use this function to get a new ListProjectsParams instance,
@@ -973,7 +942,6 @@ func (p *SuspendProjectParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 // You should always use this function to get a new SuspendProjectParams instance,
@@ -1095,7 +1063,6 @@ func (p *UpdateProjectParams) SetAccount(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["account"] = v
-	return
 }
 
 func (p *UpdateProjectParams) SetDisplaytext(v string) {
@@ -1103,7 +1070,6 @@ func (p *UpdateProjectParams) SetDisplaytext(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["displaytext"] = v
-	return
 }
 
 func (p *UpdateProjectParams) SetId(v string) {
@@ -1111,7 +1077,6 @@ func (p *UpdateProjectParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 // You should always use this function to get a new UpdateProjectParams instance,
@@ -1237,7 +1202,6 @@ func (p *UpdateProjectInvitationParams) SetAccept(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["accept"] = v
-	return
 }
 
 func (p *UpdateProjectInvitationParams) SetAccount(v string) {
@@ -1245,7 +1209,6 @@ func (p *UpdateProjectInvitationParams) SetAccount(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["account"] = v
-	return
 }
 
 func (p *UpdateProjectInvitationParams) SetProjectid(v string) {
@@ -1253,7 +1216,6 @@ func (p *UpdateProjectInvitationParams) SetProjectid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["projectid"] = v
-	return
 }
 
 func (p *UpdateProjectInvitationParams) SetToken(v string) {
@@ -1261,7 +1223,6 @@ func (p *UpdateProjectInvitationParams) SetToken(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["token"] = v
-	return
 }
 
 // You should always use this function to get a new UpdateProjectInvitationParams instance,

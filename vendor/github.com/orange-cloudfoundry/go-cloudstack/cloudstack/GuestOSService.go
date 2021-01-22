@@ -34,11 +34,10 @@ func (p *AddGuestOsParams) toURLValues() url.Values {
 		return u
 	}
 	if v, found := p.p["details"]; found {
-		i := 0
-		for k, vv := range v.(map[string]string) {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
 			u.Set(fmt.Sprintf("details[%d].key", i), k)
-			u.Set(fmt.Sprintf("details[%d].value", i), vv)
-			i++
+			u.Set(fmt.Sprintf("details[%d].value", i), m[k])
 		}
 	}
 	if v, found := p.p["name"]; found {
@@ -58,7 +57,6 @@ func (p *AddGuestOsParams) SetDetails(v map[string]string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["details"] = v
-	return
 }
 
 func (p *AddGuestOsParams) SetName(v string) {
@@ -66,7 +64,6 @@ func (p *AddGuestOsParams) SetName(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["name"] = v
-	return
 }
 
 func (p *AddGuestOsParams) SetOscategoryid(v string) {
@@ -74,7 +71,6 @@ func (p *AddGuestOsParams) SetOscategoryid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["oscategoryid"] = v
-	return
 }
 
 func (p *AddGuestOsParams) SetOsdisplayname(v string) {
@@ -82,7 +78,6 @@ func (p *AddGuestOsParams) SetOsdisplayname(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["osdisplayname"] = v
-	return
 }
 
 // You should always use this function to get a new AddGuestOsParams instance,
@@ -172,7 +167,6 @@ func (p *AddGuestOsMappingParams) SetHypervisor(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["hypervisor"] = v
-	return
 }
 
 func (p *AddGuestOsMappingParams) SetHypervisorversion(v string) {
@@ -180,7 +174,6 @@ func (p *AddGuestOsMappingParams) SetHypervisorversion(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["hypervisorversion"] = v
-	return
 }
 
 func (p *AddGuestOsMappingParams) SetOsdisplayname(v string) {
@@ -188,7 +181,6 @@ func (p *AddGuestOsMappingParams) SetOsdisplayname(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["osdisplayname"] = v
-	return
 }
 
 func (p *AddGuestOsMappingParams) SetOsnameforhypervisor(v string) {
@@ -196,7 +188,6 @@ func (p *AddGuestOsMappingParams) SetOsnameforhypervisor(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["osnameforhypervisor"] = v
-	return
 }
 
 func (p *AddGuestOsMappingParams) SetOstypeid(v string) {
@@ -204,7 +195,6 @@ func (p *AddGuestOsMappingParams) SetOstypeid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["ostypeid"] = v
-	return
 }
 
 // You should always use this function to get a new AddGuestOsMappingParams instance,
@@ -332,7 +322,6 @@ func (p *ListGuestOsMappingParams) SetHypervisor(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["hypervisor"] = v
-	return
 }
 
 func (p *ListGuestOsMappingParams) SetHypervisorversion(v string) {
@@ -340,7 +329,6 @@ func (p *ListGuestOsMappingParams) SetHypervisorversion(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["hypervisorversion"] = v
-	return
 }
 
 func (p *ListGuestOsMappingParams) SetId(v string) {
@@ -348,7 +336,6 @@ func (p *ListGuestOsMappingParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *ListGuestOsMappingParams) SetKeyword(v string) {
@@ -356,7 +343,6 @@ func (p *ListGuestOsMappingParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListGuestOsMappingParams) SetOstypeid(v string) {
@@ -364,7 +350,6 @@ func (p *ListGuestOsMappingParams) SetOstypeid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["ostypeid"] = v
-	return
 }
 
 func (p *ListGuestOsMappingParams) SetPage(v int) {
@@ -372,7 +357,6 @@ func (p *ListGuestOsMappingParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListGuestOsMappingParams) SetPagesize(v int) {
@@ -380,7 +364,6 @@ func (p *ListGuestOsMappingParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 // You should always use this function to get a new ListGuestOsMappingParams instance,
@@ -517,7 +500,6 @@ func (p *ListOsCategoriesParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *ListOsCategoriesParams) SetKeyword(v string) {
@@ -525,7 +507,6 @@ func (p *ListOsCategoriesParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListOsCategoriesParams) SetName(v string) {
@@ -533,7 +514,6 @@ func (p *ListOsCategoriesParams) SetName(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["name"] = v
-	return
 }
 
 func (p *ListOsCategoriesParams) SetPage(v int) {
@@ -541,7 +521,6 @@ func (p *ListOsCategoriesParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListOsCategoriesParams) SetPagesize(v int) {
@@ -549,7 +528,6 @@ func (p *ListOsCategoriesParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 // You should always use this function to get a new ListOsCategoriesParams instance,
@@ -707,7 +685,6 @@ func (p *ListOsTypesParams) SetDescription(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["description"] = v
-	return
 }
 
 func (p *ListOsTypesParams) SetId(v string) {
@@ -715,7 +692,6 @@ func (p *ListOsTypesParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *ListOsTypesParams) SetKeyword(v string) {
@@ -723,7 +699,6 @@ func (p *ListOsTypesParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListOsTypesParams) SetOscategoryid(v string) {
@@ -731,7 +706,6 @@ func (p *ListOsTypesParams) SetOscategoryid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["oscategoryid"] = v
-	return
 }
 
 func (p *ListOsTypesParams) SetPage(v int) {
@@ -739,7 +713,6 @@ func (p *ListOsTypesParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListOsTypesParams) SetPagesize(v int) {
@@ -747,7 +720,6 @@ func (p *ListOsTypesParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 // You should always use this function to get a new ListOsTypesParams instance,
@@ -840,7 +812,6 @@ func (p *RemoveGuestOsParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 // You should always use this function to get a new RemoveGuestOsParams instance,
@@ -909,7 +880,6 @@ func (p *RemoveGuestOsMappingParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 // You should always use this function to get a new RemoveGuestOsMappingParams instance,
@@ -968,11 +938,10 @@ func (p *UpdateGuestOsParams) toURLValues() url.Values {
 		return u
 	}
 	if v, found := p.p["details"]; found {
-		i := 0
-		for k, vv := range v.(map[string]string) {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
 			u.Set(fmt.Sprintf("details[%d].key", i), k)
-			u.Set(fmt.Sprintf("details[%d].value", i), vv)
-			i++
+			u.Set(fmt.Sprintf("details[%d].value", i), m[k])
 		}
 	}
 	if v, found := p.p["id"]; found {
@@ -989,7 +958,6 @@ func (p *UpdateGuestOsParams) SetDetails(v map[string]string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["details"] = v
-	return
 }
 
 func (p *UpdateGuestOsParams) SetId(v string) {
@@ -997,7 +965,6 @@ func (p *UpdateGuestOsParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *UpdateGuestOsParams) SetOsdisplayname(v string) {
@@ -1005,7 +972,6 @@ func (p *UpdateGuestOsParams) SetOsdisplayname(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["osdisplayname"] = v
-	return
 }
 
 // You should always use this function to get a new UpdateGuestOsParams instance,
@@ -1086,7 +1052,6 @@ func (p *UpdateGuestOsMappingParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *UpdateGuestOsMappingParams) SetOsnameforhypervisor(v string) {
@@ -1094,7 +1059,6 @@ func (p *UpdateGuestOsMappingParams) SetOsnameforhypervisor(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["osnameforhypervisor"] = v
-	return
 }
 
 // You should always use this function to get a new UpdateGuestOsMappingParams instance,

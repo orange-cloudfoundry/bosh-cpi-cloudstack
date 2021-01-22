@@ -44,11 +44,10 @@ func (p *CreateTagsParams) toURLValues() url.Values {
 		u.Set("resourcetype", v.(string))
 	}
 	if v, found := p.p["tags"]; found {
-		i := 0
-		for k, vv := range v.(map[string]string) {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
 			u.Set(fmt.Sprintf("tags[%d].key", i), k)
-			u.Set(fmt.Sprintf("tags[%d].value", i), vv)
-			i++
+			u.Set(fmt.Sprintf("tags[%d].value", i), m[k])
 		}
 	}
 	return u
@@ -59,7 +58,6 @@ func (p *CreateTagsParams) SetCustomer(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["customer"] = v
-	return
 }
 
 func (p *CreateTagsParams) SetResourceids(v []string) {
@@ -67,7 +65,6 @@ func (p *CreateTagsParams) SetResourceids(v []string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourceids"] = v
-	return
 }
 
 func (p *CreateTagsParams) SetResourcetype(v string) {
@@ -75,7 +72,6 @@ func (p *CreateTagsParams) SetResourcetype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourcetype"] = v
-	return
 }
 
 func (p *CreateTagsParams) SetTags(v map[string]string) {
@@ -83,7 +79,6 @@ func (p *CreateTagsParams) SetTags(v map[string]string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["tags"] = v
-	return
 }
 
 // You should always use this function to get a new CreateTagsParams instance,
@@ -151,11 +146,10 @@ func (p *DeleteTagsParams) toURLValues() url.Values {
 		u.Set("resourcetype", v.(string))
 	}
 	if v, found := p.p["tags"]; found {
-		i := 0
-		for k, vv := range v.(map[string]string) {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
 			u.Set(fmt.Sprintf("tags[%d].key", i), k)
-			u.Set(fmt.Sprintf("tags[%d].value", i), vv)
-			i++
+			u.Set(fmt.Sprintf("tags[%d].value", i), m[k])
 		}
 	}
 	return u
@@ -166,7 +160,6 @@ func (p *DeleteTagsParams) SetResourceids(v []string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourceids"] = v
-	return
 }
 
 func (p *DeleteTagsParams) SetResourcetype(v string) {
@@ -174,7 +167,6 @@ func (p *DeleteTagsParams) SetResourcetype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourcetype"] = v
-	return
 }
 
 func (p *DeleteTagsParams) SetTags(v map[string]string) {
@@ -182,7 +174,6 @@ func (p *DeleteTagsParams) SetTags(v map[string]string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["tags"] = v
-	return
 }
 
 // You should always use this function to get a new DeleteTagsParams instance,
@@ -260,7 +251,6 @@ func (p *ListStorageTagsParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListStorageTagsParams) SetPage(v int) {
@@ -268,7 +258,6 @@ func (p *ListStorageTagsParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListStorageTagsParams) SetPagesize(v int) {
@@ -276,7 +265,6 @@ func (p *ListStorageTagsParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 // You should always use this function to get a new ListStorageTagsParams instance,
@@ -411,7 +399,6 @@ func (p *ListTagsParams) SetAccount(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["account"] = v
-	return
 }
 
 func (p *ListTagsParams) SetCustomer(v string) {
@@ -419,7 +406,6 @@ func (p *ListTagsParams) SetCustomer(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["customer"] = v
-	return
 }
 
 func (p *ListTagsParams) SetDomainid(v string) {
@@ -427,7 +413,6 @@ func (p *ListTagsParams) SetDomainid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["domainid"] = v
-	return
 }
 
 func (p *ListTagsParams) SetIsrecursive(v bool) {
@@ -435,7 +420,6 @@ func (p *ListTagsParams) SetIsrecursive(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["isrecursive"] = v
-	return
 }
 
 func (p *ListTagsParams) SetKey(v string) {
@@ -443,7 +427,6 @@ func (p *ListTagsParams) SetKey(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["key"] = v
-	return
 }
 
 func (p *ListTagsParams) SetKeyword(v string) {
@@ -451,7 +434,6 @@ func (p *ListTagsParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListTagsParams) SetListall(v bool) {
@@ -459,7 +441,6 @@ func (p *ListTagsParams) SetListall(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["listall"] = v
-	return
 }
 
 func (p *ListTagsParams) SetPage(v int) {
@@ -467,7 +448,6 @@ func (p *ListTagsParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListTagsParams) SetPagesize(v int) {
@@ -475,7 +455,6 @@ func (p *ListTagsParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 func (p *ListTagsParams) SetProjectid(v string) {
@@ -483,7 +462,6 @@ func (p *ListTagsParams) SetProjectid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["projectid"] = v
-	return
 }
 
 func (p *ListTagsParams) SetResourceid(v string) {
@@ -491,7 +469,6 @@ func (p *ListTagsParams) SetResourceid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourceid"] = v
-	return
 }
 
 func (p *ListTagsParams) SetResourcetype(v string) {
@@ -499,7 +476,6 @@ func (p *ListTagsParams) SetResourcetype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourcetype"] = v
-	return
 }
 
 func (p *ListTagsParams) SetValue(v string) {
@@ -507,7 +483,6 @@ func (p *ListTagsParams) SetValue(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["value"] = v
-	return
 }
 
 // You should always use this function to get a new ListTagsParams instance,

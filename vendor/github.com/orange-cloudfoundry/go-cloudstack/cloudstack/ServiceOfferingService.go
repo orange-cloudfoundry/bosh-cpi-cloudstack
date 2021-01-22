@@ -148,11 +148,10 @@ func (p *CreateServiceOfferingParams) toURLValues() url.Values {
 		u.Set("provisioningtype", v.(string))
 	}
 	if v, found := p.p["serviceofferingdetails"]; found {
-		i := 0
-		for k, vv := range v.(map[string]string) {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
 			u.Set(fmt.Sprintf("serviceofferingdetails[%d].key", i), k)
-			u.Set(fmt.Sprintf("serviceofferingdetails[%d].value", i), vv)
-			i++
+			u.Set(fmt.Sprintf("serviceofferingdetails[%d].value", i), m[k])
 		}
 	}
 	if v, found := p.p["storagetype"]; found {
@@ -172,7 +171,6 @@ func (p *CreateServiceOfferingParams) SetBytesreadrate(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["bytesreadrate"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetBytesreadratemax(v int64) {
@@ -180,7 +178,6 @@ func (p *CreateServiceOfferingParams) SetBytesreadratemax(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["bytesreadratemax"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetBytesreadratemaxlength(v int64) {
@@ -188,7 +185,6 @@ func (p *CreateServiceOfferingParams) SetBytesreadratemaxlength(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["bytesreadratemaxlength"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetByteswriterate(v int64) {
@@ -196,7 +192,6 @@ func (p *CreateServiceOfferingParams) SetByteswriterate(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["byteswriterate"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetByteswriteratemax(v int64) {
@@ -204,7 +199,6 @@ func (p *CreateServiceOfferingParams) SetByteswriteratemax(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["byteswriteratemax"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetByteswriteratemaxlength(v int64) {
@@ -212,7 +206,6 @@ func (p *CreateServiceOfferingParams) SetByteswriteratemaxlength(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["byteswriteratemaxlength"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetCpunumber(v int) {
@@ -220,7 +213,6 @@ func (p *CreateServiceOfferingParams) SetCpunumber(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["cpunumber"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetCpuspeed(v int) {
@@ -228,7 +220,6 @@ func (p *CreateServiceOfferingParams) SetCpuspeed(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["cpuspeed"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetCustomizediops(v bool) {
@@ -236,7 +227,6 @@ func (p *CreateServiceOfferingParams) SetCustomizediops(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["customizediops"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetDeploymentplanner(v string) {
@@ -244,7 +234,6 @@ func (p *CreateServiceOfferingParams) SetDeploymentplanner(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["deploymentplanner"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetDisplaytext(v string) {
@@ -252,7 +241,6 @@ func (p *CreateServiceOfferingParams) SetDisplaytext(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["displaytext"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetDomainid(v string) {
@@ -260,7 +248,6 @@ func (p *CreateServiceOfferingParams) SetDomainid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["domainid"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetHosttags(v string) {
@@ -268,7 +255,6 @@ func (p *CreateServiceOfferingParams) SetHosttags(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["hosttags"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetHypervisorsnapshotreserve(v int) {
@@ -276,7 +262,6 @@ func (p *CreateServiceOfferingParams) SetHypervisorsnapshotreserve(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["hypervisorsnapshotreserve"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetIopsreadrate(v int64) {
@@ -284,7 +269,6 @@ func (p *CreateServiceOfferingParams) SetIopsreadrate(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["iopsreadrate"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetIopsreadratemax(v int64) {
@@ -292,7 +276,6 @@ func (p *CreateServiceOfferingParams) SetIopsreadratemax(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["iopsreadratemax"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetIopsreadratemaxlength(v int64) {
@@ -300,7 +283,6 @@ func (p *CreateServiceOfferingParams) SetIopsreadratemaxlength(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["iopsreadratemaxlength"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetIopswriterate(v int64) {
@@ -308,7 +290,6 @@ func (p *CreateServiceOfferingParams) SetIopswriterate(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["iopswriterate"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetIopswriteratemax(v int64) {
@@ -316,7 +297,6 @@ func (p *CreateServiceOfferingParams) SetIopswriteratemax(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["iopswriteratemax"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetIopswriteratemaxlength(v int64) {
@@ -324,7 +304,6 @@ func (p *CreateServiceOfferingParams) SetIopswriteratemaxlength(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["iopswriteratemaxlength"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetIssystem(v bool) {
@@ -332,7 +311,6 @@ func (p *CreateServiceOfferingParams) SetIssystem(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["issystem"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetIsvolatile(v bool) {
@@ -340,7 +318,6 @@ func (p *CreateServiceOfferingParams) SetIsvolatile(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["isvolatile"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetLimitcpuuse(v bool) {
@@ -348,7 +325,6 @@ func (p *CreateServiceOfferingParams) SetLimitcpuuse(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["limitcpuuse"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetMaxiops(v int64) {
@@ -356,7 +332,6 @@ func (p *CreateServiceOfferingParams) SetMaxiops(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["maxiops"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetMemory(v int) {
@@ -364,7 +339,6 @@ func (p *CreateServiceOfferingParams) SetMemory(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["memory"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetMiniops(v int64) {
@@ -372,7 +346,6 @@ func (p *CreateServiceOfferingParams) SetMiniops(v int64) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["miniops"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetName(v string) {
@@ -380,7 +353,6 @@ func (p *CreateServiceOfferingParams) SetName(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["name"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetNetworkrate(v int) {
@@ -388,7 +360,6 @@ func (p *CreateServiceOfferingParams) SetNetworkrate(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["networkrate"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetOfferha(v bool) {
@@ -396,7 +367,6 @@ func (p *CreateServiceOfferingParams) SetOfferha(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["offerha"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetProvisioningtype(v string) {
@@ -404,7 +374,6 @@ func (p *CreateServiceOfferingParams) SetProvisioningtype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["provisioningtype"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetServiceofferingdetails(v map[string]string) {
@@ -412,7 +381,6 @@ func (p *CreateServiceOfferingParams) SetServiceofferingdetails(v map[string]str
 		p.p = make(map[string]interface{})
 	}
 	p.p["serviceofferingdetails"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetStoragetype(v string) {
@@ -420,7 +388,6 @@ func (p *CreateServiceOfferingParams) SetStoragetype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["storagetype"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetSystemvmtype(v string) {
@@ -428,7 +395,6 @@ func (p *CreateServiceOfferingParams) SetSystemvmtype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["systemvmtype"] = v
-	return
 }
 
 func (p *CreateServiceOfferingParams) SetTags(v string) {
@@ -436,7 +402,6 @@ func (p *CreateServiceOfferingParams) SetTags(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["tags"] = v
-	return
 }
 
 // You should always use this function to get a new CreateServiceOfferingParams instance,
@@ -532,7 +497,6 @@ func (p *DeleteServiceOfferingParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 // You should always use this function to get a new DeleteServiceOfferingParams instance,
@@ -648,7 +612,6 @@ func (p *ListServiceOfferingsParams) SetDomainid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["domainid"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetId(v string) {
@@ -656,7 +619,6 @@ func (p *ListServiceOfferingsParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetIsrecursive(v bool) {
@@ -664,7 +626,6 @@ func (p *ListServiceOfferingsParams) SetIsrecursive(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["isrecursive"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetIssystem(v bool) {
@@ -672,7 +633,6 @@ func (p *ListServiceOfferingsParams) SetIssystem(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["issystem"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetKeyword(v string) {
@@ -680,7 +640,6 @@ func (p *ListServiceOfferingsParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetListall(v bool) {
@@ -688,7 +647,6 @@ func (p *ListServiceOfferingsParams) SetListall(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["listall"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetName(v string) {
@@ -696,7 +654,6 @@ func (p *ListServiceOfferingsParams) SetName(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["name"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetPage(v int) {
@@ -704,7 +661,6 @@ func (p *ListServiceOfferingsParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetPagesize(v int) {
@@ -712,7 +668,6 @@ func (p *ListServiceOfferingsParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetSystemvmtype(v string) {
@@ -720,7 +675,6 @@ func (p *ListServiceOfferingsParams) SetSystemvmtype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["systemvmtype"] = v
-	return
 }
 
 func (p *ListServiceOfferingsParams) SetVirtualmachineid(v string) {
@@ -728,7 +682,6 @@ func (p *ListServiceOfferingsParams) SetVirtualmachineid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["virtualmachineid"] = v
-	return
 }
 
 // You should always use this function to get a new ListServiceOfferingsParams instance,
@@ -916,7 +869,6 @@ func (p *UpdateServiceOfferingParams) SetDisplaytext(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["displaytext"] = v
-	return
 }
 
 func (p *UpdateServiceOfferingParams) SetId(v string) {
@@ -924,7 +876,6 @@ func (p *UpdateServiceOfferingParams) SetId(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
-	return
 }
 
 func (p *UpdateServiceOfferingParams) SetName(v string) {
@@ -932,7 +883,6 @@ func (p *UpdateServiceOfferingParams) SetName(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["name"] = v
-	return
 }
 
 func (p *UpdateServiceOfferingParams) SetSortkey(v int) {
@@ -940,7 +890,6 @@ func (p *UpdateServiceOfferingParams) SetSortkey(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["sortkey"] = v
-	return
 }
 
 // You should always use this function to get a new UpdateServiceOfferingParams instance,

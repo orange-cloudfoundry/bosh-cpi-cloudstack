@@ -33,11 +33,10 @@ func (p *AddResourceDetailParams) toURLValues() url.Values {
 		return u
 	}
 	if v, found := p.p["details"]; found {
-		i := 0
-		for k, vv := range v.(map[string]string) {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
 			u.Set(fmt.Sprintf("details[%d].key", i), k)
-			u.Set(fmt.Sprintf("details[%d].value", i), vv)
-			i++
+			u.Set(fmt.Sprintf("details[%d].value", i), m[k])
 		}
 	}
 	if v, found := p.p["fordisplay"]; found {
@@ -58,7 +57,6 @@ func (p *AddResourceDetailParams) SetDetails(v map[string]string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["details"] = v
-	return
 }
 
 func (p *AddResourceDetailParams) SetFordisplay(v bool) {
@@ -66,7 +64,6 @@ func (p *AddResourceDetailParams) SetFordisplay(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["fordisplay"] = v
-	return
 }
 
 func (p *AddResourceDetailParams) SetResourceid(v string) {
@@ -74,7 +71,6 @@ func (p *AddResourceDetailParams) SetResourceid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourceid"] = v
-	return
 }
 
 func (p *AddResourceDetailParams) SetResourcetype(v string) {
@@ -82,7 +78,6 @@ func (p *AddResourceDetailParams) SetResourcetype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourcetype"] = v
-	return
 }
 
 // You should always use this function to get a new AddResourceDetailParams instance,
@@ -153,7 +148,6 @@ func (p *GetVolumeSnapshotDetailsParams) SetSnapshotid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["snapshotid"] = v
-	return
 }
 
 // You should always use this function to get a new GetVolumeSnapshotDetailsParams instance,
@@ -247,7 +241,6 @@ func (p *ListResourceDetailsParams) SetAccount(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["account"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetDomainid(v string) {
@@ -255,7 +248,6 @@ func (p *ListResourceDetailsParams) SetDomainid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["domainid"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetFordisplay(v bool) {
@@ -263,7 +255,6 @@ func (p *ListResourceDetailsParams) SetFordisplay(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["fordisplay"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetIsrecursive(v bool) {
@@ -271,7 +262,6 @@ func (p *ListResourceDetailsParams) SetIsrecursive(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["isrecursive"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetKey(v string) {
@@ -279,7 +269,6 @@ func (p *ListResourceDetailsParams) SetKey(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["key"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetKeyword(v string) {
@@ -287,7 +276,6 @@ func (p *ListResourceDetailsParams) SetKeyword(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["keyword"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetListall(v bool) {
@@ -295,7 +283,6 @@ func (p *ListResourceDetailsParams) SetListall(v bool) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["listall"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetPage(v int) {
@@ -303,7 +290,6 @@ func (p *ListResourceDetailsParams) SetPage(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["page"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetPagesize(v int) {
@@ -311,7 +297,6 @@ func (p *ListResourceDetailsParams) SetPagesize(v int) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["pagesize"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetProjectid(v string) {
@@ -319,7 +304,6 @@ func (p *ListResourceDetailsParams) SetProjectid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["projectid"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetResourceid(v string) {
@@ -327,7 +311,6 @@ func (p *ListResourceDetailsParams) SetResourceid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourceid"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetResourcetype(v string) {
@@ -335,7 +318,6 @@ func (p *ListResourceDetailsParams) SetResourcetype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourcetype"] = v
-	return
 }
 
 func (p *ListResourceDetailsParams) SetValue(v string) {
@@ -343,7 +325,6 @@ func (p *ListResourceDetailsParams) SetValue(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["value"] = v
-	return
 }
 
 // You should always use this function to get a new ListResourceDetailsParams instance,
@@ -416,7 +397,6 @@ func (p *RemoveResourceDetailParams) SetKey(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["key"] = v
-	return
 }
 
 func (p *RemoveResourceDetailParams) SetResourceid(v string) {
@@ -424,7 +404,6 @@ func (p *RemoveResourceDetailParams) SetResourceid(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourceid"] = v
-	return
 }
 
 func (p *RemoveResourceDetailParams) SetResourcetype(v string) {
@@ -432,7 +411,6 @@ func (p *RemoveResourceDetailParams) SetResourcetype(v string) {
 		p.p = make(map[string]interface{})
 	}
 	p.p["resourcetype"] = v
-	return
 }
 
 // You should always use this function to get a new RemoveResourceDetailParams instance,
