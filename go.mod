@@ -2,7 +2,7 @@ module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
 go 1.15
 
-replace github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.4-ora
+replace github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.5-ora
 
 require (
 	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
@@ -15,7 +15,5 @@ require (
 	github.com/prometheus/client_golang v1.10.0 // indirect
 	github.com/prometheus/common v0.20.0
 	github.com/satori/go.uuid v1.2.0
-	golang.org/x/net v0.0.0-20210324051636-2c4c8ecb7826 // indirect
-	golang.org/x/sys v0.0.0-20210324051608-47abb6519492 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )

@@ -18,7 +18,7 @@ github.com/cloudfoundry/bosh-utils/errors
 github.com/cloudfoundry/bosh-utils/logger
 github.com/cloudfoundry/bosh-utils/system
 github.com/cloudfoundry/bosh-utils/system/fakes
-# github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.4-ora
+# github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.5-ora
 ## explicit
 github.com/cppforlife/bosh-cpi-go/apiv1
 github.com/cppforlife/bosh-cpi-go/rpc
@@ -98,13 +98,11 @@ github.com/prometheus/procfs/internal/util
 # github.com/satori/go.uuid v1.2.0
 ## explicit
 github.com/satori/go.uuid
-# golang.org/x/net v0.0.0-20210324051636-2c4c8ecb7826
-## explicit
+# golang.org/x/net v0.0.0-20210324205630-d1beb07c2056
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
 # golang.org/x/sys v0.0.0-20210324051608-47abb6519492
-## explicit
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
@@ -164,4 +162,4 @@ gopkg.in/alecthomas/kingpin.v2
 gopkg.in/tomb.v1
 # gopkg.in/yaml.v2 v2.4.0
 gopkg.in/yaml.v2
-# github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.4-ora
+# github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.5-ora
