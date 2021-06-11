@@ -12,8 +12,7 @@ require (
 	github.com/onsi/ginkgo v1.15.2
 	github.com/onsi/gomega v1.11.0
 	github.com/orange-cloudfoundry/go-cloudstack v2.9.0-ora+incompatible
-	github.com/prometheus/client_golang v1.10.0 // indirect
-	github.com/prometheus/common v0.20.0
+	github.com/prometheus/common v0.29.0
 	github.com/satori/go.uuid v1.2.0
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
