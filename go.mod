@@ -9,7 +9,7 @@ require (
 	github.com/cloudfoundry/bosh-utils v0.0.264
 	github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd
 	github.com/onsi/ginkgo v1.16.4
-	github.com/onsi/gomega v1.13.0
+	github.com/onsi/gomega v1.14.0
 	github.com/orange-cloudfoundry/go-cloudstack v2.9.0-ora+incompatible
 	github.com/prometheus/common v0.29.0
 	github.com/prometheus/procfs v0.7.0 // indirect
