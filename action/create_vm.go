@@ -11,7 +11,7 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
+	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/satori/go.uuid"
 )
 
@@ -107,7 +107,7 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 		if (0 == cpu) || (0 == ram) {
 			return apiv1.VMCID{}, apiv1.Networks{}, bosherr.Errorf("Could not find `cpu` and `memory` cloud_properties mandatory for compute offering %s when creating vm", resProps.ComputeOffering)
 		}
-		deplParams.AddDetails(map[string]string{
+		deplParams.SetDetails(map[string]string{
 			"cpuNumber": fmt.Sprintf("%d", cpu),
 			"cpuSpeed":  fmt.Sprintf("%d", cpuSpeed),
 			"memory":    fmt.Sprintf("%d", ram),

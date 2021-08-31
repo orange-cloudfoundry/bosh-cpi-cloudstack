@@ -5,7 +5,7 @@ import (
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/reg"
-	"github.com/orange-cloudfoundry/go-cloudstack/cloudstack"
+	"github.com/apache/cloudstack-go/v2/cloudstack"
 )
 
 type Factory struct {
