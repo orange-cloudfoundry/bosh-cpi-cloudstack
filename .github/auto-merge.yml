@@ -1,3 +1,9 @@
 - match:
-    dependency_type: all
+    dependency_name: github.com/apache/cloudstack-go/v2
     update_type: "semver:patch"
+- match:
+    dependency_name: github.com/cppforlife/bosh-cpi-go
+    update_type: "semver:patch"
+- match:
+    dependency_type: all
+    update_type: "semver:minor"
