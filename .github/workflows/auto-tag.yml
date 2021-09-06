@@ -1,0 +1,66 @@
+name: auto-tag
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  tag:
+    if: github.event.pull_request.merged == 'true'
+    concurrency:
+      group: auto-tag
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - id: fetch-latest-release
+        uses: thebritican/fetch-latest-release@v2.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: extract bump information
+        id: bump_info
+        run: |
+          type=$(git log --format=%B -n 1 ${{ github.event.pull_request.merge_commit_sha }} | sed '/---/,/\.\.\./!d;/\.\.\./q' | grep update-type | cut -d: -f3)
+          echo "::warning::type == ${type}"
+          if [ -z "${type}" ]; then
+            echo "::error:: unable to find dependabot version bump message"
+            exit 1
+          fi
+          echo "::set-output name=type::${type}"
+
+      - name: parse semver string
+        id: semver_parser
+        uses: booxmedialtd/ws-action-parse-semver@v1
+        with:
+          input_string: '${{ steps.fetch-latest-release.outputs.tag_name }}'
+          version_extractor_regex: 'v(.*)$'
+
+      - name: compute new tag
+        id: compte_tag
+        run: |
+          major=${{ steps.semver_parser.outputs.major }}
+          minor=${{ steps.semver_parser.outputs.minor }}
+          patch=${{ steps.semver_parser.outputs.patch }}
+          if [ "${{ steps.bump_info.outputs.type  }}" == "semver-minor" ]; then
+            minor=$((minor+1))
+            patch=0
+            echo "::warning::bumping minor version"
+          elif [ "${{ steps.bump_info.outputs.type  }}" == "semver-patch" ]; then
+            patch=$((patch+1))
+            echo "::warning::bumping patch version"
+          fi
+          tag="v${major}.${minor}.${patch}"
+          echo "::set-output name=tag::${tag}"
+          echo "::warning::tag == ${tag}"
+
+      - name: Tag commit
+        uses: tvdias/github-tagger@v0.0.1
+        if: steps.compte_tag.outputs.tag != steps.semver_parser.outputs.fullversion
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "${{ steps.compte_tag.outputs.tag }}"
