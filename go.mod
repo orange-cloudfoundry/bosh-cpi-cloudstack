@@ -4,11 +4,10 @@ go 1.15
 
 replace github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.7-ora
 
-
 require (
-	github.com/apache/cloudstack-go/v2 v2.9.1-0.20210831123014-8290b0373f69
 	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
-	github.com/cloudfoundry/bosh-utils v0.0.264
+	github.com/apache/cloudstack-go/v2 v2.9.1-0.20210831123014-8290b0373f69
+	github.com/cloudfoundry/bosh-utils v0.0.273
 	github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.14.0
