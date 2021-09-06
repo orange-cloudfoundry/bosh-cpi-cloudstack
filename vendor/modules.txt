@@ -20,7 +20,7 @@ github.com/cespare/xxhash/v2
 # github.com/charlievieth/fs v0.0.1
 ## explicit; go 1.15
 github.com/charlievieth/fs
-# github.com/cloudfoundry/bosh-utils v0.0.264
+# github.com/cloudfoundry/bosh-utils v0.0.273
 ## explicit; go 1.15
 github.com/cloudfoundry/bosh-utils/errors
 github.com/cloudfoundry/bosh-utils/logger
