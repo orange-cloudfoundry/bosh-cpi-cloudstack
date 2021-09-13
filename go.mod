@@ -6,7 +6,7 @@ replace github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh
 
 require (
 	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
-	github.com/apache/cloudstack-go/v2 v2.9.1-0.20210831123014-8290b0373f69
+	github.com/apache/cloudstack-go/v2 v2.10.0
 	github.com/cloudfoundry/bosh-utils v0.0.274
 	github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd
 	github.com/onsi/ginkgo v1.16.4

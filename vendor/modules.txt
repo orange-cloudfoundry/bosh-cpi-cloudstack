@@ -5,7 +5,7 @@ github.com/alecthomas/template/parse
 # github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15
 ## explicit; go 1.15
 github.com/alecthomas/units
-# github.com/apache/cloudstack-go/v2 v2.9.1-0.20210831123014-8290b0373f69
+# github.com/apache/cloudstack-go/v2 v2.10.0
 ## explicit; go 1.13
 github.com/apache/cloudstack-go/v2/cloudstack
 # github.com/beorn7/perks v1.0.1
