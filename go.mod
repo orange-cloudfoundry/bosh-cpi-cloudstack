@@ -7,7 +7,7 @@ replace github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh
 require (
 	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
 	github.com/apache/cloudstack-go/v2 v2.10.0
-	github.com/cloudfoundry/bosh-utils v0.0.276
+	github.com/cloudfoundry/bosh-utils v0.0.277
 	github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.16.0
@@ -31,8 +31,8 @@ require (
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
-	golang.org/x/net v0.0.0-20210924151903-3ad01bbaa167 // indirect
-	golang.org/x/sys v0.0.0-20210925032602-92d5a993a665 // indirect
+	golang.org/x/net v0.0.0-20210929193557-e81a3d93ecf6 // indirect
+	golang.org/x/sys v0.0.0-20211001092434-39dca1131b70 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
