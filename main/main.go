@@ -4,7 +4,7 @@ import (
 	"os"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
-	"github.com/cppforlife/bosh-cpi-go/rpc"
+	"github.com/cloudfoundry/bosh-cpi-go/rpc"
 
 	bwcaction "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/action"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"

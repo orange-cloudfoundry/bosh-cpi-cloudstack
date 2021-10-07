@@ -80,6 +80,8 @@ type NetworkOpts struct {
 
 	DNS     []string
 	Default []string
+	Routes  []Route  `json:"routes"`
+	Alias   string   `json:"alias,omitempty"`
 
 	CloudProps CloudPropsImpl `json:"cloud_properties"`
 }
@@ -95,8 +97,8 @@ func NewNetwork(opts NetworkOpts) Network {
 
 			DNS:     opts.DNS,
 			Default: opts.Default,
-			Routes:  []Route{},
-			Alias:   "",
+			Routes:  opts.Routes,
+			Alias:   opts.Alias,
 		},
 	}
 }

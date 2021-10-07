@@ -2,7 +2,7 @@ package action
 
 import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"strings"
 )

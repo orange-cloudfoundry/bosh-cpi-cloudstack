@@ -1,6 +1,6 @@
 package reg
 
-import "github.com/cppforlife/bosh-cpi-go/apiv1"
+import "github.com/cloudfoundry/bosh-cpi-go/apiv1"
 
 type nullAgentEnvService struct {
 }

@@ -2,7 +2,7 @@
 ## explicit
 github.com/alecthomas/template
 github.com/alecthomas/template/parse
-# github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15
+# github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a
 ## explicit; go 1.15
 github.com/alecthomas/units
 # github.com/apache/cloudstack-go/v2 v2.10.0
@@ -14,23 +14,23 @@ github.com/beorn7/perks/quantile
 # github.com/bmatcuk/doublestar v1.3.4
 ## explicit; go 1.12
 github.com/bmatcuk/doublestar
-# github.com/cespare/xxhash/v2 v2.1.1
+# github.com/cespare/xxhash/v2 v2.1.2
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/charlievieth/fs v0.0.1
+# github.com/charlievieth/fs v0.0.2
 ## explicit; go 1.15
 github.com/charlievieth/fs
+# github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211007183231-0c1f191a32b1
+## explicit; go 1.16
+github.com/cloudfoundry/bosh-cpi-go/apiv1
+github.com/cloudfoundry/bosh-cpi-go/rpc
 # github.com/cloudfoundry/bosh-utils v0.0.277
 ## explicit; go 1.15
 github.com/cloudfoundry/bosh-utils/errors
 github.com/cloudfoundry/bosh-utils/logger
 github.com/cloudfoundry/bosh-utils/system
 github.com/cloudfoundry/bosh-utils/system/fakes
-# github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.7-ora
-## explicit; go 1.15
-github.com/cppforlife/bosh-cpi-go/apiv1
-github.com/cppforlife/bosh-cpi-go/rpc
-# github.com/fsnotify/fsnotify v1.4.9
+# github.com/fsnotify/fsnotify v1.5.1
 ## explicit; go 1.13
 github.com/fsnotify/fsnotify
 # github.com/golang/protobuf v1.5.2
@@ -99,7 +99,7 @@ github.com/prometheus/common/expfmt
 github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg
 github.com/prometheus/common/model
 github.com/prometheus/common/version
-# github.com/prometheus/procfs v0.7.0
+# github.com/prometheus/procfs v0.7.3
 ## explicit; go 1.13
 github.com/prometheus/procfs
 github.com/prometheus/procfs/internal/fs
@@ -177,4 +177,3 @@ gopkg.in/tomb.v1
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
-# github.com/cppforlife/bosh-cpi-go => github.com/orange-cloudfoundry/bosh-cpi-go v1.1.7-ora

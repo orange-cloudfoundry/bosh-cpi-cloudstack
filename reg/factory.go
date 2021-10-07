@@ -2,7 +2,7 @@ package reg
 
 import (
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
-	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 

@@ -3,7 +3,7 @@ package action
 import (
 	"fmt"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/satori/go.uuid"
