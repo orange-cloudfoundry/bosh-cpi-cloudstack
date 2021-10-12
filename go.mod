@@ -7,7 +7,7 @@ require (
 	github.com/apache/cloudstack-go/v2 v2.10.0
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211007183231-0c1f191a32b1
 	github.com/cloudfoundry/bosh-utils v0.0.278
-	github.com/onsi/ginkgo v1.16.4
+	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.16.0
 	github.com/prometheus/common v0.31.1
 	github.com/prometheus/procfs v0.7.3 // indirect
