@@ -6,7 +6,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a // indirect
 	github.com/apache/cloudstack-go/v2 v2.10.0
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211007183231-0c1f191a32b1
-	github.com/cloudfoundry/bosh-utils v0.0.278
+	github.com/cloudfoundry/bosh-utils v0.0.279
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.16.0
 	github.com/prometheus/common v0.31.1
@@ -29,8 +29,8 @@ require (
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
-	golang.org/x/net v0.0.0-20211008194852-3b03d305991f // indirect
-	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
+	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
+	golang.org/x/sys v0.0.0-20211015200801-69063c4bb744 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
