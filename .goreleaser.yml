@@ -1,9 +1,11 @@
 project_name: bosh-cpi-cloudstack
 
 builds:
-  - id: binary
+  -
+    &template
+    id: binary
     binary: bosh-cpi-cloudstack
-    dir: /main
+    dir: main
     env:
       - CGO_ENABLED=0
     ldflags:
@@ -27,12 +29,14 @@ archives:
     format: "tar.gz"
     name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
     wrap_in_directory: true
-  - id: archives-zip
-    builds:
-      - binary
-    format: "zip"
-    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
-    wrap_in_directory: true
+    files:
+      - LICENSE*
+      - README*
+      - CHANGELOG*
+      - docs/*
+      - assets/*
+      - static/*
+      - templates/*
 
 checksum:
   name_template: checksums.txt
