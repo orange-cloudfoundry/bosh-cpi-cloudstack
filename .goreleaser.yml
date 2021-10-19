@@ -3,7 +3,7 @@ project_name: bosh-cpi-cloudstack
 builds:
   - id: binary
     binary: bosh-cpi-cloudstack
-    dir: .
+    dir: /main
     env:
       - CGO_ENABLED=0
     ldflags:
