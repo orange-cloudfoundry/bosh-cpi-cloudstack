@@ -65,8 +65,8 @@ github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDk
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211007183231-0c1f191a32b1 h1:2GxaOHk6M6QWF63XugDqDkdrTSkUr/9tkBP5Q2m4FLQ=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211007183231-0c1f191a32b1/go.mod h1:XwYauuch9CWJ6kl4nZAi+N3P6kdzUsm0kOpKsETehak=
 github.com/cloudfoundry/bosh-utils v0.0.275/go.mod h1:PcNKw1XC06W/f8XPI/oRVtqIy93asGcgo5/EIgqBp44=
-github.com/cloudfoundry/bosh-utils v0.0.280 h1:/e14OUtG9xS5/SPCxF2TmPeX27T4xZnZZtBom+S2QFo=
-github.com/cloudfoundry/bosh-utils v0.0.280/go.mod h1:wuIESr5pFADGPeqm8B6qbGPY7/cZp6APk9jfS4ernwg=
+github.com/cloudfoundry/bosh-utils v0.0.281 h1:2tbI8NhwTsQepkot6qqhKyTi3F8AZEL60YxQUY6Rj4s=
+github.com/cloudfoundry/bosh-utils v0.0.281/go.mod h1:wuIESr5pFADGPeqm8B6qbGPY7/cZp6APk9jfS4ernwg=
 github.com/cloudfoundry/go-socks5 v0.0.0-20180221174514-54f73bdb8a8e/go.mod h1:PXmcacyJB/pJjSxEl15IU6rEIKXrhZQRzsr0UTkgNNs=
 github.com/cloudfoundry/socks5-proxy v0.2.21/go.mod h1:RImU21ZDO0QV/wo7PAti6dAv5g6AQUxuOCJx3ITqGPA=
 github.com/cloudfoundry/socks5-proxy v0.2.25/go.mod h1:xA2mFn7rUfscv0fdSdBgyyhLPkHbsOnUpuOR/s98pHc=
