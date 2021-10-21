@@ -9,7 +9,7 @@ require (
 	github.com/cloudfoundry/bosh-utils v0.0.281
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.16.0
-	github.com/prometheus/common v0.31.1
+	github.com/prometheus/common v0.32.1
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/satori/go.uuid v1.2.0
 	google.golang.org/protobuf v1.27.1 // indirect
