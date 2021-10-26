@@ -1,11 +1,13 @@
 package action
 
 import (
-	boshlog "github.com/cloudfoundry/bosh-utils/logger"
+	"time"
+
+	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/reg"
-	"github.com/apache/cloudstack-go/v2/cloudstack"
 )
 
 type Factory struct {
@@ -36,6 +38,7 @@ func (f Factory) New(callCtx apiv1.CallContext) (apiv1.CPI, error) {
 	if f.config.CloudStack.Timeout.Global > 0 {
 		client.AsyncTimeout(f.config.CloudStack.Timeout.Global)
 	}
+	client.Timeout(time.Duration(time.Minute * 5))
 
 	regFactory := reg.NewFactory(f.config.Actions.Registry, f.logger)
 

@@ -2,6 +2,8 @@ module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
 go 1.17
 
+replace github.com/apache/cloudstack-go/v2 v2.11.0 => github.com/orange-cloudfoundry/cloudstack-go/v2 v2.11.0-ora
+
 require (
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a // indirect
 	github.com/apache/cloudstack-go/v2 v2.11.0
