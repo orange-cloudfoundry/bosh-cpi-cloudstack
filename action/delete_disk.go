@@ -3,31 +3,31 @@ package action
 import (
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"fmt"
 )
 
 func (a CPI) DeleteDisk(cid apiv1.DiskCID) error {
-	a.client.AsyncTimeout(a.config.CloudStack.Timeout.DeleteVolume)
+	a.logger.Info("delete_disk", "deleting disk '%s' ...", cid.AsString())
 
-	volumes, err := a.findVolumesByName(cid)
+	err := a.deleteDisk(cid.AsString())
 	if err != nil {
-		return bosherr.WrapErrorf(err, "Cannot delete disk %s", cid.AsString())
+		err = bosherr.WrapErrorf(err, "could not delete disk '%s'", cid.AsString())
+		a.logger.Error("delete_disk", err.Error())
+		return err
+	}
+	a.logger.Info("delete_disk", "finished deleting disk '%s'", cid.AsString())
+	return nil
+}
+
+func (a CPI) deleteDisk(cid string) error {
+	volumes, err := a.volumesFindByName(cid)
+	if err != nil {
+		return err
 	}
 	if len(volumes) > 1 {
-		return bosherr.WrapErrorf(
-			fmt.Errorf("multiple volumes found with this name"),
-			"Cannot delete disk %s", cid.AsString())
+		return bosherr.Errorf("too many volumes '%s', found %d", cid, len(volumes))
 	}
 	if len(volumes) == 0 {
 		return nil
 	}
-
-	a.logger.Info("delete_disk", "Deleting disk %s ...", cid.AsString())
-	p := a.client.Volume.NewDeleteVolumeParams(volumes[0].Id)
-	_, err = a.client.Volume.DeleteVolume(p)
-	if err != nil {
-		return bosherr.WrapErrorf(err, "Cannot delete disk %s", cid.AsString())
-	}
-	a.logger.Info("delete_disk", "Finished deleting disk %s .", cid.AsString())
-	return nil
+	return a.volumeDelete(volumes[0])
 }

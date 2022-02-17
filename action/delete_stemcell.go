@@ -5,28 +5,29 @@ import (
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 )
 
-// DeleteStemcell - Delete CS template matching given stemcell name
 func (a CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
-	zoneid, err := a.findZoneID()
+	a.logger.Info("delete_stemcell", "deleting stemcell %s ...", cid.AsString())
+	err := a.deleteStemcell(cid.AsString())
+	if err != nil {
+		err = bosherr.WrapErrorf(err, "unable to delete stemcell '%s'", cid.AsString())
+		a.logger.Error("delete_stemcell", err.Error())
+	}
+	a.logger.Info("delete_stemcell", "finished deleting stemcell %s", cid.AsString())
+	return nil
+}
+
+func (a CPI) deleteStemcell(stemcell string) error {
+	zone, err := a.zoneFindDefault()
 	if err != nil {
 		return err
 	}
-
-	template, _, err := a.client.Template.GetTemplateByName(cid.AsString(), "executable", zoneid)
+	template, err := a.templateFindByName(stemcell, zone)
 	if err != nil {
-		return nil
+		return err
 	}
-
-	deleteP := a.client.Template.NewDeleteTemplateParams(template.Id)
-	deleteP.SetZoneid(zoneid)
-	//deleteP.SetForced(true)
-
-	a.logger.Info("delete_stemcell", "deleting template %s (%s)", template.Id, cid.AsString())
-	_, err = a.client.Template.DeleteTemplate(deleteP)
+	err = a.templateDelete(template, zone)
 	if err != nil {
-		return bosherr.WrapErrorf(err, "[delete_stemcell] could not delete template %s (%s)", template.Id, cid.AsString())
+		return err
 	}
-
-	a.logger.Info("delete_stemcell", "delete_stemcell success : template %s (%s)", template.Id, cid.AsString())
 	return nil
 }

@@ -2,90 +2,71 @@ package action
 
 import (
 	"fmt"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"strings"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
 func (a CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
-	_, err := a.AttachDiskBase(vmCID, diskCID, false)
-	return err
+	return bosherr.Errorf("attach_disk '%s' to vm '%s' is no more supported from api v1", diskCID.AsString(), vmCID.AsString())
 }
 
 func (a CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
-	diskHints, err := a.AttachDiskBase(vmCID, diskCID, true)
-	return diskHints, err
+	a.logger.Info("attach_disk", "attaching disk '%s' to vm '%s'...", diskCID.AsString(), vmCID.AsString())
+	hints, err := a.attachDisk(vmCID, diskCID)
+	if err != nil {
+		a.logger.Info("attach_disk", bosherr.WrapErrorf(err, "error while attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString()))
+		return apiv1.DiskHint{}, err
+	}
+	a.logger.Info("attach_disk", "finished attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID..AsString())
+	return hints, err
 }
 
-func (a CPI) AttachDiskBase(vmCID apiv1.VMCID, diskCID apiv1.DiskCID, isV2 bool) (apiv1.DiskHint, error) {
-	a.client.AsyncTimeout(a.config.CloudStack.Timeout.AttachVolume)
-
-	volumes, err := a.findVolumesByName(diskCID)
+func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
+	a.logger.Info("detach_disk", "detaching disk '%s' from vm '%s' ...", diskCID.AsString(), vmCID.AsString())
+	err = a.detachDisk(vmCID, diskCID)
 	if err != nil {
-		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "Error when finding disk %s on vm %s", diskCID.AsString(), vmCID.AsString())
+		a.logger.Info("detach_disk", bosherr.WrapErrorf(err, "error while detaching disk '%s' from vm '%s'", diskCID.AsString(), vmCID.AsString())
+		return err
 	}
+	a.logger.Info("detach_disk", "finished detaching disk '%s' from vm '%s'", diskCID.AsString(), vmCID.AsString())
+}
 
-	if len(volumes) > 1 {
-		return apiv1.DiskHint{}, bosherr.Errorf("Too much volume with name %s", diskCID.AsString())
+
+func (a CPI) attachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
+	volume, err := a.findVolumeDetached(diskCID)
+	if err != nil {
+		return apiv1.DiskHint{}, err
 	}
-
-	if len(volumes) == 0 {
-		return apiv1.DiskHint{}, bosherr.Errorf("No volume found with name %s", diskCID.AsString())
-	}
-
-	volume := volumes[0]
-	if volume.Vmname != "" {
-		return apiv1.DiskHint{}, bosherr.Errorf("Volume with name %s already attached to vm %s", diskCID.AsString(), volume.Vmname)
-	}
-
 	vm, err := a.findVmByName(vmCID)
 	if err != nil {
-		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "Error when finding vm %s", vmCID.AsString())
+		return apiv1.DiskHint{}, err
 	}
-
-	a.logger.Info("attach_disk", "Attaching disk %s ...", diskCID.AsString())
-	p := a.client.Volume.NewAttachVolumeParams(volume.Id, vm.Id)
-	resp, err := a.client.Volume.AttachVolume(p)
+	deviceID, err := a.volumeAttach(volume, vm)
 	if err != nil {
-		return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "Error when attaching volume %s to vm %s", diskCID.AsString(), vmCID.AsString())
+		return apiv1.DiskHint{}, err
 	}
-	a.logger.Info("attach_disk", "Finished attaching disk %s .", diskCID.AsString())
-
-	indexVol := byte('a') + byte(resp.Deviceid)
+	indexVol := byte('a') + byte(deviceID)
 	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{
 		"path":      "/dev/xvd" + string(indexVol),
-		"volumd_id": fmt.Sprintf("%d", resp.Deviceid),
+		"volumd_id": fmt.Sprintf("%d", deviceID),
 	})
-
-	if !isV2 {
-		a.logger.Info("attach_disk", "Registering disk %s to registry ...", diskCID.AsString())
-		if err := a.registerDisk(volume.Name, vmCID, diskCID, diskHint); err != nil {
-			detachParams := a.client.Volume.NewDetachVolumeParams()
-			detachParams.SetId(volume.Id)
-			a.client.Volume.DetachVolume(detachParams)
-			return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "unable to register disk into registry")
-		}
-		a.logger.Info("attach_disk", "Finished registering disk %s to registry.", diskCID.AsString())
-	}
-
 	return diskHint, nil
 }
 
-func (a CPI) registerDisk(name string, vmCID apiv1.VMCID, diskCID apiv1.DiskCID, hint apiv1.DiskHint) error {
-	// we skip registry registering if disk is an ephemeral one
-	if strings.HasPrefix(name, config.EphemeralDiskPrefix) {
-		a.logger.Debug("attach_disk", "skip registering epehemeral disks ...")
+// DetachDisk -
+// 1. if already detached do nothing
+func (a CPI) detachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
+	if a.ctx.APIVersion == 1 {
+		return bosherr.Errorf("detach_disk '%s' from vm '%s' is no more supported from api v1", diskCID, vmCID)
+	}
+	volume, err := a.findVolumeByName(diskCID)
+	if err != nil {
+		return err
+	}
+	// 1.
+	if volume.Virtualmachineid == "" {
 		return nil
 	}
-	nvSvc := a.regFactory.Create(vmCID)
-	agentEnv, err := nvSvc.Fetch()
-	if err != nil {
-		return bosherr.WrapErrorf(err, "Error when fetching registry for vm %s", vmCID.AsString())
-	}
-	agentEnv.AttachPersistentDisk(diskCID, hint)
-	if err = nvSvc.Update(agentEnv); err != nil {
-		return bosherr.WrapErrorf(err, "Error when updating registry for vm %s", vmCID.AsString())
-	}
-	return nil
+	return a.detachVolume(volume)
 }

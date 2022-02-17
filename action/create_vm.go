@@ -193,15 +193,15 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 	}
 	a.logger.Info("create_vm", "Finished creating ephemeral disk for vm %s .", vmName)
 
-	// creating load-balancers
-	if len(resProps.Lbs) > 0 {
-		a.logger.Info("create_vm", "Assigning vm %s to loadbalancers ...", vmName)
-		err = a.setLoadBalancers(resProps.LBCloudProperties, resp.Id, zoneID, networkDefault.Id)
-		if err != nil {
-			return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot assign loadbalancers to vm"), resp.Id)
-		}
-		a.logger.Info("create_vm", "Finished assigning vm %s to loadbalancers.", vmName)
-	}
+	// // creating load-balancers
+	// if len(resProps.Lbs) > 0 {
+	// 	a.logger.Info("create_vm", "Assigning vm %s to loadbalancers ...", vmName)
+	// 	err = a.setLoadBalancers(resProps.LBCloudProperties, resp.Id, zoneID, networkDefault.Id)
+	// 	if err != nil {
+	// 		return apiv1.VMCID{}, apiv1.Networks{}, a.destroyVmErrFallback(bosherr.WrapError(err, "Cannot assign loadbalancers to vm"), resp.Id)
+	// 	}
+	// 	a.logger.Info("create_vm", "Finished assigning vm %s to loadbalancers.", vmName)
+	// }
 
 	// attaching disks
 	a.logger.Info("create_vm", "Attaching ephemeral disk for vm %s ...", vmName)

@@ -3,18 +3,28 @@ package action
 import (
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"fmt"
 )
 
 func (a CPI) HasVM(cid apiv1.VMCID) (bool, error) {
-	vms, err := a.findVmsByName(cid)
+	a.logger.Info("has_vm", "checking vm exists for '%s'...", cid.AsString())
+	found, err := a.hasVM(cid.AsString())
 	if err != nil {
-		return false, bosherr.WrapErrorf(err, "Has vm failed on vm %s", cid.AsString())
+		err := bosherr.WrapErrorf(err, "could not check if vm exists for '%s'", cid.AsString())
+		a.logger.Error("has_vm", err.Error())
+		return false, err
+	}
+	a.logger.Info("has_vm", "finished checking vm exists for '%s' (%t)", cid.AsString(), found)
+	return found, nil
+}
+
+
+func (a CPI) hasVM(vmName string) (bool, error) {
+	vms, err := a.vmsFindByName(vmName)
+	if err != nil {
+		return false, err
 	}
 	if len(vms) > 1 {
-		return false, bosherr.WrapErrorf(
-			fmt.Errorf("multiple vm found with this name"),
-			"Has vm failed on vm %s", cid.AsString())
+		return false, bosherr.Errorf("found multiple instances of mv '%s'", vmName)
 	}
 	return len(vms) == 1, nil
 }

@@ -2,8 +2,6 @@ package action
 
 import (
 	"time"
-	"strings"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
 func (a CPI) PeriodicCleanDisk() {
@@ -17,44 +15,33 @@ func (a CPI) PeriodicCleanDisk() {
 
 func (a CPI) cleanDisk() {
 	defer time.Sleep(time.Duration(a.config.CloudStack.IntervalCleanDisk) * time.Minute)
-	a.logger.Info("periodic_clean_disk", "Start cleaning emphemeral disks ...")
-	p := a.client.Volume.NewListVolumesParams()
-	p.SetTags(map[string]string{
-		"director": a.config.CloudStack.DirectorName,
-	})
 
-	resp, err := a.client.Volume.ListVolumes(p)
+	a.logger.Info("periodic_clean_disk", "(background) cleaning emphemeral disks...")
+	tags := map[string]string{
+		"director": a.config.CloudStack.DirectorName,
+	}
+	volumes, err := a.volumesFindByTags(tags)
 	if err != nil {
-		a.logger.Warn("periodic_clean_disk", "Error occured when finding volumes: %s", err.Error())
+		a.logger.Warn("periodic_clean_disk", err.Error())
 		return
 	}
 
-	for _, vol := range resp.Volumes {
-		if !strings.HasPrefix(vol.Name, config.EphemeralDiskPrefix) ||
-			vol.Vmname != "" ||
-			vol.Destroyed {
+	volumes = a.volumesFilterEphemeral(volumes)
+	volumes = a.volumesFilterDetached(volumes)
+	volumes = a.volumesFilterReady(volumes)
+	volumes = a.volumesFilterCreatedBefore(volumes, time.Now().Add(-1 * time.Hour))
+
+	err = a.volumesDelete(volumes)
+	if err != nil {
+		a.logger.Warn("periodic_clean_disk", err.Error())
+	}
+
+	for _, cVolume := range volumes {
+		a.logger.Info("periodic_clean_disk", "deleting volume %s (%s) ...", cVolume.Name, cVolume.Id)
+		if err := a.volumeDelete(cVolume); err != nil {
+			a.logger.Warn("periodic_clean_disk", "could not delete volume '%s' (%s)", cVolume.Name, cVolume.Id)
 			continue
 		}
-
-		t, err := time.Parse(time.RFC3339, vol.Created)
-		if err != nil {
-			a.logger.Warn("periodic_clean_disk", "Error occured when parsing create time for volume %s: %s", vol.Name, err.Error())
-			return
-		}
-
-		deleteTime := time.Now().Add(-1 * time.Hour)
-		if t.Before(deleteTime) {
-			return
-		}
-		a.logger.Info("periodic_clean_disk", "Deleting volume %s ...", vol.Name)
-		delParams := a.client.Volume.NewDeleteVolumeParams(vol.Id)
-		_, err = a.client.Volume.DeleteVolume(delParams)
-		if err != nil {
-			a.logger.Warn("periodic_clean_disk", "Error occured when deleting volume %s: %s", vol.Name, err.Error())
-			return
-		}
-		a.logger.Info("periodic_clean_disk", "Finished deleting volume %s .", vol.Name)
 	}
-	a.logger.Info("periodic_clean_disk", "Finished cleaning emphemeral disks.")
-
+	a.logger.Info("periodic_clean_disk", "(background) finished cleaning emphemeral disks")
 }

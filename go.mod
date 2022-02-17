@@ -5,9 +5,9 @@ go 1.17
 replace github.com/apache/cloudstack-go/v2 => github.com/orange-cloudfoundry/cloudstack-go/v2 v2.11.1-ora
 
 require (
-	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a // indirect
-	github.com/apache/cloudstack-go/v2 v2.11.0
-	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211007183231-0c1f191a32b1
+	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
+	github.com/apache/cloudstack-go/v2 v2.12.0
+	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506
 	github.com/cloudfoundry/bosh-utils v0.0.297
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0

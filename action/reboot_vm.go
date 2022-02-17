@@ -6,19 +6,21 @@ import (
 )
 
 func (a CPI) RebootVM(cid apiv1.VMCID) error {
-	a.client.AsyncTimeout(a.config.CloudStack.Timeout.RebootVm)
-
-	vm, err := a.findVmByName(cid)
+	a.logger.Info("reboot_vm", "rebooting vm '%s' ...", cid.AsString())
+	err := a.rebootVM(cid.AsString())
 	if err != nil {
-		return bosherr.WrapErrorf(err, "Rebooting vm %s", cid.AsString())
+		err = bosherr.WrapErrorf(err, "could not reboot vm '%s'", cid.AsString())
+		a.logger.Error("reboot_vm", err.Error())
+		return err
 	}
-
-	a.logger.Info("reboot_vm", "Rebooting vm %s ...", cid.AsString())
-	p := a.client.VirtualMachine.NewRebootVirtualMachineParams(vm.Id)
-	_, err = a.client.VirtualMachine.RebootVirtualMachine(p)
-	if err != nil {
-		return bosherr.WrapErrorf(err, "Rebooting vm %s", cid.AsString())
-	}
-	a.logger.Info("reboot_vm", "Finished rebooting vm %s .", cid.AsString())
+	a.logger.Info("reboot_vm", "finished rebooting vm '%s'", cid.AsString())
 	return nil
+}
+
+func (a CPI) rebootVM(vmName string) error {
+	vm, err := a.vmFindByName(vmName)
+	if err != nil {
+		return err
+	}
+	return a.vmReboot(vm)
 }

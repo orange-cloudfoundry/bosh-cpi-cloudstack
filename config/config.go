@@ -95,6 +95,7 @@ type Timeout struct {
 	DetachVolume         int64
 	SnapshotVolume       int64
 	DeleteSnapshotVolume int64
+	DeleteStemcell       int64
 }
 
 type StemcellConfig struct {
@@ -137,10 +138,12 @@ func defaultConfig() Config {
 		DetachVolume:         1800,
 		StopVm:               1800,
 		DeleteSnapshotVolume: 1800,
+		DeleteStemcell:       1800,
 		SnapshotVolume:       1800,
 	}
 	defOffers := DefaultOffer{
-		CustomDisk: "shared.custom",
+		Disk: "shared.custom",
+		EphemeralDisk: "shared.custom",
 	}
 	return Config{
 		CloudStack: CloudStackConfig{

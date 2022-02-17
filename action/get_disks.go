@@ -3,30 +3,40 @@ package action
 import (
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"strings"
 )
 
 func (a CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
-	diskCids := make([]apiv1.DiskCID, 0)
-	vm, err := a.findVmByName(cid)
+	a.logger.Info("get_disks", "fetching disks for vm '%s'...", cid.AsString())
+
+	disks, err := a.getDisks(cid.AsString())
 	if err != nil {
-		return diskCids, bosherr.WrapErrorf(err, "Cannot getting disks for vm %s", cid.AsString())
+		err = bosherr.WrapErrorf(err, "could not fetch disks of vm '%s'", cid.AsString())
+		return []apiv1.DiskCID{}, err
 	}
 
-	p := a.client.Volume.NewListVolumesParams()
-	p.SetVirtualmachineid(vm.Id)
-	p.SetType(string(config.Datadisk))
-	resp, err := a.client.Volume.ListVolumes(p)
-	if err != nil {
-		return diskCids, bosherr.WrapErrorf(err, "Cannot getting disks for vm %s", cid.AsString())
+	cids := []apiv1.DiskCID{}
+	for _, cDiskName := range disks {
+		cids = append(cids, apiv1.NewDiskCID(cDiskName))
 	}
 
-	for _, vol := range resp.Volumes {
-		if !strings.HasPrefix(vol.Name, config.PersistenceDiskPrefix) {
-			continue
-		}
-		diskCids = append(diskCids, apiv1.NewDiskCID(vol.Name))
+	a.logger.Info("get_disks", "finished fetching disks for vm '%s'", cid.AsString())
+	return cids, nil
+}
+
+func (a CPI) getDisks(vmName string) ([]string, error) {
+	res := []string{}
+	vm, err := a.vmFindByName(vmName)
+	if err != nil {
+		return nil, err
 	}
-	return diskCids, nil
+
+	volumes, err := a.volumesFindPersistentByVM(vm)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, cVolume := range volumes {
+		res = append(res, cVolume.Name)
+	}
+	return res, nil
 }
