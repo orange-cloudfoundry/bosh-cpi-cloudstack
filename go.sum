@@ -59,8 +59,8 @@ github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMn
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506 h1:SOXctBXghL0VSp+rzUNCLRYZ8yMAYEdEhNi6A51pHro=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506/go.mod h1:UprycOKfN9N47g2CZIYfMCCg3097Y+E0O7bs1IhrICI=
-github.com/cloudfoundry/bosh-utils v0.0.309 h1:ELt4IibJCBtEtiEMdjpRh6YV8wbWjuVGunWnROVN1EQ=
-github.com/cloudfoundry/bosh-utils v0.0.309/go.mod h1:AgBCWbqNbRNAnuBbT0T3bTK84y18IDF59rgzlCyMlUk=
+github.com/cloudfoundry/bosh-utils v0.0.310 h1:nv9PYnIILsIfjny/PUbzngoaN2u1+cJlrwGvaUlYWq4=
+github.com/cloudfoundry/bosh-utils v0.0.310/go.mod h1:pqe0Ms9JBNXaNInBWz772LgxsG9tRnp/ei7X4N/ihus=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
