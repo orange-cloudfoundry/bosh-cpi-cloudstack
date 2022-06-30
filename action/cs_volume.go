@@ -262,3 +262,18 @@ func (a CPI) volumeResize(volume *cloudstack.Volume, newSizeMB int, switchOffer 
 	a.logger.Debug("volumeResize", "finished resizing volume '%s' (%s) to '%d MB'", volume.Name, volume.Id, newSizeMB)
 	return nil
 }
+
+func (a CPI) volumeSnapshot(volume *cloudstack.Volume) (string, error) {
+	a.client.AsyncTimeout(a.config.CloudStack.Timeout.SnapshotVolume)
+
+	a.logger.Debug("volumeSnapshot", "snapshoting volume '%s' (%s)...", volume.Name, volume.Id)
+	p := a.client.Snapshot.NewCreateSnapshotParams(volume.Id)
+	resp, err := a.client.Snapshot.CreateSnapshot(p)
+	if err != nil {
+		err = bosherr.WrapErrorf(err, "could not snapshot volume '%s' (%s)", volume.Name, volume.Id)
+		a.logger.Error("volumeSnapshot", err.Errorf())
+		return "", err
+	}
+	a.logger.Debug("volumeSnapshot", "finished snapshoting volume '%s' (%s)", volume.Name, volume.Id)
+	return resp.Id, nil
+}

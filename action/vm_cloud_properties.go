@@ -65,7 +65,9 @@ type VMExtRoute struct {
 	CIDR    string
 	Gateway string
 }
+
 type VMExtRoutes []VMExtRoute
+
 type VMExtRouteMap map[string]VMExtRoutes
 
 type ResourceCloudProperties struct {

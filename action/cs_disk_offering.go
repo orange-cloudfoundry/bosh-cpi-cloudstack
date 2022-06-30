@@ -9,37 +9,37 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
-func (a CPI) diskOfferingsByName(offerName string) ([]*cloudstack.DiskOffering, error) {
-	a.logger.Debug("diskOfferingsByName", "fetching disk offering with name '%s'...", offerName)
+func (a CPI) diskOfferingsFindByName(offerName string) ([]*cloudstack.DiskOffering, error) {
+	a.logger.Debug("diskOfferingsFindByName", "fetching disk offering with name '%s'...", offerName)
 
 	p := a.client.DiskOffering.NewListDiskOfferingsParams()
 	p.SetName(offerName)
 	resp, err := a.client.DiskOffering.ListDiskOfferings(p)
 	if err != nil {
 		err := bosherr.WrapErrorf(err, "could not fetch disk offerings")
-		a.logger.Error("diskOfferingsByName", err.Error())
+		a.logger.Error("diskOfferingsFindByName", err.Error())
 		return nil, err
 	}
 
-	a.logger.Debug("diskOfferingsByName", "finish fetching disk offering with name '%s'...", offerName)
+	a.logger.Debug("diskOfferingsFindByName", "finish fetching disk offering with name '%s'...", offerName)
 	return resp.DiskOfferings, nil
 }
 
-func (a CPI) diskOfferingByName(offerName string) (*cloudstack.DiskOffering, error) {
-	offers, err := a.diskOfferingsByName(offerName)
+func (a CPI) diskOfferingFindByName(offerName string) (*cloudstack.DiskOffering, error) {
+	offers, err := a.diskOfferingsFindByName(offerName)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(offers) == 0 {
 		err := bosherr.Errorf("could not find any disk offering with name '%s'", offerName)
-		a.logger.Error("diskOfferingByName", err.Error())
+		a.logger.Error("diskOfferingFindByName", err.Error())
 		return nil, err
 	}
 
 	if len(offers) > 1 {
 		err := bosherr.Errorf("found multiple disk offering with name '%s'", offerName)
-		a.logger.Error("diskOfferingByName", err.Error())
+		a.logger.Error("diskOfferingFindByName", err.Error())
 		return nil, err
 
 	}

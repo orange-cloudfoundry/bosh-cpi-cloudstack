@@ -1,6 +1,8 @@
 package action
 
 import (
+	"fmt"
+
 	"github.com/apache/cloudstack-go/v2/cloudstack"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
@@ -94,3 +96,31 @@ func (a CPI) vmReboot(vm *cloudstack.VirtualMachine) error {
 	return nil
 }
 
+
+func (a CPI) vmDeployParamsCreate(
+	name string,
+	template *cloudstack.Template,
+	serviceOffering *cloudstack.ServiceOffering,
+	zone *cloudstack.Zone,
+) (*cloudstack.DeployVirtualMachineParams) {
+
+	p := a.client.VirtualMachine.NewDeployVirtualMachineParams(serviceOffering.Id, template.Id, zone.Id)
+	p.SetName(name)
+	p.SetKeypair(a.config.CloudStack.DefaultKeyName)
+	return p
+}
+
+func (a CPI) vmDeployParamsCustomize(p *cloudstack.DeployVirtualMachineParams, cpu int, cpuSpeed int, ram int) error {
+	if 0 == cpuSpeed {
+		cpuSpeed = 2000
+	}
+	if (0 == cpu) || (0 == ram) {
+		return bosherr.Errorf("invalid cpu=%d and ram=%d values, cannot be zero", cpu, ram)
+	}
+	p.SetDetails(map[string]string{
+		"cpuNumber": fmt.Sprintf("%d", cpu),
+		"cpuSpeed":  fmt.Sprintf("%d", cpuSpeed),
+		"memory":    fmt.Sprintf("%d", ram),
+	})
+	return nil
+}

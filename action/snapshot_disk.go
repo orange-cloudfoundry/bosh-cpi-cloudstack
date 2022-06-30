@@ -8,34 +8,35 @@ import (
 )
 
 func (a CPI) SnapshotDisk(diskCID apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.SnapshotCID, error) {
-	a.client.AsyncTimeout(a.config.CloudStack.Timeout.SnapshotVolume)
-
-	volumes, err := a.findVolumesByName(diskCID)
+	a.logger.Info("snapshot_disk", "snapshoting disk '%s' ...", diskCID.AsString())
+	id, err := a.snapshotDisk(diskCID.AsString(), &meta)
 	if err != nil {
-		return apiv1.SnapshotCID{}, bosherr.WrapErrorf(err, "Error when finding disk %s", diskCID.AsString())
+		err = bosherr.WrapError(err, "could not snapshot disk '%s'", diskCID.AsString()))
+		a.logger.Error("snapshot_disk", err.Error())
+	}
+	a.logger.Info("snapshot_disk", "finished snapshoting disk '%s'", diskCID.AsString())
+	return apiv1.NewSnapshotCID(id), nil
+}
+
+func (a CPI) snapshotDisk(diskName string, meta util.MetaMarshal) (string, error) {
+	volume, err := a.volumeFindByName(diskName)
+	if err != nil {
+		return "", err
 	}
 
-	if len(volumes) > 1 {
-		return apiv1.SnapshotCID{}, bosherr.Errorf("Too much volume with name %s", diskCID.AsString())
-	}
-
-	if len(volumes) == 0 {
-		return apiv1.SnapshotCID{}, bosherr.Errorf("No volume found with name %s", diskCID.AsString())
-	}
-	volume := volumes[0]
 	if strings.HasPrefix(volume.Name, config.PersistenceDiskPrefix) {
-		return apiv1.SnapshotCID{}, bosherr.Errorf("Volume found with name %s is not a persistent disk", diskCID.AsString())
+		return "", bosherr.Errorf("could not snapshot non persistent volume '%s' (%s)", volume.Name, volume.Id)
 	}
 
-	a.logger.Info("resize_disk", "Snapshoting disk %s ...", diskCID.AsString())
-	p := a.client.Snapshot.NewCreateSnapshotParams(volume.Id)
-	resp, err := a.client.Snapshot.CreateSnapshot(p)
+	id, err := a.volumeSnapshot(volume)
 	if err != nil {
-		return apiv1.SnapshotCID{}, bosherr.WrapErrorf(err, "Could not create snapshot for disk %s", diskCID.AsString())
+		return "", err
 	}
-	a.logger.Info("resize_disk", "Finished snapshooting disk %s .", diskCID.AsString())
 
-	a.setMetadata(config.Snapshot, resp.Id, &meta)
+	err = a.setMetadata(string(config.Snapshot), id, meta)
+	if err != nil {
+		return "", err
+	}
 
-	return apiv1.NewSnapshotCID(resp.Id), nil
+	return id, nil
 }
