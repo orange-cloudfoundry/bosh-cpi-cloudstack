@@ -8,7 +8,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/apache/cloudstack-go/v2 v2.12.1
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506
-	github.com/cloudfoundry/bosh-utils v0.0.326
+	github.com/cloudfoundry/bosh-utils v0.0.327
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.20.0
 	github.com/prometheus/common v0.37.0
@@ -23,7 +23,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/charlievieth/fs v0.0.2 // indirect
+	github.com/charlievieth/fs v0.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -34,8 +34,8 @@ require (
 	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
-	golang.org/x/net v0.0.0-20220805013720-a33c5aa5df48 // indirect
-	golang.org/x/sys v0.0.0-20220804214406-8e32c043e418 // indirect
+	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
+	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
