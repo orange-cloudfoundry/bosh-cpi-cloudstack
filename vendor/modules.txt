@@ -24,7 +24,7 @@ github.com/charlievieth/fs
 ## explicit; go 1.17
 github.com/cloudfoundry/bosh-cpi-go/apiv1
 github.com/cloudfoundry/bosh-cpi-go/rpc
-# github.com/cloudfoundry/bosh-utils v0.0.327
+# github.com/cloudfoundry/bosh-utils v0.0.328
 ## explicit; go 1.18
 github.com/cloudfoundry/bosh-utils/errors
 github.com/cloudfoundry/bosh-utils/logger
@@ -122,7 +122,7 @@ github.com/satori/go.uuid
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab
+# golang.org/x/sys v0.0.0-20220818161305-2296e01440c6
 ## explicit; go 1.17
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
