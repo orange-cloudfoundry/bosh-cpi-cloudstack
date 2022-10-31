@@ -59,8 +59,8 @@ github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMn
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506 h1:SOXctBXghL0VSp+rzUNCLRYZ8yMAYEdEhNi6A51pHro=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506/go.mod h1:UprycOKfN9N47g2CZIYfMCCg3097Y+E0O7bs1IhrICI=
-github.com/cloudfoundry/bosh-utils v0.0.340 h1:SHzCtdT513fwZsw0BHx4r8hvCDVh5JOxoOA8c5OP0LU=
-github.com/cloudfoundry/bosh-utils v0.0.340/go.mod h1:v8Jb3Zm9peXSOjffKp+HzL8tHHlmjEKHN1xmeetntcw=
+github.com/cloudfoundry/bosh-utils v0.0.341 h1:yH/Wz4pCfXjwQOFzKQ6KhJPp7UBSeFkSvoPf/3WzlJI=
+github.com/cloudfoundry/bosh-utils v0.0.341/go.mod h1:7o+mFKJpPLyXzD5P7eCdG1pkIQqfGNlcmxeIL40f1lg=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -237,7 +237,7 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
-github.com/stretchr/testify v1.8.0 h1:pSgiaMZlXftHpm5L7V1+rVB+AZJydKsMxsQBIJw4PKk=
+github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
