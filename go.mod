@@ -10,7 +10,7 @@ require (
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506
 	github.com/cloudfoundry/bosh-utils v0.0.341
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.24.0
+	github.com/onsi/gomega v1.24.1
 	github.com/prometheus/common v0.37.0
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/satori/go.uuid v1.2.0
@@ -34,8 +34,8 @@ require (
 	github.com/prometheus/client_golang v1.13.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
-	golang.org/x/net v0.1.0 // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/net v0.2.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
