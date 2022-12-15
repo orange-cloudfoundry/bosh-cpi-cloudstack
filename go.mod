@@ -10,7 +10,7 @@ require (
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506
 	github.com/cloudfoundry/bosh-utils v0.0.345
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.24.1
+	github.com/onsi/gomega v1.24.2
 	github.com/prometheus/common v0.39.0
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/satori/go.uuid v1.2.0
