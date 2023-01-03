@@ -67,6 +67,36 @@ func (mr *MockProjectServiceIfaceMockRecorder) ActivateProject(p interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ActivateProject", reflect.TypeOf((*MockProjectServiceIface)(nil).ActivateProject), p)
 }
 
+// AddAccountToProject mocks base method.
+func (m *MockProjectServiceIface) AddAccountToProject(p *AddAccountToProjectParams) (*AddAccountToProjectResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddAccountToProject", p)
+	ret0, _ := ret[0].(*AddAccountToProjectResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddAccountToProject indicates an expected call of AddAccountToProject.
+func (mr *MockProjectServiceIfaceMockRecorder) AddAccountToProject(p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddAccountToProject", reflect.TypeOf((*MockProjectServiceIface)(nil).AddAccountToProject), p)
+}
+
+// AddUserToProject mocks base method.
+func (m *MockProjectServiceIface) AddUserToProject(p *AddUserToProjectParams) (*AddUserToProjectResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddUserToProject", p)
+	ret0, _ := ret[0].(*AddUserToProjectResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddUserToProject indicates an expected call of AddUserToProject.
+func (mr *MockProjectServiceIfaceMockRecorder) AddUserToProject(p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUserToProject", reflect.TypeOf((*MockProjectServiceIface)(nil).AddUserToProject), p)
+}
+
 // CreateProject mocks base method.
 func (m *MockProjectServiceIface) CreateProject(p *CreateProjectParams) (*CreateProjectResponse, error) {
 	m.ctrl.T.Helper()
@@ -80,6 +110,36 @@ func (m *MockProjectServiceIface) CreateProject(p *CreateProjectParams) (*Create
 func (mr *MockProjectServiceIfaceMockRecorder) CreateProject(p interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProject", reflect.TypeOf((*MockProjectServiceIface)(nil).CreateProject), p)
+}
+
+// CreateProjectRolePermission mocks base method.
+func (m *MockProjectServiceIface) CreateProjectRolePermission(p *CreateProjectRolePermissionParams) (*CreateProjectRolePermissionResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateProjectRolePermission", p)
+	ret0, _ := ret[0].(*CreateProjectRolePermissionResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateProjectRolePermission indicates an expected call of CreateProjectRolePermission.
+func (mr *MockProjectServiceIfaceMockRecorder) CreateProjectRolePermission(p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProjectRolePermission", reflect.TypeOf((*MockProjectServiceIface)(nil).CreateProjectRolePermission), p)
+}
+
+// DeleteAccountFromProject mocks base method.
+func (m *MockProjectServiceIface) DeleteAccountFromProject(p *DeleteAccountFromProjectParams) (*DeleteAccountFromProjectResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteAccountFromProject", p)
+	ret0, _ := ret[0].(*DeleteAccountFromProjectResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteAccountFromProject indicates an expected call of DeleteAccountFromProject.
+func (mr *MockProjectServiceIfaceMockRecorder) DeleteAccountFromProject(p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAccountFromProject", reflect.TypeOf((*MockProjectServiceIface)(nil).DeleteAccountFromProject), p)
 }
 
 // DeleteProject mocks base method.
@@ -110,6 +170,36 @@ func (m *MockProjectServiceIface) DeleteProjectInvitation(p *DeleteProjectInvita
 func (mr *MockProjectServiceIfaceMockRecorder) DeleteProjectInvitation(p interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteProjectInvitation", reflect.TypeOf((*MockProjectServiceIface)(nil).DeleteProjectInvitation), p)
+}
+
+// DeleteProjectRolePermission mocks base method.
+func (m *MockProjectServiceIface) DeleteProjectRolePermission(p *DeleteProjectRolePermissionParams) (*DeleteProjectRolePermissionResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteProjectRolePermission", p)
+	ret0, _ := ret[0].(*DeleteProjectRolePermissionResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteProjectRolePermission indicates an expected call of DeleteProjectRolePermission.
+func (mr *MockProjectServiceIfaceMockRecorder) DeleteProjectRolePermission(p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteProjectRolePermission", reflect.TypeOf((*MockProjectServiceIface)(nil).DeleteProjectRolePermission), p)
+}
+
+// DeleteUserFromProject mocks base method.
+func (m *MockProjectServiceIface) DeleteUserFromProject(p *DeleteUserFromProjectParams) (*DeleteUserFromProjectResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUserFromProject", p)
+	ret0, _ := ret[0].(*DeleteUserFromProjectResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteUserFromProject indicates an expected call of DeleteUserFromProject.
+func (mr *MockProjectServiceIfaceMockRecorder) DeleteUserFromProject(p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserFromProject", reflect.TypeOf((*MockProjectServiceIface)(nil).DeleteUserFromProject), p)
 }
 
 // GetProjectByID mocks base method.
@@ -211,6 +301,21 @@ func (mr *MockProjectServiceIfaceMockRecorder) ListProjectInvitations(p interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListProjectInvitations", reflect.TypeOf((*MockProjectServiceIface)(nil).ListProjectInvitations), p)
 }
 
+// ListProjectRolePermissions mocks base method.
+func (m *MockProjectServiceIface) ListProjectRolePermissions(p *ListProjectRolePermissionsParams) (*ListProjectRolePermissionsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListProjectRolePermissions", p)
+	ret0, _ := ret[0].(*ListProjectRolePermissionsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListProjectRolePermissions indicates an expected call of ListProjectRolePermissions.
+func (mr *MockProjectServiceIfaceMockRecorder) ListProjectRolePermissions(p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListProjectRolePermissions", reflect.TypeOf((*MockProjectServiceIface)(nil).ListProjectRolePermissions), p)
+}
+
 // ListProjects mocks base method.
 func (m *MockProjectServiceIface) ListProjects(p *ListProjectsParams) (*ListProjectsResponse, error) {
 	m.ctrl.T.Helper()
@@ -240,6 +345,34 @@ func (mr *MockProjectServiceIfaceMockRecorder) NewActivateProjectParams(id inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewActivateProjectParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewActivateProjectParams), id)
 }
 
+// NewAddAccountToProjectParams mocks base method.
+func (m *MockProjectServiceIface) NewAddAccountToProjectParams(projectid string) *AddAccountToProjectParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewAddAccountToProjectParams", projectid)
+	ret0, _ := ret[0].(*AddAccountToProjectParams)
+	return ret0
+}
+
+// NewAddAccountToProjectParams indicates an expected call of NewAddAccountToProjectParams.
+func (mr *MockProjectServiceIfaceMockRecorder) NewAddAccountToProjectParams(projectid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewAddAccountToProjectParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewAddAccountToProjectParams), projectid)
+}
+
+// NewAddUserToProjectParams mocks base method.
+func (m *MockProjectServiceIface) NewAddUserToProjectParams(projectid, username string) *AddUserToProjectParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewAddUserToProjectParams", projectid, username)
+	ret0, _ := ret[0].(*AddUserToProjectParams)
+	return ret0
+}
+
+// NewAddUserToProjectParams indicates an expected call of NewAddUserToProjectParams.
+func (mr *MockProjectServiceIfaceMockRecorder) NewAddUserToProjectParams(projectid, username interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewAddUserToProjectParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewAddUserToProjectParams), projectid, username)
+}
+
 // NewCreateProjectParams mocks base method.
 func (m *MockProjectServiceIface) NewCreateProjectParams(displaytext, name string) *CreateProjectParams {
 	m.ctrl.T.Helper()
@@ -252,6 +385,34 @@ func (m *MockProjectServiceIface) NewCreateProjectParams(displaytext, name strin
 func (mr *MockProjectServiceIfaceMockRecorder) NewCreateProjectParams(displaytext, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewCreateProjectParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewCreateProjectParams), displaytext, name)
+}
+
+// NewCreateProjectRolePermissionParams mocks base method.
+func (m *MockProjectServiceIface) NewCreateProjectRolePermissionParams(permission, projectid, projectroleid, rule string) *CreateProjectRolePermissionParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewCreateProjectRolePermissionParams", permission, projectid, projectroleid, rule)
+	ret0, _ := ret[0].(*CreateProjectRolePermissionParams)
+	return ret0
+}
+
+// NewCreateProjectRolePermissionParams indicates an expected call of NewCreateProjectRolePermissionParams.
+func (mr *MockProjectServiceIfaceMockRecorder) NewCreateProjectRolePermissionParams(permission, projectid, projectroleid, rule interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewCreateProjectRolePermissionParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewCreateProjectRolePermissionParams), permission, projectid, projectroleid, rule)
+}
+
+// NewDeleteAccountFromProjectParams mocks base method.
+func (m *MockProjectServiceIface) NewDeleteAccountFromProjectParams(account, projectid string) *DeleteAccountFromProjectParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewDeleteAccountFromProjectParams", account, projectid)
+	ret0, _ := ret[0].(*DeleteAccountFromProjectParams)
+	return ret0
+}
+
+// NewDeleteAccountFromProjectParams indicates an expected call of NewDeleteAccountFromProjectParams.
+func (mr *MockProjectServiceIfaceMockRecorder) NewDeleteAccountFromProjectParams(account, projectid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewDeleteAccountFromProjectParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewDeleteAccountFromProjectParams), account, projectid)
 }
 
 // NewDeleteProjectInvitationParams mocks base method.
@@ -282,6 +443,34 @@ func (mr *MockProjectServiceIfaceMockRecorder) NewDeleteProjectParams(id interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewDeleteProjectParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewDeleteProjectParams), id)
 }
 
+// NewDeleteProjectRolePermissionParams mocks base method.
+func (m *MockProjectServiceIface) NewDeleteProjectRolePermissionParams(id, projectid string) *DeleteProjectRolePermissionParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewDeleteProjectRolePermissionParams", id, projectid)
+	ret0, _ := ret[0].(*DeleteProjectRolePermissionParams)
+	return ret0
+}
+
+// NewDeleteProjectRolePermissionParams indicates an expected call of NewDeleteProjectRolePermissionParams.
+func (mr *MockProjectServiceIfaceMockRecorder) NewDeleteProjectRolePermissionParams(id, projectid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewDeleteProjectRolePermissionParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewDeleteProjectRolePermissionParams), id, projectid)
+}
+
+// NewDeleteUserFromProjectParams mocks base method.
+func (m *MockProjectServiceIface) NewDeleteUserFromProjectParams(projectid, userid string) *DeleteUserFromProjectParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewDeleteUserFromProjectParams", projectid, userid)
+	ret0, _ := ret[0].(*DeleteUserFromProjectParams)
+	return ret0
+}
+
+// NewDeleteUserFromProjectParams indicates an expected call of NewDeleteUserFromProjectParams.
+func (mr *MockProjectServiceIfaceMockRecorder) NewDeleteUserFromProjectParams(projectid, userid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewDeleteUserFromProjectParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewDeleteUserFromProjectParams), projectid, userid)
+}
+
 // NewListProjectInvitationsParams mocks base method.
 func (m *MockProjectServiceIface) NewListProjectInvitationsParams() *ListProjectInvitationsParams {
 	m.ctrl.T.Helper()
@@ -294,6 +483,20 @@ func (m *MockProjectServiceIface) NewListProjectInvitationsParams() *ListProject
 func (mr *MockProjectServiceIfaceMockRecorder) NewListProjectInvitationsParams() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewListProjectInvitationsParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewListProjectInvitationsParams))
+}
+
+// NewListProjectRolePermissionsParams mocks base method.
+func (m *MockProjectServiceIface) NewListProjectRolePermissionsParams(projectid string) *ListProjectRolePermissionsParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewListProjectRolePermissionsParams", projectid)
+	ret0, _ := ret[0].(*ListProjectRolePermissionsParams)
+	return ret0
+}
+
+// NewListProjectRolePermissionsParams indicates an expected call of NewListProjectRolePermissionsParams.
+func (mr *MockProjectServiceIfaceMockRecorder) NewListProjectRolePermissionsParams(projectid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewListProjectRolePermissionsParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewListProjectRolePermissionsParams), projectid)
 }
 
 // NewListProjectsParams mocks base method.
@@ -352,6 +555,20 @@ func (mr *MockProjectServiceIfaceMockRecorder) NewUpdateProjectParams(id interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewUpdateProjectParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewUpdateProjectParams), id)
 }
 
+// NewUpdateProjectRolePermissionParams mocks base method.
+func (m *MockProjectServiceIface) NewUpdateProjectRolePermissionParams(projectid, projectroleid string) *UpdateProjectRolePermissionParams {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NewUpdateProjectRolePermissionParams", projectid, projectroleid)
+	ret0, _ := ret[0].(*UpdateProjectRolePermissionParams)
+	return ret0
+}
+
+// NewUpdateProjectRolePermissionParams indicates an expected call of NewUpdateProjectRolePermissionParams.
+func (mr *MockProjectServiceIfaceMockRecorder) NewUpdateProjectRolePermissionParams(projectid, projectroleid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewUpdateProjectRolePermissionParams", reflect.TypeOf((*MockProjectServiceIface)(nil).NewUpdateProjectRolePermissionParams), projectid, projectroleid)
+}
+
 // SuspendProject mocks base method.
 func (m *MockProjectServiceIface) SuspendProject(p *SuspendProjectParams) (*SuspendProjectResponse, error) {
 	m.ctrl.T.Helper()
@@ -395,4 +612,19 @@ func (m *MockProjectServiceIface) UpdateProjectInvitation(p *UpdateProjectInvita
 func (mr *MockProjectServiceIfaceMockRecorder) UpdateProjectInvitation(p interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProjectInvitation", reflect.TypeOf((*MockProjectServiceIface)(nil).UpdateProjectInvitation), p)
+}
+
+// UpdateProjectRolePermission mocks base method.
+func (m *MockProjectServiceIface) UpdateProjectRolePermission(p *UpdateProjectRolePermissionParams) (*UpdateProjectRolePermissionResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateProjectRolePermission", p)
+	ret0, _ := ret[0].(*UpdateProjectRolePermissionResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateProjectRolePermission indicates an expected call of UpdateProjectRolePermission.
+func (mr *MockProjectServiceIfaceMockRecorder) UpdateProjectRolePermission(p interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProjectRolePermission", reflect.TypeOf((*MockProjectServiceIface)(nil).UpdateProjectRolePermission), p)
 }

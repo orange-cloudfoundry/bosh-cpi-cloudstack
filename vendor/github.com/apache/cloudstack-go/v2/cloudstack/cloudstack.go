@@ -68,20 +68,23 @@ func (e *CSError) Error() error {
 	return fmt.Errorf("CloudStack API error %d (CSExceptionErrorCode: %d): %s", e.ErrorCode, e.CSErrorCode, e.ErrorText)
 }
 
-type CSLong string
+type UUID string
 
-func (c CSLong) MarshalJSON() ([]byte, error) {
+func (c UUID) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(c))
 }
 
-func (c *CSLong) UnmarshalJSON(data []byte) error {
+func (c *UUID) UnmarshalJSON(data []byte) error {
 	value := strings.Trim(string(data), "\"")
-	iVal, err := strconv.ParseInt(value, 10, 64)
-	if err == nil {
-		*c = CSLong(fmt.Sprintf("%d", iVal))
-	} else {
-		*c = CSLong(value)
+	if strings.HasPrefix(string(data), "\"") {
+		*c = UUID(value)
+		return nil
 	}
+	_, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return err
+	}
+	*c = UUID(value)
 	return nil
 }
 
@@ -101,6 +104,7 @@ type CloudStackClient struct {
 	Address             AddressServiceIface
 	AffinityGroup       AffinityGroupServiceIface
 	Alert               AlertServiceIface
+	Annotation          AnnotationServiceIface
 	Asyncjob            AsyncjobServiceIface
 	Authentication      AuthenticationServiceIface
 	AutoScale           AutoScaleServiceIface
@@ -122,6 +126,7 @@ type CloudStackClient struct {
 	ISO                 ISOServiceIface
 	ImageStore          ImageStoreServiceIface
 	InternalLB          InternalLBServiceIface
+	Kubernetes          KubernetesServiceIface
 	LDAP                LDAPServiceIface
 	Limit               LimitServiceIface
 	LoadBalancer        LoadBalancerServiceIface
@@ -204,6 +209,7 @@ func newClient(apiurl string, apikey string, secret string, async bool, verifyss
 	cs.Address = NewAddressService(cs)
 	cs.AffinityGroup = NewAffinityGroupService(cs)
 	cs.Alert = NewAlertService(cs)
+	cs.Annotation = NewAnnotationService(cs)
 	cs.Asyncjob = NewAsyncjobService(cs)
 	cs.Authentication = NewAuthenticationService(cs)
 	cs.AutoScale = NewAutoScaleService(cs)
@@ -225,6 +231,7 @@ func newClient(apiurl string, apikey string, secret string, async bool, verifyss
 	cs.ISO = NewISOService(cs)
 	cs.ImageStore = NewImageStoreService(cs)
 	cs.InternalLB = NewInternalLBService(cs)
+	cs.Kubernetes = NewKubernetesService(cs)
 	cs.LDAP = NewLDAPService(cs)
 	cs.Limit = NewLimitService(cs)
 	cs.LoadBalancer = NewLoadBalancerService(cs)
@@ -280,6 +287,7 @@ func newMockClient(ctrl *gomock.Controller) *CloudStackClient {
 	cs.Address = NewMockAddressServiceIface(ctrl)
 	cs.AffinityGroup = NewMockAffinityGroupServiceIface(ctrl)
 	cs.Alert = NewMockAlertServiceIface(ctrl)
+	cs.Annotation = NewMockAnnotationServiceIface(ctrl)
 	cs.Asyncjob = NewMockAsyncjobServiceIface(ctrl)
 	cs.Authentication = NewMockAuthenticationServiceIface(ctrl)
 	cs.AutoScale = NewMockAutoScaleServiceIface(ctrl)
@@ -301,6 +309,7 @@ func newMockClient(ctrl *gomock.Controller) *CloudStackClient {
 	cs.ISO = NewMockISOServiceIface(ctrl)
 	cs.ImageStore = NewMockImageStoreServiceIface(ctrl)
 	cs.InternalLB = NewMockInternalLBServiceIface(ctrl)
+	cs.Kubernetes = NewMockKubernetesServiceIface(ctrl)
 	cs.LDAP = NewMockLDAPServiceIface(ctrl)
 	cs.Limit = NewMockLimitServiceIface(ctrl)
 	cs.LoadBalancer = NewMockLoadBalancerServiceIface(ctrl)
@@ -524,14 +533,33 @@ func encodeValues(v url.Values) string {
 	return buf.String()
 }
 
-// Generic function to get the first raw value from a response as json.RawMessage
+// Generic function to get the first non-count raw value from a response as json.RawMessage
 func getRawValue(b json.RawMessage) (json.RawMessage, error) {
 	var m map[string]json.RawMessage
 	if err := json.Unmarshal(b, &m); err != nil {
 		return nil, err
 	}
-	for _, v := range m {
-		return v, nil
+	getArrayResponse := false
+	for k := range m {
+		if k == "count" {
+			getArrayResponse = true
+		}
+	}
+	if getArrayResponse {
+		var resp []json.RawMessage
+		for k, v := range m {
+			if k != "count" {
+				if err := json.Unmarshal(v, &resp); err != nil {
+					return nil, err
+				}
+				return resp[0], nil
+			}
+		}
+
+	} else {
+		for _, v := range m {
+			return v, nil
+		}
 	}
 	return nil, fmt.Errorf("Unable to extract the raw value from:\n\n%s\n\n", string(b))
 }
@@ -730,6 +758,14 @@ func NewAlertService(cs *CloudStackClient) AlertServiceIface {
 	return &AlertService{cs: cs}
 }
 
+type AnnotationService struct {
+	cs *CloudStackClient
+}
+
+func NewAnnotationService(cs *CloudStackClient) AnnotationServiceIface {
+	return &AnnotationService{cs: cs}
+}
+
 type AsyncjobService struct {
 	cs *CloudStackClient
 }
@@ -896,6 +932,14 @@ type InternalLBService struct {
 
 func NewInternalLBService(cs *CloudStackClient) InternalLBServiceIface {
 	return &InternalLBService{cs: cs}
+}
+
+type KubernetesService struct {
+	cs *CloudStackClient
+}
+
+func NewKubernetesService(cs *CloudStackClient) KubernetesServiceIface {
+	return &KubernetesService{cs: cs}
 }
 
 type LDAPService struct {

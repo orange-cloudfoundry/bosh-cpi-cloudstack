@@ -28,14 +28,10 @@ import (
 )
 
 type AccountServiceIface interface {
-	AddAccountToProject(p *AddAccountToProjectParams) (*AddAccountToProjectResponse, error)
-	NewAddAccountToProjectParams(projectid string) *AddAccountToProjectParams
 	CreateAccount(p *CreateAccountParams) (*CreateAccountResponse, error)
 	NewCreateAccountParams(email string, firstname string, lastname string, password string, username string) *CreateAccountParams
 	DeleteAccount(p *DeleteAccountParams) (*DeleteAccountResponse, error)
 	NewDeleteAccountParams(id string) *DeleteAccountParams
-	DeleteAccountFromProject(p *DeleteAccountFromProjectParams) (*DeleteAccountFromProjectResponse, error)
-	NewDeleteAccountFromProjectParams(account string, projectid string) *DeleteAccountFromProjectParams
 	DisableAccount(p *DisableAccountParams) (*DisableAccountResponse, error)
 	NewDisableAccountParams(lock bool) *DisableAccountParams
 	EnableAccount(p *EnableAccountParams) (*EnableAccountResponse, error)
@@ -56,154 +52,6 @@ type AccountServiceIface interface {
 	NewMarkDefaultZoneForAccountParams(account string, domainid string, zoneid string) *MarkDefaultZoneForAccountParams
 	UpdateAccount(p *UpdateAccountParams) (*UpdateAccountResponse, error)
 	NewUpdateAccountParams() *UpdateAccountParams
-}
-
-type AddAccountToProjectParams struct {
-	p map[string]interface{}
-}
-
-func (p *AddAccountToProjectParams) toURLValues() url.Values {
-	u := url.Values{}
-	if p.p == nil {
-		return u
-	}
-	if v, found := p.p["account"]; found {
-		u.Set("account", v.(string))
-	}
-	if v, found := p.p["email"]; found {
-		u.Set("email", v.(string))
-	}
-	if v, found := p.p["projectid"]; found {
-		u.Set("projectid", v.(string))
-	}
-	if v, found := p.p["projectroleid"]; found {
-		u.Set("projectroleid", v.(string))
-	}
-	if v, found := p.p["roletype"]; found {
-		u.Set("roletype", v.(string))
-	}
-	return u
-}
-
-func (p *AddAccountToProjectParams) SetAccount(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["account"] = v
-}
-
-func (p *AddAccountToProjectParams) GetAccount() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["account"].(string)
-	return value, ok
-}
-
-func (p *AddAccountToProjectParams) SetEmail(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["email"] = v
-}
-
-func (p *AddAccountToProjectParams) GetEmail() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["email"].(string)
-	return value, ok
-}
-
-func (p *AddAccountToProjectParams) SetProjectid(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["projectid"] = v
-}
-
-func (p *AddAccountToProjectParams) GetProjectid() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["projectid"].(string)
-	return value, ok
-}
-
-func (p *AddAccountToProjectParams) SetProjectroleid(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["projectroleid"] = v
-}
-
-func (p *AddAccountToProjectParams) GetProjectroleid() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["projectroleid"].(string)
-	return value, ok
-}
-
-func (p *AddAccountToProjectParams) SetRoletype(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["roletype"] = v
-}
-
-func (p *AddAccountToProjectParams) GetRoletype() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["roletype"].(string)
-	return value, ok
-}
-
-// You should always use this function to get a new AddAccountToProjectParams instance,
-// as then you are sure you have configured all required params
-func (s *AccountService) NewAddAccountToProjectParams(projectid string) *AddAccountToProjectParams {
-	p := &AddAccountToProjectParams{}
-	p.p = make(map[string]interface{})
-	p.p["projectid"] = projectid
-	return p
-}
-
-// Adds account to a project
-func (s *AccountService) AddAccountToProject(p *AddAccountToProjectParams) (*AddAccountToProjectResponse, error) {
-	resp, err := s.cs.newRequest("addAccountToProject", p.toURLValues())
-	if err != nil {
-		return nil, err
-	}
-
-	var r AddAccountToProjectResponse
-	if err := json.Unmarshal(resp, &r); err != nil {
-		return nil, err
-	}
-
-	// If we have a async client, we need to wait for the async result
-	if s.cs.async {
-		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
-		if err != nil {
-			if err == AsyncTimeoutErr {
-				return &r, err
-			}
-			return nil, err
-		}
-
-		if err := json.Unmarshal(b, &r); err != nil {
-			return nil, err
-		}
-	}
-
-	return &r, nil
-}
-
-type AddAccountToProjectResponse struct {
-	Displaytext string `json:"displaytext"`
-	JobID       string `json:"jobid"`
-	Jobstatus   int    `json:"jobstatus"`
-	Success     bool   `json:"success"`
 }
 
 type CreateAccountParams struct {
@@ -513,11 +361,13 @@ type CreateAccountResponse struct {
 	Cpuavailable              string                      `json:"cpuavailable"`
 	Cpulimit                  string                      `json:"cpulimit"`
 	Cputotal                  int64                       `json:"cputotal"`
+	Created                   string                      `json:"created"`
 	Defaultzoneid             string                      `json:"defaultzoneid"`
 	Domain                    string                      `json:"domain"`
 	Domainid                  string                      `json:"domainid"`
 	Domainpath                string                      `json:"domainpath"`
 	Groups                    []string                    `json:"groups"`
+	Icon                      string                      `json:"icon"`
 	Id                        string                      `json:"id"`
 	Ipavailable               string                      `json:"ipavailable"`
 	Iplimit                   string                      `json:"iplimit"`
@@ -579,6 +429,7 @@ type CreateAccountResponseUser struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -663,101 +514,6 @@ func (s *AccountService) DeleteAccount(p *DeleteAccountParams) (*DeleteAccountRe
 }
 
 type DeleteAccountResponse struct {
-	Displaytext string `json:"displaytext"`
-	JobID       string `json:"jobid"`
-	Jobstatus   int    `json:"jobstatus"`
-	Success     bool   `json:"success"`
-}
-
-type DeleteAccountFromProjectParams struct {
-	p map[string]interface{}
-}
-
-func (p *DeleteAccountFromProjectParams) toURLValues() url.Values {
-	u := url.Values{}
-	if p.p == nil {
-		return u
-	}
-	if v, found := p.p["account"]; found {
-		u.Set("account", v.(string))
-	}
-	if v, found := p.p["projectid"]; found {
-		u.Set("projectid", v.(string))
-	}
-	return u
-}
-
-func (p *DeleteAccountFromProjectParams) SetAccount(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["account"] = v
-}
-
-func (p *DeleteAccountFromProjectParams) GetAccount() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["account"].(string)
-	return value, ok
-}
-
-func (p *DeleteAccountFromProjectParams) SetProjectid(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["projectid"] = v
-}
-
-func (p *DeleteAccountFromProjectParams) GetProjectid() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["projectid"].(string)
-	return value, ok
-}
-
-// You should always use this function to get a new DeleteAccountFromProjectParams instance,
-// as then you are sure you have configured all required params
-func (s *AccountService) NewDeleteAccountFromProjectParams(account string, projectid string) *DeleteAccountFromProjectParams {
-	p := &DeleteAccountFromProjectParams{}
-	p.p = make(map[string]interface{})
-	p.p["account"] = account
-	p.p["projectid"] = projectid
-	return p
-}
-
-// Deletes account from the project
-func (s *AccountService) DeleteAccountFromProject(p *DeleteAccountFromProjectParams) (*DeleteAccountFromProjectResponse, error) {
-	resp, err := s.cs.newRequest("deleteAccountFromProject", p.toURLValues())
-	if err != nil {
-		return nil, err
-	}
-
-	var r DeleteAccountFromProjectResponse
-	if err := json.Unmarshal(resp, &r); err != nil {
-		return nil, err
-	}
-
-	// If we have a async client, we need to wait for the async result
-	if s.cs.async {
-		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
-		if err != nil {
-			if err == AsyncTimeoutErr {
-				return &r, err
-			}
-			return nil, err
-		}
-
-		if err := json.Unmarshal(b, &r); err != nil {
-			return nil, err
-		}
-	}
-
-	return &r, nil
-}
-
-type DeleteAccountFromProjectResponse struct {
 	Displaytext string `json:"displaytext"`
 	JobID       string `json:"jobid"`
 	Jobstatus   int    `json:"jobstatus"`
@@ -899,11 +655,13 @@ type DisableAccountResponse struct {
 	Cpuavailable              string                       `json:"cpuavailable"`
 	Cpulimit                  string                       `json:"cpulimit"`
 	Cputotal                  int64                        `json:"cputotal"`
+	Created                   string                       `json:"created"`
 	Defaultzoneid             string                       `json:"defaultzoneid"`
 	Domain                    string                       `json:"domain"`
 	Domainid                  string                       `json:"domainid"`
 	Domainpath                string                       `json:"domainpath"`
 	Groups                    []string                     `json:"groups"`
+	Icon                      string                       `json:"icon"`
 	Id                        string                       `json:"id"`
 	Ipavailable               string                       `json:"ipavailable"`
 	Iplimit                   string                       `json:"iplimit"`
@@ -965,6 +723,7 @@ type DisableAccountResponseUser struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -1074,11 +833,13 @@ type EnableAccountResponse struct {
 	Cpuavailable              string                      `json:"cpuavailable"`
 	Cpulimit                  string                      `json:"cpulimit"`
 	Cputotal                  int64                       `json:"cputotal"`
+	Created                   string                      `json:"created"`
 	Defaultzoneid             string                      `json:"defaultzoneid"`
 	Domain                    string                      `json:"domain"`
 	Domainid                  string                      `json:"domainid"`
 	Domainpath                string                      `json:"domainpath"`
 	Groups                    []string                    `json:"groups"`
+	Icon                      string                      `json:"icon"`
 	Id                        string                      `json:"id"`
 	Ipavailable               string                      `json:"ipavailable"`
 	Iplimit                   string                      `json:"iplimit"`
@@ -1140,6 +901,7 @@ type EnableAccountResponseUser struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -1281,6 +1043,10 @@ func (p *ListAccountsParams) toURLValues() url.Values {
 	if v, found := p.p["pagesize"]; found {
 		vv := strconv.Itoa(v.(int))
 		u.Set("pagesize", vv)
+	}
+	if v, found := p.p["showicon"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("showicon", vv)
 	}
 	if v, found := p.p["state"]; found {
 		u.Set("state", v.(string))
@@ -1453,6 +1219,21 @@ func (p *ListAccountsParams) GetPagesize() (int, bool) {
 	return value, ok
 }
 
+func (p *ListAccountsParams) SetShowicon(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["showicon"] = v
+}
+
+func (p *ListAccountsParams) GetShowicon() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["showicon"].(bool)
+	return value, ok
+}
+
 func (p *ListAccountsParams) SetState(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -1585,11 +1366,13 @@ type Account struct {
 	Cpuavailable              string            `json:"cpuavailable"`
 	Cpulimit                  string            `json:"cpulimit"`
 	Cputotal                  int64             `json:"cputotal"`
+	Created                   string            `json:"created"`
 	Defaultzoneid             string            `json:"defaultzoneid"`
 	Domain                    string            `json:"domain"`
 	Domainid                  string            `json:"domainid"`
 	Domainpath                string            `json:"domainpath"`
 	Groups                    []string          `json:"groups"`
+	Icon                      string            `json:"icon"`
 	Id                        string            `json:"id"`
 	Ipavailable               string            `json:"ipavailable"`
 	Iplimit                   string            `json:"iplimit"`
@@ -1651,6 +1434,7 @@ type AccountUser struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -1893,9 +1677,11 @@ type ProjectAccount struct {
 	Cpuavailable              string              `json:"cpuavailable"`
 	Cpulimit                  string              `json:"cpulimit"`
 	Cputotal                  int64               `json:"cputotal"`
+	Created                   string              `json:"created"`
 	Displaytext               string              `json:"displaytext"`
 	Domain                    string              `json:"domain"`
 	Domainid                  string              `json:"domainid"`
+	Icon                      string              `json:"icon"`
 	Id                        string              `json:"id"`
 	Ipavailable               string              `json:"ipavailable"`
 	Iplimit                   string              `json:"iplimit"`
@@ -2030,11 +1816,13 @@ type LockAccountResponse struct {
 	Cpuavailable              string                    `json:"cpuavailable"`
 	Cpulimit                  string                    `json:"cpulimit"`
 	Cputotal                  int64                     `json:"cputotal"`
+	Created                   string                    `json:"created"`
 	Defaultzoneid             string                    `json:"defaultzoneid"`
 	Domain                    string                    `json:"domain"`
 	Domainid                  string                    `json:"domainid"`
 	Domainpath                string                    `json:"domainpath"`
 	Groups                    []string                  `json:"groups"`
+	Icon                      string                    `json:"icon"`
 	Id                        string                    `json:"id"`
 	Ipavailable               string                    `json:"ipavailable"`
 	Iplimit                   string                    `json:"iplimit"`
@@ -2096,6 +1884,7 @@ type LockAccountResponseUser struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -2228,11 +2017,13 @@ type MarkDefaultZoneForAccountResponse struct {
 	Cpuavailable              string                                  `json:"cpuavailable"`
 	Cpulimit                  string                                  `json:"cpulimit"`
 	Cputotal                  int64                                   `json:"cputotal"`
+	Created                   string                                  `json:"created"`
 	Defaultzoneid             string                                  `json:"defaultzoneid"`
 	Domain                    string                                  `json:"domain"`
 	Domainid                  string                                  `json:"domainid"`
 	Domainpath                string                                  `json:"domainpath"`
 	Groups                    []string                                `json:"groups"`
+	Icon                      string                                  `json:"icon"`
 	Id                        string                                  `json:"id"`
 	Ipavailable               string                                  `json:"ipavailable"`
 	Iplimit                   string                                  `json:"iplimit"`
@@ -2294,6 +2085,7 @@ type MarkDefaultZoneForAccountResponseUser struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -2479,11 +2271,13 @@ type UpdateAccountResponse struct {
 	Cpuavailable              string                      `json:"cpuavailable"`
 	Cpulimit                  string                      `json:"cpulimit"`
 	Cputotal                  int64                       `json:"cputotal"`
+	Created                   string                      `json:"created"`
 	Defaultzoneid             string                      `json:"defaultzoneid"`
 	Domain                    string                      `json:"domain"`
 	Domainid                  string                      `json:"domainid"`
 	Domainpath                string                      `json:"domainpath"`
 	Groups                    []string                    `json:"groups"`
+	Icon                      string                      `json:"icon"`
 	Id                        string                      `json:"id"`
 	Ipavailable               string                      `json:"ipavailable"`
 	Iplimit                   string                      `json:"iplimit"`
@@ -2545,6 +2339,7 @@ type UpdateAccountResponseUser struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`

@@ -38,6 +38,8 @@ type UserServiceIface interface {
 	NewEnableUserParams(id string) *EnableUserParams
 	GetUser(p *GetUserParams) (*GetUserResponse, error)
 	NewGetUserParams(userapikey string) *GetUserParams
+	GetUserKeys(p *GetUserKeysParams) (*GetUserKeysResponse, error)
+	NewGetUserKeysParams(id string) *GetUserKeysParams
 	GetVirtualMachineUserData(p *GetVirtualMachineUserDataParams) (*GetVirtualMachineUserDataResponse, error)
 	NewGetVirtualMachineUserDataParams(virtualmachineid string) *GetVirtualMachineUserDataParams
 	ListUsers(p *ListUsersParams) (*ListUsersResponse, error)
@@ -268,6 +270,7 @@ type CreateUserResponse struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -456,6 +459,7 @@ type DisableUserResponse struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -540,6 +544,7 @@ type EnableUserResponse struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -620,6 +625,7 @@ type GetUserResponse struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -634,6 +640,71 @@ type GetUserResponse struct {
 	Timezone            string `json:"timezone"`
 	Username            string `json:"username"`
 	Usersource          string `json:"usersource"`
+}
+
+type GetUserKeysParams struct {
+	p map[string]interface{}
+}
+
+func (p *GetUserKeysParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	return u
+}
+
+func (p *GetUserKeysParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *GetUserKeysParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new GetUserKeysParams instance,
+// as then you are sure you have configured all required params
+func (s *UserService) NewGetUserKeysParams(id string) *GetUserKeysParams {
+	p := &GetUserKeysParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// This command allows the user to query the seceret and API keys for the account
+func (s *UserService) GetUserKeys(p *GetUserKeysParams) (*GetUserKeysResponse, error) {
+	resp, err := s.cs.newRequest("getUserKeys", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	if resp, err = getRawValue(resp); err != nil {
+		return nil, err
+	}
+
+	var r GetUserKeysResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type GetUserKeysResponse struct {
+	Apikey    string `json:"apikey"`
+	JobID     string `json:"jobid"`
+	Jobstatus int    `json:"jobstatus"`
+	Secretkey string `json:"secretkey"`
 }
 
 type GetVirtualMachineUserDataParams struct {
@@ -741,6 +812,10 @@ func (p *ListUsersParams) toURLValues() url.Values {
 	if v, found := p.p["pagesize"]; found {
 		vv := strconv.Itoa(v.(int))
 		u.Set("pagesize", vv)
+	}
+	if v, found := p.p["showicon"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("showicon", vv)
 	}
 	if v, found := p.p["state"]; found {
 		u.Set("state", v.(string))
@@ -886,6 +961,21 @@ func (p *ListUsersParams) GetPagesize() (int, bool) {
 	return value, ok
 }
 
+func (p *ListUsersParams) SetShowicon(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["showicon"] = v
+}
+
+func (p *ListUsersParams) GetShowicon() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["showicon"].(bool)
+	return value, ok
+}
+
 func (p *ListUsersParams) SetState(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -987,6 +1077,7 @@ type User struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -1071,6 +1162,7 @@ type LockUserResponse struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`
@@ -1378,6 +1470,7 @@ type UpdateUserResponse struct {
 	Domainid            string `json:"domainid"`
 	Email               string `json:"email"`
 	Firstname           string `json:"firstname"`
+	Icon                string `json:"icon"`
 	Id                  string `json:"id"`
 	Iscallerchilddomain bool   `json:"iscallerchilddomain"`
 	Isdefault           bool   `json:"isdefault"`

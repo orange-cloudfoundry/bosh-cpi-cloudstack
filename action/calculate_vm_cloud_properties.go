@@ -62,9 +62,9 @@ func (a CPI) findServiceOffering(ram, cpu int) (string, error) {
 		return "", err
 	}
 
-	offers := a.filterServiceOffering(resp.ServiceOfferings)
+	offers := resp.ServiceOfferings
 	if len(offers) == 0 {
-		return "", fmt.Errorf("There is no offers corresponding to tags: %s", strings.Join(a.config.CloudStack.CalculateCloudProp.ServiceTags, ","))
+		return "", fmt.Errorf("There is no offers corresponding")
 	}
 
 	sort.SliceStable(offers, func(i, j int) bool {
@@ -98,38 +98,6 @@ func (a CPI) findServiceOffering(ram, cpu int) (string, error) {
 	return finalOffers[0].Name, nil
 }
 
-func (a CPI) filterServiceOffering(offers []*cloudstack.ServiceOffering) []*cloudstack.ServiceOffering {
-	if len(a.config.CloudStack.CalculateCloudProp.ServiceTags) == 0 &&
-		len(a.config.CloudStack.CalculateCloudProp.NotServiceTags) == 0 {
-		return offers
-	}
-	tmpOffers := make([]*cloudstack.ServiceOffering, 0)
-	for _, offer := range offers {
-		for _, tag := range a.config.CloudStack.CalculateCloudProp.ServiceTags {
-			if strings.Contains(offer.Tags, tag) {
-				tmpOffers = append(tmpOffers, offer)
-				break
-			}
-		}
-	}
-	if len(tmpOffers) > 0 {
-		offers = tmpOffers
-		tmpOffers = make([]*cloudstack.ServiceOffering, 0)
-	}
-	for _, offer := range offers {
-		contains := false
-		for _, tag := range a.config.CloudStack.CalculateCloudProp.NotServiceTags {
-			if strings.Contains(offer.Tags, tag) {
-				contains = true
-				break
-			}
-		}
-		if !contains {
-			tmpOffers = append(tmpOffers, offer)
-		}
-	}
-	return offers
-}
 
 func (a CPI) filterDiskOffering(offers []*cloudstack.DiskOffering) []*cloudstack.DiskOffering {
 	if len(a.config.CloudStack.CalculateCloudProp.DiskTags) == 0 &&
