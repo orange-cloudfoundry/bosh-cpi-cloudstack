@@ -1,8 +1,8 @@
 package action
 
 import (
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
 // DeleteStemcell - Delete CS template matching given stemcell name

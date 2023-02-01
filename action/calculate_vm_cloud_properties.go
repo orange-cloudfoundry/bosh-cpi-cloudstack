@@ -2,11 +2,12 @@ package action
 
 import (
 	"fmt"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
-	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"sort"
 	"strings"
+
+	"github.com/apache/cloudstack-go/v2/cloudstack"
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
 func (a CPI) CalculateVMCloudProperties(res apiv1.VMResources) (apiv1.VMCloudProps, error) {
@@ -97,7 +98,6 @@ func (a CPI) findServiceOffering(ram, cpu int) (string, error) {
 
 	return finalOffers[0].Name, nil
 }
-
 
 func (a CPI) filterDiskOffering(offers []*cloudstack.DiskOffering) []*cloudstack.DiskOffering {
 	if len(a.config.CloudStack.CalculateCloudProp.DiskTags) == 0 &&

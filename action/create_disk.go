@@ -2,10 +2,11 @@ package action
 
 import (
 	"fmt"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+
 	"github.com/apache/cloudstack-go/v2/cloudstack"
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/satori/go.uuid"
 )
 
@@ -62,7 +63,7 @@ func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid st
 		})
 		err := a.setMetadata(config.Volume, diskName, &meta)
 		if err != nil {
-			a.logger.Warn("create_ephemeral_disk", "Error occured when setting metadata on ephemeral disk %s: %s", diskName, err.Error())
+			a.logger.Warn("create_ephemeral_disk", "Error occurred when setting metadata on ephemeral disk %s: %s", diskName, err.Error())
 		}
 	}
 

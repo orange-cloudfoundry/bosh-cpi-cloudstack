@@ -236,11 +236,11 @@ func (a CPI) applyMacToNetworks(resp *cloudstack.DeployVirtualMachineResponse, b
 }
 
 func (a CPI) parseCIDR(cidr string) (string, string, error) {
-	addr, net, err := net.ParseCIDR(cidr)
+	addr, ipNet, err := net.ParseCIDR(cidr)
 	if err != nil {
 		return "", "", err
 	}
-	mask := fmt.Sprintf("%d.%d.%d.%d", net.Mask[0], net.Mask[1], net.Mask[2], net.Mask[3])
+	mask := fmt.Sprintf("%d.%d.%d.%d", ipNet.Mask[0], ipNet.Mask[1], ipNet.Mask[2], ipNet.Mask[3])
 	return addr.String(), mask, nil
 }
 
@@ -414,7 +414,7 @@ type NetworkElem struct {
 // 1. create sortable structure
 // 2. sort network, default first, the by name
 // 3. create CS network list
-//    - vip network not given to cloudstack
+//   - vip network not given to cloudstack
 func (a CPI) generateNetworksMap(networks apiv1.Networks, zoneID string) (*cloudstack.Network, []map[string]string, error) {
 	result := make([]map[string]string, 0)
 	var defaultNetwork *cloudstack.Network

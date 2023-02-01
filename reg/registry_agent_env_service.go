@@ -4,12 +4,12 @@ import (
 	gobytes "bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
-	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
@@ -58,7 +58,7 @@ func (s registryAgentEnvService) Fetch() (apiv1.AgentEnv, error) {
 		return nil, bosherr.Errorf("Received non-200 status code when contacting registry: '%d'", httpResponse.StatusCode)
 	}
 
-	httpBody, err := ioutil.ReadAll(httpResponse.Body)
+	httpBody, err := io.ReadAll(httpResponse.Body)
 	if err != nil {
 		return nil, bosherr.WrapErrorf(err, "Reading response from registry endpoint '%s'", s.endpoint)
 	}

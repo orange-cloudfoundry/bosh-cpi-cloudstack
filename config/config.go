@@ -2,10 +2,10 @@ package config
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
 type RegistryOptions struct {
@@ -105,7 +105,7 @@ type StemcellConfig struct {
 
 func NewConfigFromPath(path string) (Config, error) {
 	config := defaultConfig()
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := os.ReadFile(path)
 	if err != nil {
 		return config, bosherr.WrapErrorf(err, "Reading config '%s'", path)
 	}

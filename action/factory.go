@@ -1,11 +1,11 @@
 package action
 
 import (
-	boshlog "github.com/cloudfoundry/bosh-utils/logger"
+	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/reg"
-	"github.com/apache/cloudstack-go/v2/cloudstack"
 )
 
 type Factory struct {

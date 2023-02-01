@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
-	"github.com/apache/cloudstack-go/v2/cloudstack"
 )
 
 func (a CPI) setMetadata(tagType config.Tags, cid string, meta util.MetaMarshal) error {

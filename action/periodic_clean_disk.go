@@ -1,8 +1,9 @@
 package action
 
 import (
-	"time"
 	"strings"
+	"time"
+
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
@@ -17,7 +18,7 @@ func (a CPI) PeriodicCleanDisk() {
 
 func (a CPI) cleanDisk() {
 	defer time.Sleep(time.Duration(a.config.CloudStack.IntervalCleanDisk) * time.Minute)
-	a.logger.Info("periodic_clean_disk", "Start cleaning emphemeral disks ...")
+	a.logger.Info("periodic_clean_disk", "Start cleaning ephemeral disks ...")
 	p := a.client.Volume.NewListVolumesParams()
 	p.SetTags(map[string]string{
 		"director": a.config.CloudStack.DirectorName,
@@ -25,7 +26,7 @@ func (a CPI) cleanDisk() {
 
 	resp, err := a.client.Volume.ListVolumes(p)
 	if err != nil {
-		a.logger.Warn("periodic_clean_disk", "Error occured when finding volumes: %s", err.Error())
+		a.logger.Warn("periodic_clean_disk", "Error occurred when finding volumes: %s", err.Error())
 		return
 	}
 
@@ -38,7 +39,7 @@ func (a CPI) cleanDisk() {
 
 		t, err := time.Parse(time.RFC3339, vol.Created)
 		if err != nil {
-			a.logger.Warn("periodic_clean_disk", "Error occured when parsing create time for volume %s: %s", vol.Name, err.Error())
+			a.logger.Warn("periodic_clean_disk", "Error occurred when parsing create time for volume %s: %s", vol.Name, err.Error())
 			return
 		}
 
@@ -50,11 +51,11 @@ func (a CPI) cleanDisk() {
 		delParams := a.client.Volume.NewDeleteVolumeParams(vol.Id)
 		_, err = a.client.Volume.DeleteVolume(delParams)
 		if err != nil {
-			a.logger.Warn("periodic_clean_disk", "Error occured when deleting volume %s: %s", vol.Name, err.Error())
+			a.logger.Warn("periodic_clean_disk", "Error occurred when deleting volume %s: %s", vol.Name, err.Error())
 			return
 		}
 		a.logger.Info("periodic_clean_disk", "Finished deleting volume %s .", vol.Name)
 	}
-	a.logger.Info("periodic_clean_disk", "Finished cleaning emphemeral disks.")
+	a.logger.Info("periodic_clean_disk", "Finished cleaning ephemeral disks.")
 
 }

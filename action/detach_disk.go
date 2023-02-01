@@ -1,10 +1,11 @@
 package action
 
 import (
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"strings"
+
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
 func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {

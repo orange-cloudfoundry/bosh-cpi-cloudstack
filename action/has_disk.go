@@ -1,9 +1,10 @@
 package action
 
 import (
+	"fmt"
+
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"fmt"
 )
 
 func (a CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
