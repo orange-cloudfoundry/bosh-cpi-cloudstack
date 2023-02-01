@@ -21,7 +21,8 @@ func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 	}
 
 	if len(volumes) == 0 {
-		return bosherr.Errorf("No volume found with name %s", diskCID.AsString())
+		a.logger.Warn("detach_disk", "No volume found with name %s", diskCID.AsString())
+		return nil
 	}
 
 	volume := volumes[0]
