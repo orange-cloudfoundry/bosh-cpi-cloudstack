@@ -26,8 +26,10 @@ func (a CPI) CalculateVMCloudProperties(res apiv1.VMResources) (apiv1.VMCloudPro
 	}), nil
 }
 
+// findEphemeralDiskOffering find a disk offering by disk size, expressed in megabytes
 func (a CPI) findEphemeralDiskOffering(diskSize int) (string, error) {
-	diskSize = int(diskSize / 1024)
+	// convert to GiB
+	diskSize /= 1024
 	resp, err := a.client.DiskOffering.ListDiskOfferings(a.client.DiskOffering.NewListDiskOfferingsParams())
 	if err != nil {
 		return "", err

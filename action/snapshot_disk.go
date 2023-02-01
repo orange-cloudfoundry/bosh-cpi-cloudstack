@@ -36,7 +36,10 @@ func (a CPI) SnapshotDisk(diskCID apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.Sna
 	}
 	a.logger.Info("resize_disk", "Finished snapshotting disk %s .", diskCID.AsString())
 
-	a.setMetadata(config.Snapshot, resp.Id, &meta)
+	err = a.setMetadata(config.Snapshot, resp.Id, &meta)
+	if err != nil {
+		a.logger.Warn("set_metadata", "an error occurred while setting metadata to: %s = %v", resp.Id, &meta)
+	}
 
 	return apiv1.NewSnapshotCID(resp.Id), nil
 }

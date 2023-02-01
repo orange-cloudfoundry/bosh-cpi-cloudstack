@@ -70,6 +70,9 @@ func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid st
 	return apiv1.NewDiskCID(diskName), nil
 }
 
+// createVolume request the creation of a new storage volume
+//
+// The size is expressed in megabytes.
 func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid string) (*cloudstack.CreateVolumeResponse, error) {
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVolume)
 
@@ -94,7 +97,8 @@ func (a CPI) createVolume(diskName string, size int, diskOfferName string, cid s
 	p.SetDiskofferingid(offer.Id)
 
 	if offer.Iscustomized {
-		size = int(size / 1024)
+		// CloudStack volume sizes are expressed in gigabytes
+		size /= 1024
 		p.SetSize(int64(size))
 	}
 

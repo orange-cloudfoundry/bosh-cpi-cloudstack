@@ -214,7 +214,10 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 				"Cannot attach ephemeral disk when creating vm"),
 			resp.Id,
 			func() {
-				a.DeleteDisk(diskCid)
+				err := a.DeleteDisk(diskCid)
+				if err != nil {
+					a.logger.Warn("delete_disk", "unable to delete disk: %s", diskCid)
+				}
 			},
 		)
 	}

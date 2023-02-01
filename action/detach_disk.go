@@ -49,7 +49,10 @@ func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 		err = a.unregisterDisk(vmCID, diskCID)
 		if err != nil {
 			p := a.client.Volume.NewAttachVolumeParams(volume.Id, volume.Virtualmachineid)
-			a.client.Volume.AttachVolume(p)
+			resp, attachError := a.client.Volume.AttachVolume(p)
+			if attachError != nil {
+				a.logger.Error("attach_disk", "unable to re-attach volume: %s to %s (%v)", volume.Id, volume.Virtualmachineid, resp)
+			}
 			return err
 		}
 	}

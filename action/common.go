@@ -233,7 +233,10 @@ func (a CPI) findOrCreateAffinityGroup(name, aType string) (string, error) {
 	if af != nil && af.Type != aType {
 		p := a.client.AffinityGroup.NewDeleteAffinityGroupParams()
 		p.SetName(name)
-		a.client.AffinityGroup.DeleteAffinityGroup(p)
+		resp, err := a.client.AffinityGroup.DeleteAffinityGroup(p)
+		if err != nil {
+			a.logger.Warn("delete_affinity_group", "error while deleting security group: %s (%v)", name, resp)
+		}
 	}
 	p := a.client.AffinityGroup.NewCreateAffinityGroupParams(name, aType)
 	resp, err := a.client.AffinityGroup.CreateAffinityGroup(p)
@@ -271,5 +274,4 @@ func retryable(timeout time.Duration, cmd func() error, checkRetry func(err erro
 		}
 		time.Sleep(timer)
 	}
-	return err
 }
