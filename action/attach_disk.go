@@ -2,10 +2,11 @@ package action
 
 import (
 	"fmt"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"strings"
+
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
 func (a CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
@@ -75,7 +76,7 @@ func (a CPI) AttachDiskBase(vmCID apiv1.VMCID, diskCID apiv1.DiskCID, isV2 bool)
 func (a CPI) registerDisk(name string, vmCID apiv1.VMCID, diskCID apiv1.DiskCID, hint apiv1.DiskHint) error {
 	// we skip registry registering if disk is an ephemeral one
 	if strings.HasPrefix(name, config.EphemeralDiskPrefix) {
-		a.logger.Debug("attach_disk", "skip registering epehemeral disks ...")
+		a.logger.Debug("attach_disk", "skip registering ephemeral disks ...")
 		return nil
 	}
 	nvSvc := a.regFactory.Create(vmCID)

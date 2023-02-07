@@ -4,13 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"github.com/apache/cloudstack-go/v2/cloudstack"
-	"github.com/satori/go.uuid"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -18,6 +12,12 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/apache/cloudstack-go/v2/cloudstack"
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/satori/go.uuid"
 )
 
 // CreateStemcell - Create CS template from given stemcell
@@ -25,7 +25,7 @@ import (
 // 1. read cloud-properties
 // 2. generate template name from random id
 // 3. request CS an upload token
-// 4. push image to CS recieved endpoint
+// 4. push image to CS received endpoint
 func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv1.StemcellCID, error) {
 	csProp := CloudStackCloudProperties{}
 	err := cp.As(&csProp)
@@ -65,7 +65,7 @@ func (a CPI) CreateStemcell(imagePath string, cp apiv1.StemcellCloudProps) (apiv
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "[create_stemcell]")
 	}
 	a.logger.Info("create_stemcell", "Finished Uploading stemcell %s ...", name)
-	a.logger.Debug("create_stemcell", "create_stemcell succes : template %s (%s)", uploadP.Id, name)
+	a.logger.Debug("create_stemcell", "create_stemcell success: template %s (%s)", uploadP.Id, name)
 	return apiv1.NewStemcellCID(name), nil
 }
 
@@ -144,7 +144,7 @@ func (a CPI) createUploadRequest(
 	r, _ := http.NewRequest("POST", postURL, body)
 
 	// manually replace header since:
-	//  - CS is case sensitive on header names
+	//  - CS is case-sensitive on header names
 	//  - golang concert header names into UpperCamelCase
 	r.Header = map[string][]string{
 		"X-signature":  []string{signature},
@@ -174,7 +174,7 @@ func (a CPI) performUpload(request *http.Request) error {
 	}
 
 	if uploadRes.StatusCode != 200 {
-		bodyBytes, _ := ioutil.ReadAll(uploadRes.Body)
+		bodyBytes, _ := io.ReadAll(uploadRes.Body)
 		return fmt.Errorf("unexpected response while uploading stemcell: %s", string(bodyBytes))
 	}
 

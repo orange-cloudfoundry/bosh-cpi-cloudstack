@@ -1,8 +1,9 @@
 package action
 
 import (
-	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	"encoding/json"
+
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 )
 
 type VMEnv struct {

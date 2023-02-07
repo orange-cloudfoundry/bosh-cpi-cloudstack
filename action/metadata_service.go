@@ -4,8 +4,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	boshlog "github.com/cloudfoundry/bosh-utils/logger"
+
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 

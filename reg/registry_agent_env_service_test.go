@@ -4,17 +4,17 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 
-	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/reg"
 	. "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	. "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/reg"
 )
 
 var _ = Describe("RegistryAgentEnvService", func() {
@@ -175,7 +175,7 @@ func (s *registryServer) instanceHandler(w http.ResponseWriter, req *http.Reques
 	}
 
 	if req.Method == "PUT" {
-		reqBody, _ := ioutil.ReadAll(req.Body)
+		reqBody, _ := io.ReadAll(req.Body)
 		s.InstanceSettings = reqBody
 		w.WriteHeader(http.StatusOK)
 		return

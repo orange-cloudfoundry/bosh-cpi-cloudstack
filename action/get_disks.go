@@ -1,10 +1,11 @@
 package action
 
 import (
+	"strings"
+
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"strings"
 )
 
 func (a CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {

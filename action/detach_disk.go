@@ -1,10 +1,11 @@
 package action
 
 import (
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
-	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"strings"
+
+	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 )
 
 func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
@@ -20,7 +21,8 @@ func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 	}
 
 	if len(volumes) == 0 {
-		return bosherr.Errorf("No volume found with name %s", diskCID.AsString())
+		a.logger.Warn("detach_disk", "No volume found with name %s", diskCID.AsString())
+		return nil
 	}
 
 	volume := volumes[0]
@@ -48,7 +50,10 @@ func (a CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 		err = a.unregisterDisk(vmCID, diskCID)
 		if err != nil {
 			p := a.client.Volume.NewAttachVolumeParams(volume.Id, volume.Virtualmachineid)
-			a.client.Volume.AttachVolume(p)
+			resp, attachError := a.client.Volume.AttachVolume(p)
+			if attachError != nil {
+				a.logger.Error("attach_disk", "unable to re-attach volume: %s to %s (%v)", volume.Id, volume.Virtualmachineid, resp)
+			}
 			return err
 		}
 	}

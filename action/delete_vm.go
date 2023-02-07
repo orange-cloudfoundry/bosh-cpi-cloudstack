@@ -1,10 +1,11 @@
 package action
 
 import (
+	"strings"
+
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"strings"
 )
 
 func (a CPI) DeleteVM(cid apiv1.VMCID) error {
@@ -67,7 +68,10 @@ func (a CPI) DeleteVM(cid apiv1.VMCID) error {
 
 	a.logger.Info("delete_vm", "Removing all ephemeral disks for vm %s ...", cid.AsString())
 	for _, diskId := range ephemDisks {
-		a.client.Volume.DeleteVolume(a.client.Volume.NewDeleteVolumeParams(diskId))
+		_, err := a.client.Volume.DeleteVolume(a.client.Volume.NewDeleteVolumeParams(diskId))
+		if err != nil {
+			a.logger.Warn("delete_disk", "unable to delete volume: %s", diskId)
+		}
 	}
 	a.logger.Info("delete_vm", "Finished removing all ephemeral disks for vm %s ...", cid.AsString())
 
@@ -128,7 +132,10 @@ func (a CPI) liberateVIPs(vmId string) error {
 	}
 	for _, rule := range respRules.IpForwardingRules {
 		ruleDelParams := a.client.NAT.NewDeleteIpForwardingRuleParams(rule.Id)
-		a.client.NAT.DeleteIpForwardingRule(ruleDelParams)
+		_, err := a.client.NAT.DeleteIpForwardingRule(ruleDelParams)
+		if err != nil {
+			a.logger.Warn("DeleteIpForwardingRule", "IP forwarding deletion failed for rule: %v", rule)
+		}
 	}
 
 	listPubIpParams := a.client.Address.NewListPublicIpAddressesParams()
@@ -143,7 +150,10 @@ func (a CPI) liberateVIPs(vmId string) error {
 			continue
 		}
 		disableParams := a.client.NAT.NewDisableStaticNatParams(pubIp.Id)
-		a.client.NAT.DisableStaticNat(disableParams)
+		_, err := a.client.NAT.DisableStaticNat(disableParams)
+		if err != nil {
+			a.logger.Warn("DisableStaticNat", "static NAT disable failed for: %v", pubIp)
+		}
 	}
 	return nil
 }

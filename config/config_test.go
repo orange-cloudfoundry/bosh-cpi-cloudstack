@@ -3,8 +3,8 @@ package config
 import (
 	"errors"
 
-	fakesys "github.com/cloudfoundry/bosh-utils/system/fakes"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
+	fakesys "github.com/cloudfoundry/bosh-utils/system/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -14,8 +14,7 @@ var validConfig = Config{
 	Actions:    validActionsOptions,
 }
 
-var validWardenConfig = CloudStackConfig{
-}
+var validWardenConfig = CloudStackConfig{}
 
 var validActionsOptions = FactoryOpts{
 	Agent: apiv1.AgentOptions{

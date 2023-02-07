@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/cloudfoundry/bosh-cpi-go/rpc"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
 	bwcaction "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/action"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
