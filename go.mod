@@ -1,6 +1,6 @@
 module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
-go 1.19
+go 1.20
 
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
