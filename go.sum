@@ -2,8 +2,8 @@ github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 h1:JYp7IbQjafo
 github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 h1:s6gZFSlWYmbqAuRjVTiNNhvNRfY2Wxp9nhfyel4rklc=
 github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137/go.mod h1:OMCwj8VM1Kc9e19TLln2VL61YJF0x1XFtfdL4JdbSyE=
-github.com/apache/cloudstack-go/v2 v2.13.2 h1:Y06CXNle++Gs24YjeNI7Ot8ZUQjLix2oPn/CMuVr/TU=
-github.com/apache/cloudstack-go/v2 v2.13.2/go.mod h1:aosD8Svfu5nhH5Sp4zcsVV1hT5UGt3mTgRXM8YqTKe0=
+github.com/apache/cloudstack-go/v2 v2.14.0 h1:w+Nwnqvx5b2hOxPdT5tfpW3WnnIZPnM8GX/XLsD34MY=
+github.com/apache/cloudstack-go/v2 v2.14.0/go.mod h1:Mc+tXpujtslBuZFk5atoGT2LanVxOrXS2GGgidAoz1A=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/bmatcuk/doublestar v1.3.4 h1:gPypJ5xD31uhX6Tf54sDPUOBXTqKH4c9aPY66CyQrS0=
