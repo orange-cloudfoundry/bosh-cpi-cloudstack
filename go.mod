@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
-	github.com/apache/cloudstack-go/v2 v2.14.0
+	github.com/apache/cloudstack-go/v2 v2.15.0
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20211021235042-66fa96dba506
 	github.com/cloudfoundry/bosh-utils v0.0.360
 	github.com/onsi/ginkgo v1.16.5
