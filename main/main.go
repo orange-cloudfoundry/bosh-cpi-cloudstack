@@ -9,7 +9,7 @@ import (
 	bwcaction "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/action"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/prometheus/common/version"
-	"gopkg.in/alecthomas/kingpin.v2"
+	"github.com/alecthomas/kingpin/v2"
 )
 
 var (
