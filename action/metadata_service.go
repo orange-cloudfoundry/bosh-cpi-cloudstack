@@ -21,7 +21,6 @@ type AgentSettings struct {
 	VM        apiv1.VMSpec        `json:"vm"`
 	Mbus      string              `json:"mbus"`
 	NTP       []string            `json:"ntp"`
-	Blobstore apiv1.BlobstoreSpec `json:"blobstore"`
 	Networks  apiv1.NetworksSpec  `json:"networks"`
 	Disks     apiv1.DisksSpec     `json:"disks"`
 	Env       apiv1.EnvSpec       `json:"env"`
@@ -107,10 +106,6 @@ func (u *UserDataService) SetAgentSettings(
 		Disks: apiv1.DisksSpec{
 			System:    apiv1.NewDiskHintFromString("/dev/xvda"),
 			Ephemeral: apiv1.NewDiskHintFromString("/dev/xvdb"),
-		},
-		Blobstore: apiv1.BlobstoreSpec{
-			Provider: agentOptions.Blobstore.Type,
-			Options:  agentOptions.Blobstore.Options,
 		},
 		Networks: networksSpec,
 		Env:      envSpec,
