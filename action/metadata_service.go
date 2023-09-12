@@ -17,13 +17,13 @@ type UserDataService struct {
 }
 
 type AgentSettings struct {
-	AgentID   string              `json:"agent_id"`
-	VM        apiv1.VMSpec        `json:"vm"`
-	Mbus      string              `json:"mbus"`
-	NTP       []string            `json:"ntp"`
-	Networks  apiv1.NetworksSpec  `json:"networks"`
-	Disks     apiv1.DisksSpec     `json:"disks"`
-	Env       apiv1.EnvSpec       `json:"env"`
+	AgentID  string             `json:"agent_id"`
+	VM       apiv1.VMSpec       `json:"vm"`
+	Mbus     string             `json:"mbus"`
+	NTP      []string           `json:"ntp"`
+	Networks apiv1.NetworksSpec `json:"networks"`
+	Disks    apiv1.DisksSpec    `json:"disks"`
+	Env      apiv1.EnvSpec      `json:"env"`
 }
 
 type UserData struct {

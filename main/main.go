@@ -6,10 +6,10 @@ import (
 	"github.com/cloudfoundry/bosh-cpi-go/rpc"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
+	"github.com/alecthomas/kingpin/v2"
 	bwcaction "github.com/orange-cloudfoundry/bosh-cpi-cloudstack/action"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
 	"github.com/prometheus/common/version"
-	"github.com/alecthomas/kingpin/v2"
 )
 
 var (

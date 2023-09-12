@@ -147,10 +147,10 @@ func (a CPI) createUploadRequest(
 	//  - CS is case-sensitive on header names
 	//  - golang concert header names into UpperCamelCase
 	r.Header = map[string][]string{
-		"X-signature":  []string{signature},
-		"X-metadata":   []string{metadata},
-		"X-expires":    []string{expires},
-		"Content-Type": []string{writer.FormDataContentType()},
+		"X-signature":  {signature},
+		"X-metadata":   {metadata},
+		"X-expires":    {expires},
+		"Content-Type": {writer.FormDataContentType()},
 	}
 
 	return r, nil
