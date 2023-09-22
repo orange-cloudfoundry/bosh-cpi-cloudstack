@@ -14,8 +14,8 @@ github.com/charlievieth/fs v0.0.3 h1:3lZQXTj4PbE81CVPwALSn+JoyCNXkZgORHN6h2XHGlg
 github.com/charlievieth/fs v0.0.3/go.mod h1:hD4sRzto1Hw8zCua76tNVKZxaeZZr1RiKftjAJQRLLo=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20230909100238-e687d768970c h1:PxNpINn/fDXnUw2IbUjJX7qvu5j7sDO441tq8ObAPok=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20230909100238-e687d768970c/go.mod h1:nFQ7eFIa4YgFzsPDDJob3FXg7S5qcSUNl2nd1FBYtbo=
-github.com/cloudfoundry/bosh-utils v0.0.395 h1:Ed/5ElVXO5Twtl9ViuBwDMCsuCOAoyuDDLfI4Ena8CY=
-github.com/cloudfoundry/bosh-utils v0.0.395/go.mod h1:FPZV+W2FecYFy2N5iWeDFYQvtkPbgrVf0uIg1Xdwk+E=
+github.com/cloudfoundry/bosh-utils v0.0.397 h1:1zs2vFN6P1eefDZ2u68j8PARbv/IKNJJQKWeeN/1B4g=
+github.com/cloudfoundry/bosh-utils v0.0.397/go.mod h1:FPZV+W2FecYFy2N5iWeDFYQvtkPbgrVf0uIg1Xdwk+E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
