@@ -23,7 +23,7 @@ github.com/charlievieth/fs
 ## explicit; go 1.21
 github.com/cloudfoundry/bosh-cpi-go/apiv1
 github.com/cloudfoundry/bosh-cpi-go/rpc
-# github.com/cloudfoundry/bosh-utils v0.0.402
+# github.com/cloudfoundry/bosh-utils v0.0.404
 ## explicit; go 1.21
 github.com/cloudfoundry/bosh-utils/errors
 github.com/cloudfoundry/bosh-utils/logger
