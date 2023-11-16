@@ -15,7 +15,7 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 )
 
-require github.com/alecthomas/kingpin/v2 v2.3.2
+require github.com/alecthomas/kingpin/v2 v2.4.0
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
