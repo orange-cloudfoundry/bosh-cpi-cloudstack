@@ -1,6 +1,7 @@
 module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
-go 1.21
+go 1.21.0
+
 toolchain go1.22.1
 
 require (
