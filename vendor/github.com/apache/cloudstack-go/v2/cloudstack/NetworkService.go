@@ -351,7 +351,7 @@ func (s *NetworkService) NewAddOpenDaylightControllerParams(password string, phy
 	return p
 }
 
-// Adds an OpenDyalight controler
+// Adds an OpenDaylight controller
 func (s *NetworkService) AddOpenDaylightController(p *AddOpenDaylightControllerParams) (*AddOpenDaylightControllerResponse, error) {
 	resp, err := s.cs.newRequest("addOpenDaylightController", p.toURLValues())
 	if err != nil {
@@ -502,6 +502,9 @@ func (p *CreateNetworkParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["routeripv6"]; found {
 		u.Set("routeripv6", v.(string))
+	}
+	if v, found := p.p["sourcenatipaddress"]; found {
+		u.Set("sourcenatipaddress", v.(string))
 	}
 	if v, found := p.p["startip"]; found {
 		u.Set("startip", v.(string))
@@ -993,6 +996,21 @@ func (p *CreateNetworkParams) GetRouteripv6() (string, bool) {
 	return value, ok
 }
 
+func (p *CreateNetworkParams) SetSourcenatipaddress(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["sourcenatipaddress"] = v
+}
+
+func (p *CreateNetworkParams) GetSourcenatipaddress() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["sourcenatipaddress"].(string)
+	return value, ok
+}
+
 func (p *CreateNetworkParams) SetStartip(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -1147,6 +1165,7 @@ type CreateNetworkResponse struct {
 	Dns2                        string                         `json:"dns2"`
 	Domain                      string                         `json:"domain"`
 	Domainid                    string                         `json:"domainid"`
+	Domainpath                  string                         `json:"domainpath"`
 	Egressdefaultpolicy         bool                           `json:"egressdefaultpolicy"`
 	Externalid                  string                         `json:"externalid"`
 	Gateway                     string                         `json:"gateway"`
@@ -2210,7 +2229,7 @@ func (s *NetworkService) NewDeleteOpenDaylightControllerParams(id string) *Delet
 	return p
 }
 
-// Removes an OpenDyalight controler
+// Removes an OpenDaylight controller
 func (s *NetworkService) DeleteOpenDaylightController(p *DeleteOpenDaylightControllerParams) (*DeleteOpenDaylightControllerResponse, error) {
 	resp, err := s.cs.newRequest("deleteOpenDaylightController", p.toURLValues())
 	if err != nil {
@@ -2578,6 +2597,7 @@ type NetscalerLoadBalancerNetwork struct {
 	Dns2                        string                                `json:"dns2"`
 	Domain                      string                                `json:"domain"`
 	Domainid                    string                                `json:"domainid"`
+	Domainpath                  string                                `json:"domainpath"`
 	Egressdefaultpolicy         bool                                  `json:"egressdefaultpolicy"`
 	Externalid                  string                                `json:"externalid"`
 	Gateway                     string                                `json:"gateway"`
@@ -3031,6 +3051,10 @@ func (p *ListNetworksParams) toURLValues() url.Values {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("restartrequired", vv)
 	}
+	if v, found := p.p["retrieveonlyresourcecount"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("retrieveonlyresourcecount", vv)
+	}
 	if v, found := p.p["showicon"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("showicon", vv)
@@ -3353,6 +3377,21 @@ func (p *ListNetworksParams) GetRestartrequired() (bool, bool) {
 	return value, ok
 }
 
+func (p *ListNetworksParams) SetRetrieveonlyresourcecount(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["retrieveonlyresourcecount"] = v
+}
+
+func (p *ListNetworksParams) GetRetrieveonlyresourcecount() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["retrieveonlyresourcecount"].(bool)
+	return value, ok
+}
+
 func (p *ListNetworksParams) SetShowicon(v bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -3618,6 +3657,7 @@ type Network struct {
 	Dns2                        string                   `json:"dns2"`
 	Domain                      string                   `json:"domain"`
 	Domainid                    string                   `json:"domainid"`
+	Domainpath                  string                   `json:"domainpath"`
 	Egressdefaultpolicy         bool                     `json:"egressdefaultpolicy"`
 	Externalid                  string                   `json:"externalid"`
 	Gateway                     string                   `json:"gateway"`
@@ -3867,6 +3907,7 @@ type NiciraNvpDeviceNetwork struct {
 	Dns2                        string                          `json:"dns2"`
 	Domain                      string                          `json:"domain"`
 	Domainid                    string                          `json:"domainid"`
+	Domainpath                  string                          `json:"domainpath"`
 	Egressdefaultpolicy         bool                            `json:"egressdefaultpolicy"`
 	Externalid                  string                          `json:"externalid"`
 	Gateway                     string                          `json:"gateway"`
@@ -4034,7 +4075,7 @@ func (s *NetworkService) GetOpenDaylightControllerByID(id string, opts ...Option
 	return nil, l.Count, fmt.Errorf("There is more then one result for OpenDaylightController UUID: %s!", id)
 }
 
-// Lists OpenDyalight controllers
+// Lists OpenDaylight controllers
 func (s *NetworkService) ListOpenDaylightControllers(p *ListOpenDaylightControllersParams) (*ListOpenDaylightControllersResponse, error) {
 	resp, err := s.cs.newRequest("listOpenDaylightControllers", p.toURLValues())
 	if err != nil {
@@ -4235,6 +4276,7 @@ type PaloAltoFirewallNetwork struct {
 	Dns2                        string                           `json:"dns2"`
 	Domain                      string                           `json:"domain"`
 	Domainid                    string                           `json:"domainid"`
+	Domainpath                  string                           `json:"domainpath"`
 	Egressdefaultpolicy         bool                             `json:"egressdefaultpolicy"`
 	Externalid                  string                           `json:"externalid"`
 	Gateway                     string                           `json:"gateway"`
@@ -5202,6 +5244,9 @@ func (p *UpdateNetworkParams) toURLValues() url.Values {
 		vv := strconv.Itoa(v.(int))
 		u.Set("publicmtu", vv)
 	}
+	if v, found := p.p["sourcenatipaddress"]; found {
+		u.Set("sourcenatipaddress", v.(string))
+	}
 	if v, found := p.p["updateinsequence"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("updateinsequence", vv)
@@ -5464,6 +5509,21 @@ func (p *UpdateNetworkParams) GetPublicmtu() (int, bool) {
 	return value, ok
 }
 
+func (p *UpdateNetworkParams) SetSourcenatipaddress(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["sourcenatipaddress"] = v
+}
+
+func (p *UpdateNetworkParams) GetSourcenatipaddress() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["sourcenatipaddress"].(string)
+	return value, ok
+}
+
 func (p *UpdateNetworkParams) SetUpdateinsequence(v bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -5542,6 +5602,7 @@ type UpdateNetworkResponse struct {
 	Dns2                        string                         `json:"dns2"`
 	Domain                      string                         `json:"domain"`
 	Domainid                    string                         `json:"domainid"`
+	Domainpath                  string                         `json:"domainpath"`
 	Egressdefaultpolicy         bool                           `json:"egressdefaultpolicy"`
 	Externalid                  string                         `json:"externalid"`
 	Gateway                     string                         `json:"gateway"`
