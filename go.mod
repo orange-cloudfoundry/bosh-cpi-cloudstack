@@ -6,7 +6,7 @@ toolchain go1.22.1
 
 require (
 	github.com/alecthomas/units v0.0.0-20231202071711-9a357b53e9c9 // indirect
-	github.com/apache/cloudstack-go/v2 v2.15.0
+	github.com/apache/cloudstack-go/v2 v2.16.0
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20240106100135-d51a7b0a8542
 	github.com/cloudfoundry/bosh-utils v0.0.452
 	github.com/onsi/ginkgo v1.16.5

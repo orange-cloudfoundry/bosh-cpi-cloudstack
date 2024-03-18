@@ -465,7 +465,7 @@ func (s *NetworkACLService) NewCreateNetworkACLListParams(name string, vpcid str
 	return p
 }
 
-// Creates a network ACL for the given VPC
+// Creates a network ACL. If no VPC is given, then it creates a global ACL that can be used by everyone.
 func (s *NetworkACLService) CreateNetworkACLList(p *CreateNetworkACLListParams) (*CreateNetworkACLListResponse, error) {
 	resp, err := s.cs.newRequest("createNetworkACLList", p.toURLValues())
 	if err != nil {

@@ -285,6 +285,9 @@ func (p *CreateTemplateParams) toURLValues() url.Values {
 	if p.p == nil {
 		return u
 	}
+	if v, found := p.p["account"]; found {
+		u.Set("account", v.(string))
+	}
 	if v, found := p.p["bits"]; found {
 		vv := strconv.Itoa(v.(int))
 		u.Set("bits", vv)
@@ -297,6 +300,9 @@ func (p *CreateTemplateParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["displaytext"]; found {
 		u.Set("displaytext", v.(string))
+	}
+	if v, found := p.p["domainid"]; found {
+		u.Set("domainid", v.(string))
 	}
 	if v, found := p.p["isdynamicallyscalable"]; found {
 		vv := strconv.FormatBool(v.(bool))
@@ -346,7 +352,25 @@ func (p *CreateTemplateParams) toURLValues() url.Values {
 	if v, found := p.p["volumeid"]; found {
 		u.Set("volumeid", v.(string))
 	}
+	if v, found := p.p["zoneid"]; found {
+		u.Set("zoneid", v.(string))
+	}
 	return u
+}
+
+func (p *CreateTemplateParams) SetAccount(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["account"] = v
+}
+
+func (p *CreateTemplateParams) GetAccount() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["account"].(string)
+	return value, ok
 }
 
 func (p *CreateTemplateParams) SetBits(v int) {
@@ -391,6 +415,21 @@ func (p *CreateTemplateParams) GetDisplaytext() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["displaytext"].(string)
+	return value, ok
+}
+
+func (p *CreateTemplateParams) SetDomainid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["domainid"] = v
+}
+
+func (p *CreateTemplateParams) GetDomainid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["domainid"].(string)
 	return value, ok
 }
 
@@ -601,6 +640,21 @@ func (p *CreateTemplateParams) GetVolumeid() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["volumeid"].(string)
+	return value, ok
+}
+
+func (p *CreateTemplateParams) SetZoneid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["zoneid"] = v
+}
+
+func (p *CreateTemplateParams) GetZoneid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["zoneid"].(string)
 	return value, ok
 }
 
@@ -1588,9 +1642,16 @@ func (p *ListTemplatesParams) toURLValues() url.Values {
 		vv := strings.Join(v.([]string), ",")
 		u.Set("ids", vv)
 	}
+	if v, found := p.p["imagestoreid"]; found {
+		u.Set("imagestoreid", v.(string))
+	}
 	if v, found := p.p["isrecursive"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("isrecursive", vv)
+	}
+	if v, found := p.p["isvnf"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("isvnf", vv)
 	}
 	if v, found := p.p["keyword"]; found {
 		u.Set("keyword", v.(string))
@@ -1628,6 +1689,9 @@ func (p *ListTemplatesParams) toURLValues() url.Values {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("showunique", vv)
 	}
+	if v, found := p.p["storageid"]; found {
+		u.Set("storageid", v.(string))
+	}
 	if v, found := p.p["tags"]; found {
 		m := v.(map[string]string)
 		for i, k := range getSortedKeysFromMap(m) {
@@ -1637,6 +1701,9 @@ func (p *ListTemplatesParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["templatefilter"]; found {
 		u.Set("templatefilter", v.(string))
+	}
+	if v, found := p.p["templatetype"]; found {
+		u.Set("templatetype", v.(string))
 	}
 	if v, found := p.p["zoneid"]; found {
 		u.Set("zoneid", v.(string))
@@ -1734,6 +1801,21 @@ func (p *ListTemplatesParams) GetIds() ([]string, bool) {
 	return value, ok
 }
 
+func (p *ListTemplatesParams) SetImagestoreid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["imagestoreid"] = v
+}
+
+func (p *ListTemplatesParams) GetImagestoreid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["imagestoreid"].(string)
+	return value, ok
+}
+
 func (p *ListTemplatesParams) SetIsrecursive(v bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -1746,6 +1828,21 @@ func (p *ListTemplatesParams) GetIsrecursive() (bool, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["isrecursive"].(bool)
+	return value, ok
+}
+
+func (p *ListTemplatesParams) SetIsvnf(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["isvnf"] = v
+}
+
+func (p *ListTemplatesParams) GetIsvnf() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["isvnf"].(bool)
 	return value, ok
 }
 
@@ -1899,6 +1996,21 @@ func (p *ListTemplatesParams) GetShowunique() (bool, bool) {
 	return value, ok
 }
 
+func (p *ListTemplatesParams) SetStorageid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["storageid"] = v
+}
+
+func (p *ListTemplatesParams) GetStorageid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["storageid"].(string)
+	return value, ok
+}
+
 func (p *ListTemplatesParams) SetTags(v map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -1926,6 +2038,21 @@ func (p *ListTemplatesParams) GetTemplatefilter() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["templatefilter"].(string)
+	return value, ok
+}
+
+func (p *ListTemplatesParams) SetTemplatetype(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["templatetype"] = v
+}
+
+func (p *ListTemplatesParams) GetTemplatetype() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["templatetype"].(string)
 	return value, ok
 }
 
@@ -2407,6 +2534,9 @@ func (p *RegisterTemplateParams) toURLValues() url.Values {
 	if v, found := p.p["templatetag"]; found {
 		u.Set("templatetag", v.(string))
 	}
+	if v, found := p.p["templatetype"]; found {
+		u.Set("templatetype", v.(string))
+	}
 	if v, found := p.p["url"]; found {
 		u.Set("url", v.(string))
 	}
@@ -2747,6 +2877,21 @@ func (p *RegisterTemplateParams) GetTemplatetag() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["templatetag"].(string)
+	return value, ok
+}
+
+func (p *RegisterTemplateParams) SetTemplatetype(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["templatetype"] = v
+}
+
+func (p *RegisterTemplateParams) GetTemplatetype() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["templatetype"].(string)
 	return value, ok
 }
 

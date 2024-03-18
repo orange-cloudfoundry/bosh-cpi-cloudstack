@@ -1247,10 +1247,13 @@ func (s *VolumeService) GetPathForVolume(p *GetPathForVolumeParams) (*GetPathFor
 		return nil, err
 	}
 
-	var r GetPathForVolumeResponse
-	if err := json.Unmarshal(resp, &r); err != nil {
+	var nested struct {
+		Response GetPathForVolumeResponse `json:"apipathforvolume"`
+	}
+	if err := json.Unmarshal(resp, &nested); err != nil {
 		return nil, err
 	}
+	r := nested.Response
 
 	return &r, nil
 }
@@ -1661,6 +1664,10 @@ func (p *ListVolumesParams) toURLValues() url.Values {
 	if v, found := p.p["projectid"]; found {
 		u.Set("projectid", v.(string))
 	}
+	if v, found := p.p["retrieveonlyresourcecount"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("retrieveonlyresourcecount", vv)
+	}
 	if v, found := p.p["state"]; found {
 		u.Set("state", v.(string))
 	}
@@ -1938,6 +1945,21 @@ func (p *ListVolumesParams) GetProjectid() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *ListVolumesParams) SetRetrieveonlyresourcecount(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["retrieveonlyresourcecount"] = v
+}
+
+func (p *ListVolumesParams) GetRetrieveonlyresourcecount() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["retrieveonlyresourcecount"].(bool)
 	return value, ok
 }
 
@@ -2280,6 +2302,10 @@ func (p *ListVolumesMetricsParams) toURLValues() url.Values {
 	if v, found := p.p["projectid"]; found {
 		u.Set("projectid", v.(string))
 	}
+	if v, found := p.p["retrieveonlyresourcecount"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("retrieveonlyresourcecount", vv)
+	}
 	if v, found := p.p["state"]; found {
 		u.Set("state", v.(string))
 	}
@@ -2557,6 +2583,21 @@ func (p *ListVolumesMetricsParams) GetProjectid() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *ListVolumesMetricsParams) SetRetrieveonlyresourcecount(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["retrieveonlyresourcecount"] = v
+}
+
+func (p *ListVolumesMetricsParams) GetRetrieveonlyresourcecount() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["retrieveonlyresourcecount"].(bool)
 	return value, ok
 }
 

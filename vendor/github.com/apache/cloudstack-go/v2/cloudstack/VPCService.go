@@ -513,6 +513,9 @@ func (p *CreateVPCParams) toURLValues() url.Values {
 		vv := strconv.Itoa(v.(int))
 		u.Set("publicmtu", vv)
 	}
+	if v, found := p.p["sourcenatipaddress"]; found {
+		u.Set("sourcenatipaddress", v.(string))
+	}
 	if v, found := p.p["start"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("start", vv)
@@ -718,6 +721,21 @@ func (p *CreateVPCParams) GetPublicmtu() (int, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["publicmtu"].(int)
+	return value, ok
+}
+
+func (p *CreateVPCParams) SetSourcenatipaddress(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["sourcenatipaddress"] = v
+}
+
+func (p *CreateVPCParams) GetSourcenatipaddress() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["sourcenatipaddress"].(string)
 	return value, ok
 }
 
@@ -3219,6 +3237,9 @@ func (p *UpdateVPCParams) toURLValues() url.Values {
 		vv := strconv.Itoa(v.(int))
 		u.Set("publicmtu", vv)
 	}
+	if v, found := p.p["sourcenatipaddress"]; found {
+		u.Set("sourcenatipaddress", v.(string))
+	}
 	return u
 }
 
@@ -3309,6 +3330,21 @@ func (p *UpdateVPCParams) GetPublicmtu() (int, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["publicmtu"].(int)
+	return value, ok
+}
+
+func (p *UpdateVPCParams) SetSourcenatipaddress(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["sourcenatipaddress"] = v
+}
+
+func (p *UpdateVPCParams) GetSourcenatipaddress() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["sourcenatipaddress"].(string)
 	return value, ok
 }
 

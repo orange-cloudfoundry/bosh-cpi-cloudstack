@@ -115,6 +115,7 @@ type CloudStackClient struct {
 	CloudIdentifier     CloudIdentifierServiceIface
 	Cluster             ClusterServiceIface
 	Configuration       ConfigurationServiceIface
+	ConsoleEndpoint     ConsoleEndpointServiceIface
 	Custom              CustomServiceIface
 	DiskOffering        DiskOfferingServiceIface
 	Domain              DomainServiceIface
@@ -221,6 +222,7 @@ func newClient(apiurl string, apikey string, secret string, async bool, verifyss
 	cs.CloudIdentifier = NewCloudIdentifierService(cs)
 	cs.Cluster = NewClusterService(cs)
 	cs.Configuration = NewConfigurationService(cs)
+	cs.ConsoleEndpoint = NewConsoleEndpointService(cs)
 	cs.Custom = NewCustomService(cs)
 	cs.DiskOffering = NewDiskOfferingService(cs)
 	cs.Domain = NewDomainService(cs)
@@ -300,6 +302,7 @@ func newMockClient(ctrl *gomock.Controller) *CloudStackClient {
 	cs.CloudIdentifier = NewMockCloudIdentifierServiceIface(ctrl)
 	cs.Cluster = NewMockClusterServiceIface(ctrl)
 	cs.Configuration = NewMockConfigurationServiceIface(ctrl)
+	cs.ConsoleEndpoint = NewMockConsoleEndpointServiceIface(ctrl)
 	cs.Custom = NewMockCustomServiceIface(ctrl)
 	cs.DiskOffering = NewMockDiskOfferingServiceIface(ctrl)
 	cs.Domain = NewMockDomainServiceIface(ctrl)
@@ -369,7 +372,7 @@ func NewClient(apiurl string, apikey string, secret string, verifyssl bool, opti
 
 // For sync API calls this client behaves exactly the same as a standard client call, but for async API calls
 // this client will wait until the async job is finished or until the configured AsyncTimeout is reached. When the async
-// job finishes successfully it will return actual object received from the API and nil, but when the timout is
+// job finishes successfully it will return actual object received from the API and nil, but when the timeout is
 // reached it will return the initial object containing the async job ID for the running job and a warning.
 func NewAsyncClient(apiurl string, apikey string, secret string, verifyssl bool, options ...ClientOption) *CloudStackClient {
 	cs := newClient(apiurl, apikey, secret, true, verifyssl, options...)
@@ -446,21 +449,21 @@ func (cs *CloudStackClient) GetAsyncJobResult(jobid string, timeout int64) (json
 }
 
 // Execute the request against a CS API. Will return the raw JSON data returned by the API and nil if
-// no error occured. If the API returns an error the result will be nil and the HTTP error code and CS
+// no error occurred. If the API returns an error the result will be nil and the HTTP error code and CS
 // error details. If a processing (code) error occurs the result will be nil and the generated error
 func (cs *CloudStackClient) newRequest(api string, params url.Values) (json.RawMessage, error) {
 	return cs.newRawRequest(api, false, params)
 }
 
 // Execute the request against a CS API using POST. Will return the raw JSON data returned by the API and
-// nil if no error occured. If the API returns an error the result will be nil and the HTTP error code
+// nil if no error occurred. If the API returns an error the result will be nil and the HTTP error code
 // and CS error details. If a processing (code) error occurs the result will be nil and the generated error
 func (cs *CloudStackClient) newPostRequest(api string, params url.Values) (json.RawMessage, error) {
 	return cs.newRawRequest(api, true, params)
 }
 
 // Execute a raw request against a CS API. Will return the raw JSON data returned by the API and nil if
-// no error occured. If the API returns an error the result will be nil and the HTTP error code and CS
+// no error occurred. If the API returns an error the result will be nil and the HTTP error code and CS
 // error details. If a processing (code) error occurs the result will be nil and the generated error
 func (cs *CloudStackClient) newRawRequest(api string, post bool, params url.Values) (json.RawMessage, error) {
 	params.Set("apiKey", cs.apiKey)
@@ -865,6 +868,14 @@ type ConfigurationService struct {
 
 func NewConfigurationService(cs *CloudStackClient) ConfigurationServiceIface {
 	return &ConfigurationService{cs: cs}
+}
+
+type ConsoleEndpointService struct {
+	cs *CloudStackClient
+}
+
+func NewConsoleEndpointService(cs *CloudStackClient) ConsoleEndpointServiceIface {
+	return &ConsoleEndpointService{cs: cs}
 }
 
 type CustomService struct {

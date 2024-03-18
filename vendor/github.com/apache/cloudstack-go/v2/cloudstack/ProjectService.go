@@ -1972,6 +1972,9 @@ func (p *UpdateProjectParams) toURLValues() url.Values {
 	if v, found := p.p["id"]; found {
 		u.Set("id", v.(string))
 	}
+	if v, found := p.p["name"]; found {
+		u.Set("name", v.(string))
+	}
 	if v, found := p.p["roletype"]; found {
 		u.Set("roletype", v.(string))
 	}
@@ -2027,6 +2030,21 @@ func (p *UpdateProjectParams) GetId() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+func (p *UpdateProjectParams) SetName(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["name"] = v
+}
+
+func (p *UpdateProjectParams) GetName() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["name"].(string)
 	return value, ok
 }
 
