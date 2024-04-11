@@ -11,7 +11,7 @@ require (
 	github.com/cloudfoundry/bosh-utils v0.0.456
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.32.0
-	github.com/prometheus/common v0.52.2
+	github.com/prometheus/common v0.52.3
 	github.com/satori/go.uuid v1.2.0
 )
 
