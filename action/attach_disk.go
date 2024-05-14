@@ -64,7 +64,9 @@ func (a CPI) AttachDiskBase(vmCID apiv1.VMCID, diskCID apiv1.DiskCID, isV2 bool)
 		if err := a.registerDisk(volume.Name, vmCID, diskCID, diskHint); err != nil {
 			detachParams := a.client.Volume.NewDetachVolumeParams()
 			detachParams.SetId(volume.Id)
-			a.client.Volume.DetachVolume(detachParams)
+			if _, err := a.client.Volume.DetachVolume(detachParams); err != nil {
+				a.logger.Error("attach_disk", "error while detaching volume with detachParams: %s: %s", detachParams, err)
+			}
 			return apiv1.DiskHint{}, bosherr.WrapErrorf(err, "unable to register disk into registry")
 		}
 		a.logger.Info("attach_disk", "Finished registering disk %s to registry.", diskCID.AsString())

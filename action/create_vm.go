@@ -2,6 +2,7 @@ package action
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"sort"
@@ -280,7 +281,9 @@ func (a CPI) attachEphemeralDisk(vmCID apiv1.VMCID, diskCid apiv1.DiskCID) error
 }
 
 func (a CPI) destroyVmErrFallback(err error, vmId string, fs ...func()) error {
-	a.deleteVMById(vmId)
+	if err := a.deleteVMById(vmId); err != nil {
+		a.logger.Error("delete_vm", "error while removing vm %s: %s", vmId, err)
+	}
 	for _, fs := range fs {
 		fs()
 	}
@@ -333,7 +336,8 @@ func (a CPI) createVip(network apiv1.Network, vmId, zoneID string, defNetwork *c
 			return err
 		},
 		func(err error) bool {
-			_, ok := err.(*json.SyntaxError)
+			var syntaxError *json.SyntaxError
+			ok := errors.As(err, &syntaxError)
 			return ok
 		})
 }
