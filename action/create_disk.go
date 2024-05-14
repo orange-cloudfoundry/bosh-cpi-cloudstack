@@ -6,8 +6,8 @@ import (
 	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/google/uuid"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"github.com/satori/go.uuid"
 )
 
 func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) (apiv1.DiskCID, error) {
@@ -27,7 +27,7 @@ func (a CPI) CreateDisk(size int, props apiv1.DiskCloudProps, cid *apiv1.VMCID) 
 		a.logger.Info("create_disk", "Using default disk offering %s because not set in properties", diskOfferName)
 	}
 
-	diskName := fmt.Sprintf("%s%s", config.PersistenceDiskPrefix, uuid.NewV4().String())
+	diskName := fmt.Sprintf("%s%s", config.PersistenceDiskPrefix, uuid.NewString())
 
 	a.logger.Info("create_disk", "Creating disk %s ...", diskName)
 	_, err = a.createVolume(diskName, size, diskOfferName, cidStr)
@@ -48,7 +48,7 @@ func (a CPI) createEphemeralDisk(size int, diskProps DiskCloudProperties, cid st
 		a.logger.Info("create_disk", "Using default disk offering %s because not set in properties", diskOfferName)
 	}
 
-	diskName := fmt.Sprintf("%s%s", config.EphemeralDiskPrefix, uuid.NewV4().String())
+	diskName := fmt.Sprintf("%s%s", config.EphemeralDiskPrefix, uuid.NewString())
 
 	_, err := a.createVolume(diskName, size, diskOfferName, cid)
 	if err != nil {

@@ -11,8 +11,8 @@ import (
 	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/google/uuid"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -61,7 +61,7 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVm)
 	a.client.Timeout(time.Duration(a.config.CloudStack.Timeout.CreateVm) * time.Second)
 
-	vmName := fmt.Sprintf("%s%s", config.VMPrefix, uuid.NewV4().String())
+	vmName := fmt.Sprintf("%s%s", config.VMPrefix, uuid.NewString())
 	vmCID := apiv1.NewVMCID(vmName)
 
 	if err := p.cloudProps.As(&resProps); err != nil {

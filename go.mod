@@ -10,10 +10,12 @@ require (
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.33.1
 	github.com/prometheus/common v0.53.0
-	github.com/satori/go.uuid v1.2.0
 )
 
-require github.com/alecthomas/kingpin/v2 v2.4.0
+require (
+	github.com/alecthomas/kingpin/v2 v2.4.0
+	github.com/google/uuid v1.6.0
+)
 
 require (
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
