@@ -1,21 +1,21 @@
 module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
-go 1.21.0
-
-toolchain go1.22.1
+go 1.22.3
 
 require (
 	github.com/alecthomas/units v0.0.0-20231202071711-9a357b53e9c9 // indirect
 	github.com/apache/cloudstack-go/v2 v2.16.0
-	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20240504100253-a8a4f68eec99
+	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20240511100124-86f8263630c3
 	github.com/cloudfoundry/bosh-utils v0.0.465
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.33.1
 	github.com/prometheus/common v0.53.0
-	github.com/satori/go.uuid v1.2.0
 )
 
-require github.com/alecthomas/kingpin/v2 v2.4.0
+require (
+	github.com/alecthomas/kingpin/v2 v2.4.0
+	github.com/google/uuid v1.6.0
+)
 
 require (
 	github.com/bmatcuk/doublestar v1.3.4 // indirect

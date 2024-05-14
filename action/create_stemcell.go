@@ -16,8 +16,8 @@ import (
 	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/google/uuid"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	"github.com/satori/go.uuid"
 )
 
 // CreateStemcell - Create CS template from given stemcell
@@ -104,7 +104,7 @@ func (a CPI) getUploadParams(name string) (*cloudstack.GetUploadParamsForTemplat
 // generateStemcellID -
 // CS ids are limited to 32 bytes
 func (a CPI) generateStemcellID() string {
-	id := uuid.NewV4()
+	id := uuid.NewString()
 	name := fmt.Sprintf(config.TemplateNameFormat, id)
 	parts := strings.Split(name, "-")
 	return strings.Join(parts[0:4], "-")

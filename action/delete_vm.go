@@ -77,7 +77,10 @@ func (a CPI) DeleteVM(cid apiv1.VMCID) error {
 
 	a.logger.Info("delete_vm", "Finished deleting vm %s ...", cid.AsString())
 
-	a.regFactory.Create(cid).Delete()
+	if err := a.regFactory.Create(cid).Delete(); err != nil {
+		a.logger.Error("delete_vm", "error while deleting VM %s: %s", cid.AsString(), err)
+		return err
+	}
 
 	return nil
 }

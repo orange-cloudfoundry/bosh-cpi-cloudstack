@@ -2,6 +2,7 @@ package action
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"sort"
@@ -11,8 +12,8 @@ import (
 	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	"github.com/google/uuid"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
-	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -61,7 +62,7 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 	a.client.AsyncTimeout(a.config.CloudStack.Timeout.CreateVm)
 	a.client.Timeout(time.Duration(a.config.CloudStack.Timeout.CreateVm) * time.Second)
 
-	vmName := fmt.Sprintf("%s%s", config.VMPrefix, uuid.NewV4().String())
+	vmName := fmt.Sprintf("%s%s", config.VMPrefix, uuid.NewString())
 	vmCID := apiv1.NewVMCID(vmName)
 
 	if err := p.cloudProps.As(&resProps); err != nil {
@@ -280,7 +281,9 @@ func (a CPI) attachEphemeralDisk(vmCID apiv1.VMCID, diskCid apiv1.DiskCID) error
 }
 
 func (a CPI) destroyVmErrFallback(err error, vmId string, fs ...func()) error {
-	a.deleteVMById(vmId)
+	if err := a.deleteVMById(vmId); err != nil {
+		a.logger.Error("delete_vm", "error while removing vm %s: %s", vmId, err)
+	}
 	for _, fs := range fs {
 		fs()
 	}
@@ -333,7 +336,8 @@ func (a CPI) createVip(network apiv1.Network, vmId, zoneID string, defNetwork *c
 			return err
 		},
 		func(err error) bool {
-			_, ok := err.(*json.SyntaxError)
+			var syntaxError *json.SyntaxError
+			ok := errors.As(err, &syntaxError)
 			return ok
 		})
 }
