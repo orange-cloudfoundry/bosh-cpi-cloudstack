@@ -1,9 +1,7 @@
 project_name: bosh-cpi-cloudstack
 
 builds:
-  -
-    &template
-    id: binary
+  - id: binary
     binary: bosh-cpi-cloudstack
     dir: main
     env:

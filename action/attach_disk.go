@@ -56,7 +56,7 @@ func (a CPI) AttachDiskBase(vmCID apiv1.VMCID, diskCID apiv1.DiskCID, isV2 bool)
 	indexVol := byte('a') + byte(resp.Deviceid)
 	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{
 		"path":      "/dev/xvd" + string(indexVol),
-		"volumd_id": fmt.Sprintf("%d", resp.Deviceid),
+		"volume_id": fmt.Sprintf("%d", resp.Deviceid),
 	})
 
 	if !isV2 {
