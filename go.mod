@@ -9,7 +9,7 @@ require (
 	github.com/cloudfoundry/bosh-utils v0.0.469
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.33.1
-	github.com/prometheus/common v0.53.0
+	github.com/prometheus/common v0.54.0
 )
 
 require (
