@@ -8,7 +8,7 @@ require (
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20240511100124-86f8263630c3
 	github.com/cloudfoundry/bosh-utils v0.0.479
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.33.1
+	github.com/onsi/gomega v1.34.0
 	github.com/prometheus/common v0.55.0
 )
 
