@@ -8,7 +8,7 @@ require (
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20240817100214-eba7b3b8a03b
 	github.com/cloudfoundry/bosh-utils v0.0.485
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.34.1
+	github.com/onsi/gomega v1.34.2
 	github.com/prometheus/common v0.56.0
 )
 
@@ -27,7 +27,6 @@ require (
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
-	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948 // indirect
 	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
