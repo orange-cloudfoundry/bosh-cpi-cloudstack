@@ -1,12 +1,11 @@
 module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
 go 1.22.6
-
 require (
 	github.com/alecthomas/units v0.0.0-20240626203959-61d1e3462e30 // indirect
 	github.com/apache/cloudstack-go/v2 v2.16.1
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20240817100214-eba7b3b8a03b
-	github.com/cloudfoundry/bosh-utils v0.0.486
+	github.com/cloudfoundry/bosh-utils v0.0.489
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.34.2
 	github.com/prometheus/common v0.58.0
