@@ -1,11 +1,11 @@
 module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
-go 1.22.6
+go 1.23.4
 
 require (
-	github.com/alecthomas/units v0.0.0-20240626203959-61d1e3462e30 // indirect
+	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/apache/cloudstack-go/v2 v2.16.1
-	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20240817100214-eba7b3b8a03b
+	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20241214100229-ac5e82eede68
 	github.com/cloudfoundry/bosh-utils v0.0.515
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.36.1
@@ -20,7 +20,7 @@ require (
 require (
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/charlievieth/fs v0.0.3 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
