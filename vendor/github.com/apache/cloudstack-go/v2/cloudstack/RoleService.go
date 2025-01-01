@@ -36,6 +36,10 @@ type RoleServiceIface interface {
 	NewDeleteRoleParams(id string) *DeleteRoleParams
 	DeleteRolePermission(p *DeleteRolePermissionParams) (*DeleteRolePermissionResponse, error)
 	NewDeleteRolePermissionParams(id string) *DeleteRolePermissionParams
+	DisableRole(p *DisableRoleParams) (*DisableRoleResponse, error)
+	NewDisableRoleParams(id string) *DisableRoleParams
+	EnableRole(p *EnableRoleParams) (*EnableRoleResponse, error)
+	NewEnableRoleParams(id string) *EnableRoleParams
 	ImportRole(p *ImportRoleParams) (*ImportRoleResponse, error)
 	NewImportRoleParams(name string, rules map[string]string) *ImportRoleParams
 	ListRolePermissions(p *ListRolePermissionsParams) (*ListRolePermissionsResponse, error)
@@ -49,6 +53,9 @@ type RoleServiceIface interface {
 	NewUpdateRoleParams(id string) *UpdateRoleParams
 	UpdateRolePermission(p *UpdateRolePermissionParams) (*UpdateRolePermissionResponse, error)
 	NewUpdateRolePermissionParams(roleid string) *UpdateRolePermissionParams
+	ListProjectRoles(p *ListProjectRolesParams) (*ListProjectRolesResponse, error)
+	NewListProjectRolesParams(projectid string) *ListProjectRolesParams
+	GetProjectRoleID(name string, projectid string, opts ...OptionFunc) (string, int, error)
 }
 
 type CreateRoleParams struct {
@@ -219,6 +226,7 @@ type CreateRoleResponse struct {
 	JobID       string `json:"jobid"`
 	Jobstatus   int    `json:"jobstatus"`
 	Name        string `json:"name"`
+	State       string `json:"state"`
 	Type        string `json:"type"`
 }
 
@@ -558,6 +566,194 @@ func (r *DeleteRolePermissionResponse) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, (*alias)(r))
 }
 
+type DisableRoleParams struct {
+	p map[string]interface{}
+}
+
+func (p *DisableRoleParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	return u
+}
+
+func (p *DisableRoleParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *DisableRoleParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *DisableRoleParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new DisableRoleParams instance,
+// as then you are sure you have configured all required params
+func (s *RoleService) NewDisableRoleParams(id string) *DisableRoleParams {
+	p := &DisableRoleParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// Disables a role
+func (s *RoleService) DisableRole(p *DisableRoleParams) (*DisableRoleResponse, error) {
+	resp, err := s.cs.newRequest("disableRole", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r DisableRoleResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type DisableRoleResponse struct {
+	Displaytext string `json:"displaytext"`
+	JobID       string `json:"jobid"`
+	Jobstatus   int    `json:"jobstatus"`
+	Success     bool   `json:"success"`
+}
+
+func (r *DisableRoleResponse) UnmarshalJSON(b []byte) error {
+	var m map[string]interface{}
+	err := json.Unmarshal(b, &m)
+	if err != nil {
+		return err
+	}
+
+	if success, ok := m["success"].(string); ok {
+		m["success"] = success == "true"
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	if ostypeid, ok := m["ostypeid"].(float64); ok {
+		m["ostypeid"] = strconv.Itoa(int(ostypeid))
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	type alias DisableRoleResponse
+	return json.Unmarshal(b, (*alias)(r))
+}
+
+type EnableRoleParams struct {
+	p map[string]interface{}
+}
+
+func (p *EnableRoleParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	return u
+}
+
+func (p *EnableRoleParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *EnableRoleParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *EnableRoleParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new EnableRoleParams instance,
+// as then you are sure you have configured all required params
+func (s *RoleService) NewEnableRoleParams(id string) *EnableRoleParams {
+	p := &EnableRoleParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// Enables a role
+func (s *RoleService) EnableRole(p *EnableRoleParams) (*EnableRoleResponse, error) {
+	resp, err := s.cs.newRequest("enableRole", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r EnableRoleResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type EnableRoleResponse struct {
+	Displaytext string `json:"displaytext"`
+	JobID       string `json:"jobid"`
+	Jobstatus   int    `json:"jobstatus"`
+	Success     bool   `json:"success"`
+}
+
+func (r *EnableRoleResponse) UnmarshalJSON(b []byte) error {
+	var m map[string]interface{}
+	err := json.Unmarshal(b, &m)
+	if err != nil {
+		return err
+	}
+
+	if success, ok := m["success"].(string); ok {
+		m["success"] = success == "true"
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	if ostypeid, ok := m["ostypeid"].(float64); ok {
+		m["ostypeid"] = strconv.Itoa(int(ostypeid))
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	type alias EnableRoleResponse
+	return json.Unmarshal(b, (*alias)(r))
+}
+
 type ImportRoleParams struct {
 	p map[string]interface{}
 }
@@ -753,6 +949,7 @@ type ImportRoleResponse struct {
 	JobID       string `json:"jobid"`
 	Jobstatus   int    `json:"jobstatus"`
 	Name        string `json:"name"`
+	State       string `json:"state"`
 	Type        string `json:"type"`
 }
 
@@ -856,6 +1053,9 @@ func (p *ListRolesParams) toURLValues() url.Values {
 	if v, found := p.p["pagesize"]; found {
 		vv := strconv.Itoa(v.(int))
 		u.Set("pagesize", vv)
+	}
+	if v, found := p.p["state"]; found {
+		u.Set("state", v.(string))
 	}
 	if v, found := p.p["type"]; found {
 		u.Set("type", v.(string))
@@ -965,6 +1165,27 @@ func (p *ListRolesParams) GetPagesize() (int, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["pagesize"].(int)
+	return value, ok
+}
+
+func (p *ListRolesParams) SetState(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["state"] = v
+}
+
+func (p *ListRolesParams) ResetState() {
+	if p.p != nil && p.p["state"] != nil {
+		delete(p.p, "state")
+	}
+}
+
+func (p *ListRolesParams) GetState() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["state"].(string)
 	return value, ok
 }
 
@@ -1108,6 +1329,7 @@ type Role struct {
 	JobID       string `json:"jobid"`
 	Jobstatus   int    `json:"jobstatus"`
 	Name        string `json:"name"`
+	State       string `json:"state"`
 	Type        string `json:"type"`
 }
 
@@ -1279,6 +1501,7 @@ type UpdateRoleResponse struct {
 	JobID       string `json:"jobid"`
 	Jobstatus   int    `json:"jobstatus"`
 	Name        string `json:"name"`
+	State       string `json:"state"`
 	Type        string `json:"type"`
 }
 
@@ -1447,4 +1670,238 @@ func (r *UpdateRolePermissionResponse) UnmarshalJSON(b []byte) error {
 
 	type alias UpdateRolePermissionResponse
 	return json.Unmarshal(b, (*alias)(r))
+}
+
+type ListProjectRolesParams struct {
+	p map[string]interface{}
+}
+
+func (p *ListProjectRolesParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["keyword"]; found {
+		u.Set("keyword", v.(string))
+	}
+	if v, found := p.p["name"]; found {
+		u.Set("name", v.(string))
+	}
+	if v, found := p.p["page"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("page", vv)
+	}
+	if v, found := p.p["pagesize"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("pagesize", vv)
+	}
+	if v, found := p.p["projectid"]; found {
+		u.Set("projectid", v.(string))
+	}
+	if v, found := p.p["projectroleid"]; found {
+		u.Set("projectroleid", v.(string))
+	}
+	return u
+}
+
+func (p *ListProjectRolesParams) SetKeyword(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["keyword"] = v
+}
+
+func (p *ListProjectRolesParams) ResetKeyword() {
+	if p.p != nil && p.p["keyword"] != nil {
+		delete(p.p, "keyword")
+	}
+}
+
+func (p *ListProjectRolesParams) GetKeyword() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["keyword"].(string)
+	return value, ok
+}
+
+func (p *ListProjectRolesParams) SetName(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["name"] = v
+}
+
+func (p *ListProjectRolesParams) ResetName() {
+	if p.p != nil && p.p["name"] != nil {
+		delete(p.p, "name")
+	}
+}
+
+func (p *ListProjectRolesParams) GetName() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["name"].(string)
+	return value, ok
+}
+
+func (p *ListProjectRolesParams) SetPage(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["page"] = v
+}
+
+func (p *ListProjectRolesParams) ResetPage() {
+	if p.p != nil && p.p["page"] != nil {
+		delete(p.p, "page")
+	}
+}
+
+func (p *ListProjectRolesParams) GetPage() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["page"].(int)
+	return value, ok
+}
+
+func (p *ListProjectRolesParams) SetPagesize(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["pagesize"] = v
+}
+
+func (p *ListProjectRolesParams) ResetPagesize() {
+	if p.p != nil && p.p["pagesize"] != nil {
+		delete(p.p, "pagesize")
+	}
+}
+
+func (p *ListProjectRolesParams) GetPagesize() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["pagesize"].(int)
+	return value, ok
+}
+
+func (p *ListProjectRolesParams) SetProjectid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["projectid"] = v
+}
+
+func (p *ListProjectRolesParams) ResetProjectid() {
+	if p.p != nil && p.p["projectid"] != nil {
+		delete(p.p, "projectid")
+	}
+}
+
+func (p *ListProjectRolesParams) GetProjectid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *ListProjectRolesParams) SetProjectroleid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["projectroleid"] = v
+}
+
+func (p *ListProjectRolesParams) ResetProjectroleid() {
+	if p.p != nil && p.p["projectroleid"] != nil {
+		delete(p.p, "projectroleid")
+	}
+}
+
+func (p *ListProjectRolesParams) GetProjectroleid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["projectroleid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ListProjectRolesParams instance,
+// as then you are sure you have configured all required params
+func (s *RoleService) NewListProjectRolesParams(projectid string) *ListProjectRolesParams {
+	p := &ListProjectRolesParams{}
+	p.p = make(map[string]interface{})
+	p.p["projectid"] = projectid
+	return p
+}
+
+// This is a courtesy helper function, which in some cases may not work as expected!
+func (s *RoleService) GetProjectRoleID(name string, projectid string, opts ...OptionFunc) (string, int, error) {
+	p := &ListProjectRolesParams{}
+	p.p = make(map[string]interface{})
+
+	p.p["name"] = name
+	p.p["projectid"] = projectid
+
+	for _, fn := range append(s.cs.options, opts...) {
+		if err := fn(s.cs, p); err != nil {
+			return "", -1, err
+		}
+	}
+
+	l, err := s.ListProjectRoles(p)
+	if err != nil {
+		return "", -1, err
+	}
+
+	if l.Count == 0 {
+		return "", l.Count, fmt.Errorf("No match found for %s: %+v", name, l)
+	}
+
+	if l.Count == 1 {
+		return l.ProjectRoles[0].Id, l.Count, nil
+	}
+
+	if l.Count > 1 {
+		for _, v := range l.ProjectRoles {
+			if v.Name == name {
+				return v.Id, l.Count, nil
+			}
+		}
+	}
+	return "", l.Count, fmt.Errorf("Could not find an exact match for %s: %+v", name, l)
+}
+
+// Lists Project roles in CloudStack
+func (s *RoleService) ListProjectRoles(p *ListProjectRolesParams) (*ListProjectRolesResponse, error) {
+	resp, err := s.cs.newRequest("listProjectRoles", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ListProjectRolesResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type ListProjectRolesResponse struct {
+	Count        int            `json:"count"`
+	ProjectRoles []*ProjectRole `json:"projectrole"`
+}
+
+type ProjectRole struct {
+	Description string `json:"description"`
+	Id          string `json:"id"`
+	Ispublic    bool   `json:"ispublic"`
+	JobID       string `json:"jobid"`
+	Jobstatus   int    `json:"jobstatus"`
+	Name        string `json:"name"`
+	Projectid   string `json:"projectid"`
 }

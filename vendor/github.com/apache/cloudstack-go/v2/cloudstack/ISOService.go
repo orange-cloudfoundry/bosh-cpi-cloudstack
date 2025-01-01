@@ -38,6 +38,8 @@ type ISOServiceIface interface {
 	NewDetachIsoParams(virtualmachineid string) *DetachIsoParams
 	ExtractIso(p *ExtractIsoParams) (*ExtractIsoResponse, error)
 	NewExtractIsoParams(id string, mode string) *ExtractIsoParams
+	GetUploadParamsForIso(p *GetUploadParamsForIsoParams) (*GetUploadParamsForIsoResponse, error)
+	NewGetUploadParamsForIsoParams(format string, name string, zoneid string) *GetUploadParamsForIsoParams
 	ListIsoPermissions(p *ListIsoPermissionsParams) (*ListIsoPermissionsResponse, error)
 	NewListIsoPermissionsParams(id string) *ListIsoPermissionsParams
 	GetIsoPermissionByID(id string, opts ...OptionFunc) (*IsoPermission, int, error)
@@ -197,6 +199,7 @@ type AttachIsoResponse struct {
 	Cpuspeed              int                              `json:"cpuspeed"`
 	Cpuused               string                           `json:"cpuused"`
 	Created               string                           `json:"created"`
+	Deleteprotection      bool                             `json:"deleteprotection"`
 	Details               map[string]string                `json:"details"`
 	Diskioread            int64                            `json:"diskioread"`
 	Diskiowrite           int64                            `json:"diskiowrite"`
@@ -208,6 +211,7 @@ type AttachIsoResponse struct {
 	Displayvm             bool                             `json:"displayvm"`
 	Domain                string                           `json:"domain"`
 	Domainid              string                           `json:"domainid"`
+	Domainpath            string                           `json:"domainpath"`
 	Forvirtualnetwork     bool                             `json:"forvirtualnetwork"`
 	Group                 string                           `json:"group"`
 	Groupid               string                           `json:"groupid"`
@@ -221,6 +225,7 @@ type AttachIsoResponse struct {
 	Icon                  interface{}                      `json:"icon"`
 	Id                    string                           `json:"id"`
 	Instancename          string                           `json:"instancename"`
+	Ipaddress             string                           `json:"ipaddress"`
 	Isdynamicallyscalable bool                             `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                           `json:"isodisplaytext"`
 	Isoid                 string                           `json:"isoid"`
@@ -258,6 +263,7 @@ type AttachIsoResponse struct {
 	State                 string                           `json:"state"`
 	Tags                  []Tags                           `json:"tags"`
 	Templatedisplaytext   string                           `json:"templatedisplaytext"`
+	Templateformat        string                           `json:"templateformat"`
 	Templateid            string                           `json:"templateid"`
 	Templatename          string                           `json:"templatename"`
 	Templatetype          string                           `json:"templatetype"`
@@ -269,6 +275,7 @@ type AttachIsoResponse struct {
 	Userid                string                           `json:"userid"`
 	Username              string                           `json:"username"`
 	Vgpu                  string                           `json:"vgpu"`
+	Vmtype                string                           `json:"vmtype"`
 	Vnfdetails            map[string]string                `json:"vnfdetails"`
 	Vnfnics               []string                         `json:"vnfnics"`
 	Zoneid                string                           `json:"zoneid"`
@@ -280,6 +287,7 @@ type AttachIsoResponseSecuritygroup struct {
 	Description         string                               `json:"description"`
 	Domain              string                               `json:"domain"`
 	Domainid            string                               `json:"domainid"`
+	Domainpath          string                               `json:"domainpath"`
 	Egressrule          []AttachIsoResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                               `json:"id"`
 	Ingressrule         []AttachIsoResponseSecuritygroupRule `json:"ingressrule"`
@@ -305,16 +313,18 @@ type AttachIsoResponseSecuritygroupRule struct {
 }
 
 type AttachIsoResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *AttachIsoResponse) UnmarshalJSON(b []byte) error {
@@ -500,6 +510,7 @@ func (s *ISOService) CopyIso(p *CopyIsoParams) (*CopyIsoResponse, error) {
 type CopyIsoResponse struct {
 	Account               string              `json:"account"`
 	Accountid             string              `json:"accountid"`
+	Arch                  string              `json:"arch"`
 	Bits                  int                 `json:"bits"`
 	Bootable              bool                `json:"bootable"`
 	Checksum              string              `json:"checksum"`
@@ -513,6 +524,7 @@ type CopyIsoResponse struct {
 	Displaytext           string              `json:"displaytext"`
 	Domain                string              `json:"domain"`
 	Domainid              string              `json:"domainid"`
+	Domainpath            string              `json:"domainpath"`
 	Downloaddetails       []map[string]string `json:"downloaddetails"`
 	Format                string              `json:"format"`
 	Hasannotations        bool                `json:"hasannotations"`
@@ -805,6 +817,7 @@ type DetachIsoResponse struct {
 	Cpuspeed              int                              `json:"cpuspeed"`
 	Cpuused               string                           `json:"cpuused"`
 	Created               string                           `json:"created"`
+	Deleteprotection      bool                             `json:"deleteprotection"`
 	Details               map[string]string                `json:"details"`
 	Diskioread            int64                            `json:"diskioread"`
 	Diskiowrite           int64                            `json:"diskiowrite"`
@@ -816,6 +829,7 @@ type DetachIsoResponse struct {
 	Displayvm             bool                             `json:"displayvm"`
 	Domain                string                           `json:"domain"`
 	Domainid              string                           `json:"domainid"`
+	Domainpath            string                           `json:"domainpath"`
 	Forvirtualnetwork     bool                             `json:"forvirtualnetwork"`
 	Group                 string                           `json:"group"`
 	Groupid               string                           `json:"groupid"`
@@ -829,6 +843,7 @@ type DetachIsoResponse struct {
 	Icon                  interface{}                      `json:"icon"`
 	Id                    string                           `json:"id"`
 	Instancename          string                           `json:"instancename"`
+	Ipaddress             string                           `json:"ipaddress"`
 	Isdynamicallyscalable bool                             `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                           `json:"isodisplaytext"`
 	Isoid                 string                           `json:"isoid"`
@@ -866,6 +881,7 @@ type DetachIsoResponse struct {
 	State                 string                           `json:"state"`
 	Tags                  []Tags                           `json:"tags"`
 	Templatedisplaytext   string                           `json:"templatedisplaytext"`
+	Templateformat        string                           `json:"templateformat"`
 	Templateid            string                           `json:"templateid"`
 	Templatename          string                           `json:"templatename"`
 	Templatetype          string                           `json:"templatetype"`
@@ -877,6 +893,7 @@ type DetachIsoResponse struct {
 	Userid                string                           `json:"userid"`
 	Username              string                           `json:"username"`
 	Vgpu                  string                           `json:"vgpu"`
+	Vmtype                string                           `json:"vmtype"`
 	Vnfdetails            map[string]string                `json:"vnfdetails"`
 	Vnfnics               []string                         `json:"vnfnics"`
 	Zoneid                string                           `json:"zoneid"`
@@ -888,6 +905,7 @@ type DetachIsoResponseSecuritygroup struct {
 	Description         string                               `json:"description"`
 	Domain              string                               `json:"domain"`
 	Domainid            string                               `json:"domainid"`
+	Domainpath          string                               `json:"domainpath"`
 	Egressrule          []DetachIsoResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                               `json:"id"`
 	Ingressrule         []DetachIsoResponseSecuritygroupRule `json:"ingressrule"`
@@ -913,16 +931,18 @@ type DetachIsoResponseSecuritygroupRule struct {
 }
 
 type DetachIsoResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *DetachIsoResponse) UnmarshalJSON(b []byte) error {
@@ -1124,6 +1144,370 @@ type ExtractIsoResponse struct {
 	Zonename         string `json:"zonename"`
 }
 
+type GetUploadParamsForIsoParams struct {
+	p map[string]interface{}
+}
+
+func (p *GetUploadParamsForIsoParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["account"]; found {
+		u.Set("account", v.(string))
+	}
+	if v, found := p.p["bootable"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("bootable", vv)
+	}
+	if v, found := p.p["checksum"]; found {
+		u.Set("checksum", v.(string))
+	}
+	if v, found := p.p["displaytext"]; found {
+		u.Set("displaytext", v.(string))
+	}
+	if v, found := p.p["domainid"]; found {
+		u.Set("domainid", v.(string))
+	}
+	if v, found := p.p["format"]; found {
+		u.Set("format", v.(string))
+	}
+	if v, found := p.p["isextractable"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("isextractable", vv)
+	}
+	if v, found := p.p["isfeatured"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("isfeatured", vv)
+	}
+	if v, found := p.p["ispublic"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("ispublic", vv)
+	}
+	if v, found := p.p["name"]; found {
+		u.Set("name", v.(string))
+	}
+	if v, found := p.p["ostypeid"]; found {
+		u.Set("ostypeid", v.(string))
+	}
+	if v, found := p.p["projectid"]; found {
+		u.Set("projectid", v.(string))
+	}
+	if v, found := p.p["zoneid"]; found {
+		u.Set("zoneid", v.(string))
+	}
+	return u
+}
+
+func (p *GetUploadParamsForIsoParams) SetAccount(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["account"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetAccount() {
+	if p.p != nil && p.p["account"] != nil {
+		delete(p.p, "account")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetAccount() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["account"].(string)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetBootable(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["bootable"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetBootable() {
+	if p.p != nil && p.p["bootable"] != nil {
+		delete(p.p, "bootable")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetBootable() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["bootable"].(bool)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetChecksum(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["checksum"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetChecksum() {
+	if p.p != nil && p.p["checksum"] != nil {
+		delete(p.p, "checksum")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetChecksum() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["checksum"].(string)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetDisplaytext(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["displaytext"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetDisplaytext() {
+	if p.p != nil && p.p["displaytext"] != nil {
+		delete(p.p, "displaytext")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetDisplaytext() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["displaytext"].(string)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetDomainid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["domainid"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetDomainid() {
+	if p.p != nil && p.p["domainid"] != nil {
+		delete(p.p, "domainid")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetDomainid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["domainid"].(string)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetFormat(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["format"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetFormat() {
+	if p.p != nil && p.p["format"] != nil {
+		delete(p.p, "format")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetFormat() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["format"].(string)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetIsextractable(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["isextractable"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetIsextractable() {
+	if p.p != nil && p.p["isextractable"] != nil {
+		delete(p.p, "isextractable")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetIsextractable() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["isextractable"].(bool)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetIsfeatured(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["isfeatured"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetIsfeatured() {
+	if p.p != nil && p.p["isfeatured"] != nil {
+		delete(p.p, "isfeatured")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetIsfeatured() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["isfeatured"].(bool)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetIspublic(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["ispublic"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetIspublic() {
+	if p.p != nil && p.p["ispublic"] != nil {
+		delete(p.p, "ispublic")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetIspublic() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["ispublic"].(bool)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetName(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["name"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetName() {
+	if p.p != nil && p.p["name"] != nil {
+		delete(p.p, "name")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetName() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["name"].(string)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetOstypeid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["ostypeid"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetOstypeid() {
+	if p.p != nil && p.p["ostypeid"] != nil {
+		delete(p.p, "ostypeid")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetOstypeid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["ostypeid"].(string)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetProjectid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["projectid"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetProjectid() {
+	if p.p != nil && p.p["projectid"] != nil {
+		delete(p.p, "projectid")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetProjectid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *GetUploadParamsForIsoParams) SetZoneid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["zoneid"] = v
+}
+
+func (p *GetUploadParamsForIsoParams) ResetZoneid() {
+	if p.p != nil && p.p["zoneid"] != nil {
+		delete(p.p, "zoneid")
+	}
+}
+
+func (p *GetUploadParamsForIsoParams) GetZoneid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["zoneid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new GetUploadParamsForIsoParams instance,
+// as then you are sure you have configured all required params
+func (s *ISOService) NewGetUploadParamsForIsoParams(format string, name string, zoneid string) *GetUploadParamsForIsoParams {
+	p := &GetUploadParamsForIsoParams{}
+	p.p = make(map[string]interface{})
+	p.p["format"] = format
+	p.p["name"] = name
+	p.p["zoneid"] = zoneid
+	return p
+}
+
+// upload an existing ISO into the CloudStack cloud.
+func (s *ISOService) GetUploadParamsForIso(p *GetUploadParamsForIsoParams) (*GetUploadParamsForIsoResponse, error) {
+	resp, err := s.cs.newRequest("getUploadParamsForIso", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r GetUploadParamsForIsoResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type GetUploadParamsForIsoResponse struct {
+	Expires   string `json:"expires"`
+	Id        string `json:"id"`
+	JobID     string `json:"jobid"`
+	Jobstatus int    `json:"jobstatus"`
+	Metadata  string `json:"metadata"`
+	PostURL   string `json:"postURL"`
+	Signature string `json:"signature"`
+}
+
 type ListIsoPermissionsParams struct {
 	p map[string]interface{}
 }
@@ -1244,6 +1628,9 @@ func (p *ListIsosParams) toURLValues() url.Values {
 	if v, found := p.p["account"]; found {
 		u.Set("account", v.(string))
 	}
+	if v, found := p.p["arch"]; found {
+		u.Set("arch", v.(string))
+	}
 	if v, found := p.p["bootable"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("bootable", vv)
@@ -1342,6 +1729,27 @@ func (p *ListIsosParams) GetAccount() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["account"].(string)
+	return value, ok
+}
+
+func (p *ListIsosParams) SetArch(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["arch"] = v
+}
+
+func (p *ListIsosParams) ResetArch() {
+	if p.p != nil && p.p["arch"] != nil {
+		delete(p.p, "arch")
+	}
+}
+
+func (p *ListIsosParams) GetArch() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["arch"].(string)
 	return value, ok
 }
 
@@ -1902,6 +2310,7 @@ type ListIsosResponse struct {
 type Iso struct {
 	Account               string              `json:"account"`
 	Accountid             string              `json:"accountid"`
+	Arch                  string              `json:"arch"`
 	Bits                  int                 `json:"bits"`
 	Bootable              bool                `json:"bootable"`
 	Checksum              string              `json:"checksum"`
@@ -1915,6 +2324,7 @@ type Iso struct {
 	Displaytext           string              `json:"displaytext"`
 	Domain                string              `json:"domain"`
 	Domainid              string              `json:"domainid"`
+	Domainpath            string              `json:"domainpath"`
 	Downloaddetails       []map[string]string `json:"downloaddetails"`
 	Format                string              `json:"format"`
 	Hasannotations        bool                `json:"hasannotations"`
@@ -1995,6 +2405,9 @@ func (p *RegisterIsoParams) toURLValues() url.Values {
 	if v, found := p.p["account"]; found {
 		u.Set("account", v.(string))
 	}
+	if v, found := p.p["arch"]; found {
+		u.Set("arch", v.(string))
+	}
 	if v, found := p.p["bootable"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("bootable", vv)
@@ -2071,6 +2484,27 @@ func (p *RegisterIsoParams) GetAccount() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["account"].(string)
+	return value, ok
+}
+
+func (p *RegisterIsoParams) SetArch(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["arch"] = v
+}
+
+func (p *RegisterIsoParams) ResetArch() {
+	if p.p != nil && p.p["arch"] != nil {
+		delete(p.p, "arch")
+	}
+}
+
+func (p *RegisterIsoParams) GetArch() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["arch"].(string)
 	return value, ok
 }
 
@@ -2444,6 +2878,7 @@ func (s *ISOService) RegisterIso(p *RegisterIsoParams) (*RegisterIsoResponse, er
 type RegisterIsoResponse struct {
 	Account               string              `json:"account"`
 	Accountid             string              `json:"accountid"`
+	Arch                  string              `json:"arch"`
 	Bits                  int                 `json:"bits"`
 	Bootable              bool                `json:"bootable"`
 	Checksum              string              `json:"checksum"`
@@ -2457,6 +2892,7 @@ type RegisterIsoResponse struct {
 	Displaytext           string              `json:"displaytext"`
 	Domain                string              `json:"domain"`
 	Domainid              string              `json:"domainid"`
+	Domainpath            string              `json:"domainpath"`
 	Downloaddetails       []map[string]string `json:"downloaddetails"`
 	Format                string              `json:"format"`
 	Hasannotations        bool                `json:"hasannotations"`
@@ -2534,6 +2970,9 @@ func (p *UpdateIsoParams) toURLValues() url.Values {
 	if p.p == nil {
 		return u
 	}
+	if v, found := p.p["arch"]; found {
+		u.Set("arch", v.(string))
+	}
 	if v, found := p.p["bootable"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("bootable", vv)
@@ -2588,6 +3027,27 @@ func (p *UpdateIsoParams) toURLValues() url.Values {
 		u.Set("sshkeyenabled", vv)
 	}
 	return u
+}
+
+func (p *UpdateIsoParams) SetArch(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["arch"] = v
+}
+
+func (p *UpdateIsoParams) ResetArch() {
+	if p.p != nil && p.p["arch"] != nil {
+		delete(p.p, "arch")
+	}
+}
+
+func (p *UpdateIsoParams) GetArch() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["arch"].(string)
+	return value, ok
 }
 
 func (p *UpdateIsoParams) SetBootable(v bool) {
@@ -2911,6 +3371,7 @@ func (s *ISOService) UpdateIso(p *UpdateIsoParams) (*UpdateIsoResponse, error) {
 type UpdateIsoResponse struct {
 	Account               string              `json:"account"`
 	Accountid             string              `json:"accountid"`
+	Arch                  string              `json:"arch"`
 	Bits                  int                 `json:"bits"`
 	Bootable              bool                `json:"bootable"`
 	Checksum              string              `json:"checksum"`
@@ -2924,6 +3385,7 @@ type UpdateIsoResponse struct {
 	Displaytext           string              `json:"displaytext"`
 	Domain                string              `json:"domain"`
 	Domainid              string              `json:"domainid"`
+	Domainpath            string              `json:"domainpath"`
 	Downloaddetails       []map[string]string `json:"downloaddetails"`
 	Format                string              `json:"format"`
 	Hasannotations        bool                `json:"hasannotations"`

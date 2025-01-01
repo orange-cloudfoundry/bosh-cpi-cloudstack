@@ -28,6 +28,8 @@ import (
 type ConfigurationServiceIface interface {
 	ListCapabilities(p *ListCapabilitiesParams) (*ListCapabilitiesResponse, error)
 	NewListCapabilitiesParams() *ListCapabilitiesParams
+	ListConfigurationGroups(p *ListConfigurationGroupsParams) (*ListConfigurationGroupsResponse, error)
+	NewListConfigurationGroupsParams() *ListConfigurationGroupsParams
 	ListConfigurations(p *ListConfigurationsParams) (*ListConfigurationsResponse, error)
 	NewListConfigurationsParams() *ListConfigurationsParams
 	ListDeploymentPlanners(p *ListDeploymentPlannersParams) (*ListDeploymentPlannersResponse, error)
@@ -36,6 +38,8 @@ type ConfigurationServiceIface interface {
 	NewUpdateConfigurationParams(name string) *UpdateConfigurationParams
 	ResetConfiguration(p *ResetConfigurationParams) (*ResetConfigurationResponse, error)
 	NewResetConfigurationParams(name string) *ResetConfigurationParams
+	UpdateStorageCapabilities(p *UpdateStorageCapabilitiesParams) (*UpdateStorageCapabilitiesResponse, error)
+	NewUpdateStorageCapabilitiesParams(id string) *UpdateStorageCapabilitiesParams
 }
 
 type ListCapabilitiesParams struct {
@@ -81,6 +85,7 @@ type Capability struct {
 	Allowusercreateprojects                      bool   `json:"allowusercreateprojects"`
 	Allowuserexpungerecovervm                    bool   `json:"allowuserexpungerecovervm"`
 	Allowuserexpungerecovervolume                bool   `json:"allowuserexpungerecovervolume"`
+	Allowuserforcestopvm                         bool   `json:"allowuserforcestopvm"`
 	Allowuserviewalldomainaccounts               bool   `json:"allowuserviewalldomainaccounts"`
 	Allowuserviewdestroyedvm                     bool   `json:"allowuserviewdestroyedvm"`
 	Apilimitinterval                             int    `json:"apilimitinterval"`
@@ -103,8 +108,162 @@ type Capability struct {
 	Projectinviterequired                        bool   `json:"projectinviterequired"`
 	Regionsecondaryenabled                       bool   `json:"regionsecondaryenabled"`
 	Securitygroupsenabled                        bool   `json:"securitygroupsenabled"`
+	Sharedfsvmmincpucount                        int    `json:"sharedfsvmmincpucount"`
+	Sharedfsvmminramsize                         int    `json:"sharedfsvmminramsize"`
 	SupportELB                                   string `json:"supportELB"`
 	Userpublictemplateenabled                    bool   `json:"userpublictemplateenabled"`
+}
+
+type ListConfigurationGroupsParams struct {
+	p map[string]interface{}
+}
+
+func (p *ListConfigurationGroupsParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["group"]; found {
+		u.Set("group", v.(string))
+	}
+	if v, found := p.p["keyword"]; found {
+		u.Set("keyword", v.(string))
+	}
+	if v, found := p.p["page"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("page", vv)
+	}
+	if v, found := p.p["pagesize"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("pagesize", vv)
+	}
+	return u
+}
+
+func (p *ListConfigurationGroupsParams) SetGroup(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["group"] = v
+}
+
+func (p *ListConfigurationGroupsParams) ResetGroup() {
+	if p.p != nil && p.p["group"] != nil {
+		delete(p.p, "group")
+	}
+}
+
+func (p *ListConfigurationGroupsParams) GetGroup() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["group"].(string)
+	return value, ok
+}
+
+func (p *ListConfigurationGroupsParams) SetKeyword(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["keyword"] = v
+}
+
+func (p *ListConfigurationGroupsParams) ResetKeyword() {
+	if p.p != nil && p.p["keyword"] != nil {
+		delete(p.p, "keyword")
+	}
+}
+
+func (p *ListConfigurationGroupsParams) GetKeyword() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["keyword"].(string)
+	return value, ok
+}
+
+func (p *ListConfigurationGroupsParams) SetPage(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["page"] = v
+}
+
+func (p *ListConfigurationGroupsParams) ResetPage() {
+	if p.p != nil && p.p["page"] != nil {
+		delete(p.p, "page")
+	}
+}
+
+func (p *ListConfigurationGroupsParams) GetPage() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["page"].(int)
+	return value, ok
+}
+
+func (p *ListConfigurationGroupsParams) SetPagesize(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["pagesize"] = v
+}
+
+func (p *ListConfigurationGroupsParams) ResetPagesize() {
+	if p.p != nil && p.p["pagesize"] != nil {
+		delete(p.p, "pagesize")
+	}
+}
+
+func (p *ListConfigurationGroupsParams) GetPagesize() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["pagesize"].(int)
+	return value, ok
+}
+
+// You should always use this function to get a new ListConfigurationGroupsParams instance,
+// as then you are sure you have configured all required params
+func (s *ConfigurationService) NewListConfigurationGroupsParams() *ListConfigurationGroupsParams {
+	p := &ListConfigurationGroupsParams{}
+	p.p = make(map[string]interface{})
+	return p
+}
+
+// Lists all configuration groups (primarily used for UI).
+func (s *ConfigurationService) ListConfigurationGroups(p *ListConfigurationGroupsParams) (*ListConfigurationGroupsResponse, error) {
+	resp, err := s.cs.newRequest("listConfigurationGroups", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ListConfigurationGroupsResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type ListConfigurationGroupsResponse struct {
+	Count               int                   `json:"count"`
+	ConfigurationGroups []*ConfigurationGroup `json:"configurationgroup"`
+}
+
+type ConfigurationGroup struct {
+	Description string                       `json:"description"`
+	JobID       string                       `json:"jobid"`
+	Jobstatus   int                          `json:"jobstatus"`
+	Name        string                       `json:"name"`
+	Precedence  int64                        `json:"precedence"`
+	Subgroup    []ConfigurationGroupSubgroup `json:"subgroup"`
+}
+
+type ConfigurationGroupSubgroup struct {
+	Name       string `json:"name"`
+	Precedence int64  `json:"precedence"`
 }
 
 type ListConfigurationsParams struct {
@@ -1099,4 +1258,99 @@ type ResetConfigurationResponse struct {
 	Subgroup     string `json:"subgroup"`
 	Type         string `json:"type"`
 	Value        string `json:"value"`
+}
+
+type UpdateStorageCapabilitiesParams struct {
+	p map[string]interface{}
+}
+
+func (p *UpdateStorageCapabilitiesParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	return u
+}
+
+func (p *UpdateStorageCapabilitiesParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *UpdateStorageCapabilitiesParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *UpdateStorageCapabilitiesParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new UpdateStorageCapabilitiesParams instance,
+// as then you are sure you have configured all required params
+func (s *ConfigurationService) NewUpdateStorageCapabilitiesParams(id string) *UpdateStorageCapabilitiesParams {
+	p := &UpdateStorageCapabilitiesParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// Syncs capabilities of storage pools
+func (s *ConfigurationService) UpdateStorageCapabilities(p *UpdateStorageCapabilitiesParams) (*UpdateStorageCapabilitiesResponse, error) {
+	resp, err := s.cs.newRequest("updateStorageCapabilities", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r UpdateStorageCapabilitiesResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type UpdateStorageCapabilitiesResponse struct {
+	Allocatediops        int64             `json:"allocatediops"`
+	Capacityiops         int64             `json:"capacityiops"`
+	Clusterid            string            `json:"clusterid"`
+	Clustername          string            `json:"clustername"`
+	Created              string            `json:"created"`
+	Disksizeallocated    int64             `json:"disksizeallocated"`
+	Disksizetotal        int64             `json:"disksizetotal"`
+	Disksizeused         int64             `json:"disksizeused"`
+	Hasannotations       bool              `json:"hasannotations"`
+	Hypervisor           string            `json:"hypervisor"`
+	Id                   string            `json:"id"`
+	Ipaddress            string            `json:"ipaddress"`
+	Istagarule           bool              `json:"istagarule"`
+	JobID                string            `json:"jobid"`
+	Jobstatus            int               `json:"jobstatus"`
+	Managed              bool              `json:"managed"`
+	Name                 string            `json:"name"`
+	Nfsmountopts         string            `json:"nfsmountopts"`
+	Overprovisionfactor  string            `json:"overprovisionfactor"`
+	Path                 string            `json:"path"`
+	Podid                string            `json:"podid"`
+	Podname              string            `json:"podname"`
+	Provider             string            `json:"provider"`
+	Scope                string            `json:"scope"`
+	State                string            `json:"state"`
+	Storagecapabilities  map[string]string `json:"storagecapabilities"`
+	Storagecustomstats   map[string]string `json:"storagecustomstats"`
+	Suitableformigration bool              `json:"suitableformigration"`
+	Tags                 string            `json:"tags"`
+	Type                 string            `json:"type"`
+	Zoneid               string            `json:"zoneid"`
+	Zonename             string            `json:"zonename"`
 }

@@ -36,8 +36,10 @@ type AccountServiceIface interface {
 	NewDisableAccountParams(lock bool) *DisableAccountParams
 	EnableAccount(p *EnableAccountParams) (*EnableAccountResponse, error)
 	NewEnableAccountParams() *EnableAccountParams
-	GetSolidFireAccountId(p *GetSolidFireAccountIdParams) (*GetSolidFireAccountIdResponse, error)
-	NewGetSolidFireAccountIdParams(accountid string, storageid string) *GetSolidFireAccountIdParams
+	IsAccountAllowedToCreateOfferingsWithTags(p *IsAccountAllowedToCreateOfferingsWithTagsParams) (*IsAccountAllowedToCreateOfferingsWithTagsResponse, error)
+	NewIsAccountAllowedToCreateOfferingsWithTagsParams() *IsAccountAllowedToCreateOfferingsWithTagsParams
+	LinkAccountToLdap(p *LinkAccountToLdapParams) (*LinkAccountToLdapResponse, error)
+	NewLinkAccountToLdapParams(account string, domainid string, ldapdomain string) *LinkAccountToLdapParams
 	ListAccounts(p *ListAccountsParams) (*ListAccountsResponse, error)
 	NewListAccountsParams() *ListAccountsParams
 	GetAccountID(name string, opts ...OptionFunc) (string, int, error)
@@ -485,6 +487,7 @@ type CreateAccountResponse struct {
 	Snapshotlimit             string                      `json:"snapshotlimit"`
 	Snapshottotal             int64                       `json:"snapshottotal"`
 	State                     string                      `json:"state"`
+	Taggedresources           []string                    `json:"taggedresources"`
 	Templateavailable         string                      `json:"templateavailable"`
 	Templatelimit             string                      `json:"templatelimit"`
 	Templatetotal             int64                       `json:"templatetotal"`
@@ -811,6 +814,7 @@ type DisableAccountResponse struct {
 	Snapshotlimit             string                       `json:"snapshotlimit"`
 	Snapshottotal             int64                        `json:"snapshottotal"`
 	State                     string                       `json:"state"`
+	Taggedresources           []string                     `json:"taggedresources"`
 	Templateavailable         string                       `json:"templateavailable"`
 	Templatelimit             string                       `json:"templatelimit"`
 	Templatetotal             int64                        `json:"templatetotal"`
@@ -1009,6 +1013,7 @@ type EnableAccountResponse struct {
 	Snapshotlimit             string                      `json:"snapshotlimit"`
 	Snapshottotal             int64                       `json:"snapshottotal"`
 	State                     string                      `json:"state"`
+	Taggedresources           []string                    `json:"taggedresources"`
 	Templateavailable         string                      `json:"templateavailable"`
 	Templatelimit             string                      `json:"templatelimit"`
 	Templatetotal             int64                       `json:"templatetotal"`
@@ -1053,84 +1058,58 @@ type EnableAccountResponseUser struct {
 	Usersource          string      `json:"usersource"`
 }
 
-type GetSolidFireAccountIdParams struct {
+type IsAccountAllowedToCreateOfferingsWithTagsParams struct {
 	p map[string]interface{}
 }
 
-func (p *GetSolidFireAccountIdParams) toURLValues() url.Values {
+func (p *IsAccountAllowedToCreateOfferingsWithTagsParams) toURLValues() url.Values {
 	u := url.Values{}
 	if p.p == nil {
 		return u
 	}
-	if v, found := p.p["accountid"]; found {
-		u.Set("accountid", v.(string))
-	}
-	if v, found := p.p["storageid"]; found {
-		u.Set("storageid", v.(string))
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
 	}
 	return u
 }
 
-func (p *GetSolidFireAccountIdParams) SetAccountid(v string) {
+func (p *IsAccountAllowedToCreateOfferingsWithTagsParams) SetId(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	p.p["accountid"] = v
+	p.p["id"] = v
 }
 
-func (p *GetSolidFireAccountIdParams) ResetAccountid() {
-	if p.p != nil && p.p["accountid"] != nil {
-		delete(p.p, "accountid")
+func (p *IsAccountAllowedToCreateOfferingsWithTagsParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
 	}
 }
 
-func (p *GetSolidFireAccountIdParams) GetAccountid() (string, bool) {
+func (p *IsAccountAllowedToCreateOfferingsWithTagsParams) GetId() (string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["accountid"].(string)
+	value, ok := p.p["id"].(string)
 	return value, ok
 }
 
-func (p *GetSolidFireAccountIdParams) SetStorageid(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["storageid"] = v
-}
-
-func (p *GetSolidFireAccountIdParams) ResetStorageid() {
-	if p.p != nil && p.p["storageid"] != nil {
-		delete(p.p, "storageid")
-	}
-}
-
-func (p *GetSolidFireAccountIdParams) GetStorageid() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["storageid"].(string)
-	return value, ok
-}
-
-// You should always use this function to get a new GetSolidFireAccountIdParams instance,
+// You should always use this function to get a new IsAccountAllowedToCreateOfferingsWithTagsParams instance,
 // as then you are sure you have configured all required params
-func (s *AccountService) NewGetSolidFireAccountIdParams(accountid string, storageid string) *GetSolidFireAccountIdParams {
-	p := &GetSolidFireAccountIdParams{}
+func (s *AccountService) NewIsAccountAllowedToCreateOfferingsWithTagsParams() *IsAccountAllowedToCreateOfferingsWithTagsParams {
+	p := &IsAccountAllowedToCreateOfferingsWithTagsParams{}
 	p.p = make(map[string]interface{})
-	p.p["accountid"] = accountid
-	p.p["storageid"] = storageid
 	return p
 }
 
-// Get SolidFire Account ID
-func (s *AccountService) GetSolidFireAccountId(p *GetSolidFireAccountIdParams) (*GetSolidFireAccountIdResponse, error) {
-	resp, err := s.cs.newRequest("getSolidFireAccountId", p.toURLValues())
+// Return true if the specified account is allowed to create offerings with tags.
+func (s *AccountService) IsAccountAllowedToCreateOfferingsWithTags(p *IsAccountAllowedToCreateOfferingsWithTagsParams) (*IsAccountAllowedToCreateOfferingsWithTagsResponse, error) {
+	resp, err := s.cs.newRequest("isAccountAllowedToCreateOfferingsWithTags", p.toURLValues())
 	if err != nil {
 		return nil, err
 	}
 
-	var r GetSolidFireAccountIdResponse
+	var r IsAccountAllowedToCreateOfferingsWithTagsResponse
 	if err := json.Unmarshal(resp, &r); err != nil {
 		return nil, err
 	}
@@ -1138,10 +1117,228 @@ func (s *AccountService) GetSolidFireAccountId(p *GetSolidFireAccountIdParams) (
 	return &r, nil
 }
 
-type GetSolidFireAccountIdResponse struct {
-	JobID              string `json:"jobid"`
-	Jobstatus          int    `json:"jobstatus"`
-	SolidFireAccountId int64  `json:"solidFireAccountId"`
+type IsAccountAllowedToCreateOfferingsWithTagsResponse struct {
+	Isallowed bool   `json:"isallowed"`
+	JobID     string `json:"jobid"`
+	Jobstatus int    `json:"jobstatus"`
+}
+
+type LinkAccountToLdapParams struct {
+	p map[string]interface{}
+}
+
+func (p *LinkAccountToLdapParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["account"]; found {
+		u.Set("account", v.(string))
+	}
+	if v, found := p.p["accounttype"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("accounttype", vv)
+	}
+	if v, found := p.p["admin"]; found {
+		u.Set("admin", v.(string))
+	}
+	if v, found := p.p["domainid"]; found {
+		u.Set("domainid", v.(string))
+	}
+	if v, found := p.p["ldapdomain"]; found {
+		u.Set("ldapdomain", v.(string))
+	}
+	if v, found := p.p["roleid"]; found {
+		u.Set("roleid", v.(string))
+	}
+	if v, found := p.p["type"]; found {
+		u.Set("type", v.(string))
+	}
+	return u
+}
+
+func (p *LinkAccountToLdapParams) SetAccount(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["account"] = v
+}
+
+func (p *LinkAccountToLdapParams) ResetAccount() {
+	if p.p != nil && p.p["account"] != nil {
+		delete(p.p, "account")
+	}
+}
+
+func (p *LinkAccountToLdapParams) GetAccount() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["account"].(string)
+	return value, ok
+}
+
+func (p *LinkAccountToLdapParams) SetAccounttype(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["accounttype"] = v
+}
+
+func (p *LinkAccountToLdapParams) ResetAccounttype() {
+	if p.p != nil && p.p["accounttype"] != nil {
+		delete(p.p, "accounttype")
+	}
+}
+
+func (p *LinkAccountToLdapParams) GetAccounttype() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["accounttype"].(int)
+	return value, ok
+}
+
+func (p *LinkAccountToLdapParams) SetAdmin(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["admin"] = v
+}
+
+func (p *LinkAccountToLdapParams) ResetAdmin() {
+	if p.p != nil && p.p["admin"] != nil {
+		delete(p.p, "admin")
+	}
+}
+
+func (p *LinkAccountToLdapParams) GetAdmin() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["admin"].(string)
+	return value, ok
+}
+
+func (p *LinkAccountToLdapParams) SetDomainid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["domainid"] = v
+}
+
+func (p *LinkAccountToLdapParams) ResetDomainid() {
+	if p.p != nil && p.p["domainid"] != nil {
+		delete(p.p, "domainid")
+	}
+}
+
+func (p *LinkAccountToLdapParams) GetDomainid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["domainid"].(string)
+	return value, ok
+}
+
+func (p *LinkAccountToLdapParams) SetLdapdomain(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["ldapdomain"] = v
+}
+
+func (p *LinkAccountToLdapParams) ResetLdapdomain() {
+	if p.p != nil && p.p["ldapdomain"] != nil {
+		delete(p.p, "ldapdomain")
+	}
+}
+
+func (p *LinkAccountToLdapParams) GetLdapdomain() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["ldapdomain"].(string)
+	return value, ok
+}
+
+func (p *LinkAccountToLdapParams) SetRoleid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["roleid"] = v
+}
+
+func (p *LinkAccountToLdapParams) ResetRoleid() {
+	if p.p != nil && p.p["roleid"] != nil {
+		delete(p.p, "roleid")
+	}
+}
+
+func (p *LinkAccountToLdapParams) GetRoleid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["roleid"].(string)
+	return value, ok
+}
+
+func (p *LinkAccountToLdapParams) SetType(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["type"] = v
+}
+
+func (p *LinkAccountToLdapParams) ResetType() {
+	if p.p != nil && p.p["type"] != nil {
+		delete(p.p, "type")
+	}
+}
+
+func (p *LinkAccountToLdapParams) GetType() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["type"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new LinkAccountToLdapParams instance,
+// as then you are sure you have configured all required params
+func (s *AccountService) NewLinkAccountToLdapParams(account string, domainid string, ldapdomain string) *LinkAccountToLdapParams {
+	p := &LinkAccountToLdapParams{}
+	p.p = make(map[string]interface{})
+	p.p["account"] = account
+	p.p["domainid"] = domainid
+	p.p["ldapdomain"] = ldapdomain
+	return p
+}
+
+// link a cloudstack account to a group or OU in ldap
+func (s *AccountService) LinkAccountToLdap(p *LinkAccountToLdapParams) (*LinkAccountToLdapResponse, error) {
+	resp, err := s.cs.newRequest("linkAccountToLdap", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r LinkAccountToLdapResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type LinkAccountToLdapResponse struct {
+	Accountid   string `json:"accountid"`
+	Accounttype int    `json:"accounttype"`
+	Domainid    string `json:"domainid"`
+	JobID       string `json:"jobid"`
+	Jobstatus   int    `json:"jobstatus"`
+	Ldapdomain  string `json:"ldapdomain"`
+	Name        string `json:"name"`
+	Type        string `json:"type"`
 }
 
 type ListAccountsParams struct {
@@ -1199,6 +1396,9 @@ func (p *ListAccountsParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["state"]; found {
 		u.Set("state", v.(string))
+	}
+	if v, found := p.p["tag"]; found {
+		u.Set("tag", v.(string))
 	}
 	return u
 }
@@ -1476,6 +1676,27 @@ func (p *ListAccountsParams) GetState() (string, bool) {
 	return value, ok
 }
 
+func (p *ListAccountsParams) SetTag(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["tag"] = v
+}
+
+func (p *ListAccountsParams) ResetTag() {
+	if p.p != nil && p.p["tag"] != nil {
+		delete(p.p, "tag")
+	}
+}
+
+func (p *ListAccountsParams) GetTag() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["tag"].(string)
+	return value, ok
+}
+
 // You should always use this function to get a new ListAccountsParams instance,
 // as then you are sure you have configured all required params
 func (s *AccountService) NewListAccountsParams() *ListAccountsParams {
@@ -1634,6 +1855,7 @@ type Account struct {
 	Snapshotlimit             string            `json:"snapshotlimit"`
 	Snapshottotal             int64             `json:"snapshottotal"`
 	State                     string            `json:"state"`
+	Taggedresources           []string          `json:"taggedresources"`
 	Templateavailable         string            `json:"templateavailable"`
 	Templatelimit             string            `json:"templatelimit"`
 	Templatetotal             int64             `json:"templatetotal"`
@@ -1984,6 +2206,7 @@ type ProjectAccount struct {
 	Snapshotlimit             string              `json:"snapshotlimit"`
 	Snapshottotal             int64               `json:"snapshottotal"`
 	State                     string              `json:"state"`
+	Taggedresources           []string            `json:"taggedresources"`
 	Tags                      []Tags              `json:"tags"`
 	Templateavailable         string              `json:"templateavailable"`
 	Templatelimit             string              `json:"templatelimit"`
@@ -2006,6 +2229,7 @@ type Tags struct {
 	Customer     string `json:"customer"`
 	Domain       string `json:"domain"`
 	Domainid     string `json:"domainid"`
+	Domainpath   string `json:"domainpath"`
 	Key          string `json:"key"`
 	Project      string `json:"project"`
 	Projectid    string `json:"projectid"`
@@ -2146,6 +2370,7 @@ type LockAccountResponse struct {
 	Snapshotlimit             string                    `json:"snapshotlimit"`
 	Snapshottotal             int64                     `json:"snapshottotal"`
 	State                     string                    `json:"state"`
+	Taggedresources           []string                  `json:"taggedresources"`
 	Templateavailable         string                    `json:"templateavailable"`
 	Templatelimit             string                    `json:"templatelimit"`
 	Templatetotal             int64                     `json:"templatetotal"`
@@ -2367,6 +2592,7 @@ type MarkDefaultZoneForAccountResponse struct {
 	Snapshotlimit             string                                  `json:"snapshotlimit"`
 	Snapshottotal             int64                                   `json:"snapshottotal"`
 	State                     string                                  `json:"state"`
+	Taggedresources           []string                                `json:"taggedresources"`
 	Templateavailable         string                                  `json:"templateavailable"`
 	Templatelimit             string                                  `json:"templatelimit"`
 	Templatetotal             int64                                   `json:"templatetotal"`
@@ -2664,6 +2890,7 @@ type UpdateAccountResponse struct {
 	Snapshotlimit             string                      `json:"snapshotlimit"`
 	Snapshottotal             int64                       `json:"snapshottotal"`
 	State                     string                      `json:"state"`
+	Taggedresources           []string                    `json:"taggedresources"`
 	Templateavailable         string                      `json:"templateavailable"`
 	Templatelimit             string                      `json:"templatelimit"`
 	Templatetotal             int64                       `json:"templatetotal"`

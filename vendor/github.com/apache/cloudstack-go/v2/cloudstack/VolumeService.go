@@ -30,6 +30,10 @@ import (
 type VolumeServiceIface interface {
 	AttachVolume(p *AttachVolumeParams) (*AttachVolumeResponse, error)
 	NewAttachVolumeParams(id string, virtualmachineid string) *AttachVolumeParams
+	ChangeOfferingForVolume(p *ChangeOfferingForVolumeParams) (*ChangeOfferingForVolumeResponse, error)
+	NewChangeOfferingForVolumeParams(diskofferingid string, id string) *ChangeOfferingForVolumeParams
+	CheckVolume(p *CheckVolumeParams) (*CheckVolumeResponse, error)
+	NewCheckVolumeParams(id string) *CheckVolumeParams
 	CreateVolume(p *CreateVolumeParams) (*CreateVolumeResponse, error)
 	NewCreateVolumeParams() *CreateVolumeParams
 	DeleteVolume(p *DeleteVolumeParams) (*DeleteVolumeResponse, error)
@@ -42,17 +46,22 @@ type VolumeServiceIface interface {
 	NewExtractVolumeParams(id string, mode string, zoneid string) *ExtractVolumeParams
 	GetPathForVolume(p *GetPathForVolumeParams) (*GetPathForVolumeResponse, error)
 	NewGetPathForVolumeParams(volumeid string) *GetPathForVolumeParams
-	GetSolidFireVolumeSize(p *GetSolidFireVolumeSizeParams) (*GetSolidFireVolumeSizeResponse, error)
-	NewGetSolidFireVolumeSizeParams(volumeid string) *GetSolidFireVolumeSizeParams
 	GetUploadParamsForVolume(p *GetUploadParamsForVolumeParams) (*GetUploadParamsForVolumeResponse, error)
 	NewGetUploadParamsForVolumeParams(format string, name string, zoneid string) *GetUploadParamsForVolumeParams
 	GetVolumeiScsiName(p *GetVolumeiScsiNameParams) (*GetVolumeiScsiNameResponse, error)
 	NewGetVolumeiScsiNameParams(volumeid string) *GetVolumeiScsiNameParams
+	ImportVolume(p *ImportVolumeParams) (*ImportVolumeResponse, error)
+	NewImportVolumeParams(path string, storageid string) *ImportVolumeParams
+	ListElastistorVolume(p *ListElastistorVolumeParams) (*ListElastistorVolumeResponse, error)
+	NewListElastistorVolumeParams(id string) *ListElastistorVolumeParams
+	GetElastistorVolumeByID(id string, opts ...OptionFunc) (*ElastistorVolume, int, error)
 	ListVolumes(p *ListVolumesParams) (*ListVolumesResponse, error)
 	NewListVolumesParams() *ListVolumesParams
 	GetVolumeID(name string, opts ...OptionFunc) (string, int, error)
 	GetVolumeByName(name string, opts ...OptionFunc) (*Volume, int, error)
 	GetVolumeByID(id string, opts ...OptionFunc) (*Volume, int, error)
+	ListVolumesForImport(p *ListVolumesForImportParams) (*ListVolumesForImportResponse, error)
+	NewListVolumesForImportParams(storageid string) *ListVolumesForImportParams
 	ListVolumesMetrics(p *ListVolumesMetricsParams) (*ListVolumesMetricsResponse, error)
 	NewListVolumesMetricsParams() *ListVolumesMetricsParams
 	GetVolumesMetricID(name string, opts ...OptionFunc) (string, int, error)
@@ -64,12 +73,19 @@ type VolumeServiceIface interface {
 	NewRecoverVolumeParams(id string) *RecoverVolumeParams
 	ResizeVolume(p *ResizeVolumeParams) (*ResizeVolumeResponse, error)
 	NewResizeVolumeParams(id string) *ResizeVolumeParams
+	UnmanageVolume(p *UnmanageVolumeParams) (*UnmanageVolumeResponse, error)
+	NewUnmanageVolumeParams(id string) *UnmanageVolumeParams
 	UpdateVolume(p *UpdateVolumeParams) (*UpdateVolumeResponse, error)
 	NewUpdateVolumeParams() *UpdateVolumeParams
 	UploadVolume(p *UploadVolumeParams) (*UploadVolumeResponse, error)
 	NewUploadVolumeParams(format string, name string, url string, zoneid string) *UploadVolumeParams
-	ChangeOfferingForVolume(p *ChangeOfferingForVolumeParams) (*ChangeOfferingForVolumeResponse, error)
-	NewChangeOfferingForVolumeParams(diskofferingid string, id string) *ChangeOfferingForVolumeParams
+	ListVolumesUsageHistory(p *ListVolumesUsageHistoryParams) (*ListVolumesUsageHistoryResponse, error)
+	NewListVolumesUsageHistoryParams() *ListVolumesUsageHistoryParams
+	GetVolumesUsageHistoryID(name string, opts ...OptionFunc) (string, int, error)
+	GetVolumesUsageHistoryByName(name string, opts ...OptionFunc) (*VolumesUsageHistory, int, error)
+	GetVolumesUsageHistoryByID(id string, opts ...OptionFunc) (*VolumesUsageHistory, int, error)
+	AssignVolume(p *AssignVolumeParams) (*AssignVolumeResponse, error)
+	NewAssignVolumeParams(volumeid string) *AssignVolumeParams
 }
 
 type AttachVolumeParams struct {
@@ -203,74 +219,565 @@ func (s *VolumeService) AttachVolume(p *AttachVolumeParams) (*AttachVolumeRespon
 }
 
 type AttachVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
+}
+
+type ChangeOfferingForVolumeParams struct {
+	p map[string]interface{}
+}
+
+func (p *ChangeOfferingForVolumeParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["automigrate"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("automigrate", vv)
+	}
+	if v, found := p.p["diskofferingid"]; found {
+		u.Set("diskofferingid", v.(string))
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	if v, found := p.p["maxiops"]; found {
+		vv := strconv.FormatInt(v.(int64), 10)
+		u.Set("maxiops", vv)
+	}
+	if v, found := p.p["miniops"]; found {
+		vv := strconv.FormatInt(v.(int64), 10)
+		u.Set("miniops", vv)
+	}
+	if v, found := p.p["shrinkok"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("shrinkok", vv)
+	}
+	if v, found := p.p["size"]; found {
+		vv := strconv.FormatInt(v.(int64), 10)
+		u.Set("size", vv)
+	}
+	return u
+}
+
+func (p *ChangeOfferingForVolumeParams) SetAutomigrate(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["automigrate"] = v
+}
+
+func (p *ChangeOfferingForVolumeParams) ResetAutomigrate() {
+	if p.p != nil && p.p["automigrate"] != nil {
+		delete(p.p, "automigrate")
+	}
+}
+
+func (p *ChangeOfferingForVolumeParams) GetAutomigrate() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["automigrate"].(bool)
+	return value, ok
+}
+
+func (p *ChangeOfferingForVolumeParams) SetDiskofferingid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["diskofferingid"] = v
+}
+
+func (p *ChangeOfferingForVolumeParams) ResetDiskofferingid() {
+	if p.p != nil && p.p["diskofferingid"] != nil {
+		delete(p.p, "diskofferingid")
+	}
+}
+
+func (p *ChangeOfferingForVolumeParams) GetDiskofferingid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["diskofferingid"].(string)
+	return value, ok
+}
+
+func (p *ChangeOfferingForVolumeParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *ChangeOfferingForVolumeParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *ChangeOfferingForVolumeParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+func (p *ChangeOfferingForVolumeParams) SetMaxiops(v int64) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["maxiops"] = v
+}
+
+func (p *ChangeOfferingForVolumeParams) ResetMaxiops() {
+	if p.p != nil && p.p["maxiops"] != nil {
+		delete(p.p, "maxiops")
+	}
+}
+
+func (p *ChangeOfferingForVolumeParams) GetMaxiops() (int64, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["maxiops"].(int64)
+	return value, ok
+}
+
+func (p *ChangeOfferingForVolumeParams) SetMiniops(v int64) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["miniops"] = v
+}
+
+func (p *ChangeOfferingForVolumeParams) ResetMiniops() {
+	if p.p != nil && p.p["miniops"] != nil {
+		delete(p.p, "miniops")
+	}
+}
+
+func (p *ChangeOfferingForVolumeParams) GetMiniops() (int64, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["miniops"].(int64)
+	return value, ok
+}
+
+func (p *ChangeOfferingForVolumeParams) SetShrinkok(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["shrinkok"] = v
+}
+
+func (p *ChangeOfferingForVolumeParams) ResetShrinkok() {
+	if p.p != nil && p.p["shrinkok"] != nil {
+		delete(p.p, "shrinkok")
+	}
+}
+
+func (p *ChangeOfferingForVolumeParams) GetShrinkok() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["shrinkok"].(bool)
+	return value, ok
+}
+
+func (p *ChangeOfferingForVolumeParams) SetSize(v int64) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["size"] = v
+}
+
+func (p *ChangeOfferingForVolumeParams) ResetSize() {
+	if p.p != nil && p.p["size"] != nil {
+		delete(p.p, "size")
+	}
+}
+
+func (p *ChangeOfferingForVolumeParams) GetSize() (int64, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["size"].(int64)
+	return value, ok
+}
+
+// You should always use this function to get a new ChangeOfferingForVolumeParams instance,
+// as then you are sure you have configured all required params
+func (s *VolumeService) NewChangeOfferingForVolumeParams(diskofferingid string, id string) *ChangeOfferingForVolumeParams {
+	p := &ChangeOfferingForVolumeParams{}
+	p.p = make(map[string]interface{})
+	p.p["diskofferingid"] = diskofferingid
+	p.p["id"] = id
+	return p
+}
+
+// Change disk offering of the volume and also an option to auto migrate if required to apply the new disk offering
+func (s *VolumeService) ChangeOfferingForVolume(p *ChangeOfferingForVolumeParams) (*ChangeOfferingForVolumeResponse, error) {
+	resp, err := s.cs.newRequest("changeOfferingForVolume", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ChangeOfferingForVolumeResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		b, err = getRawValue(b)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type ChangeOfferingForVolumeResponse struct {
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
+}
+
+type CheckVolumeParams struct {
+	p map[string]interface{}
+}
+
+func (p *CheckVolumeParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	if v, found := p.p["repair"]; found {
+		u.Set("repair", v.(string))
+	}
+	return u
+}
+
+func (p *CheckVolumeParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *CheckVolumeParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *CheckVolumeParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+func (p *CheckVolumeParams) SetRepair(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["repair"] = v
+}
+
+func (p *CheckVolumeParams) ResetRepair() {
+	if p.p != nil && p.p["repair"] != nil {
+		delete(p.p, "repair")
+	}
+}
+
+func (p *CheckVolumeParams) GetRepair() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["repair"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new CheckVolumeParams instance,
+// as then you are sure you have configured all required params
+func (s *VolumeService) NewCheckVolumeParams(id string) *CheckVolumeParams {
+	p := &CheckVolumeParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// Check the volume for any errors or leaks and also repairs when repair parameter is passed, this is currently supported for KVM only
+func (s *VolumeService) CheckVolume(p *CheckVolumeParams) (*CheckVolumeResponse, error) {
+	resp, err := s.cs.newRequest("checkVolume", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r CheckVolumeResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		b, err = getRawValue(b)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type CheckVolumeResponse struct {
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
 type CreateVolumeParams struct {
@@ -645,74 +1152,79 @@ func (s *VolumeService) CreateVolume(p *CreateVolumeParams) (*CreateVolumeRespon
 }
 
 type CreateVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
 type DeleteVolumeParams struct {
@@ -915,74 +1427,79 @@ func (s *VolumeService) DestroyVolume(p *DestroyVolumeParams) (*DestroyVolumeRes
 }
 
 type DestroyVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
 type DetachVolumeParams struct {
@@ -1114,74 +1631,79 @@ func (s *VolumeService) DetachVolume(p *DetachVolumeParams) (*DetachVolumeRespon
 }
 
 type DetachVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
 type ExtractVolumeParams struct {
@@ -1424,72 +1946,6 @@ type GetPathForVolumeResponse struct {
 	JobID     string `json:"jobid"`
 	Jobstatus int    `json:"jobstatus"`
 	Path      string `json:"path"`
-}
-
-type GetSolidFireVolumeSizeParams struct {
-	p map[string]interface{}
-}
-
-func (p *GetSolidFireVolumeSizeParams) toURLValues() url.Values {
-	u := url.Values{}
-	if p.p == nil {
-		return u
-	}
-	if v, found := p.p["volumeid"]; found {
-		u.Set("volumeid", v.(string))
-	}
-	return u
-}
-
-func (p *GetSolidFireVolumeSizeParams) SetVolumeid(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["volumeid"] = v
-}
-
-func (p *GetSolidFireVolumeSizeParams) ResetVolumeid() {
-	if p.p != nil && p.p["volumeid"] != nil {
-		delete(p.p, "volumeid")
-	}
-}
-
-func (p *GetSolidFireVolumeSizeParams) GetVolumeid() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["volumeid"].(string)
-	return value, ok
-}
-
-// You should always use this function to get a new GetSolidFireVolumeSizeParams instance,
-// as then you are sure you have configured all required params
-func (s *VolumeService) NewGetSolidFireVolumeSizeParams(volumeid string) *GetSolidFireVolumeSizeParams {
-	p := &GetSolidFireVolumeSizeParams{}
-	p.p = make(map[string]interface{})
-	p.p["volumeid"] = volumeid
-	return p
-}
-
-// Get the SF volume size including Hypervisor Snapshot Reserve
-func (s *VolumeService) GetSolidFireVolumeSize(p *GetSolidFireVolumeSizeParams) (*GetSolidFireVolumeSizeResponse, error) {
-	resp, err := s.cs.newRequest("getSolidFireVolumeSize", p.toURLValues())
-	if err != nil {
-		return nil, err
-	}
-
-	var r GetSolidFireVolumeSizeResponse
-	if err := json.Unmarshal(resp, &r); err != nil {
-		return nil, err
-	}
-
-	return &r, nil
-}
-
-type GetSolidFireVolumeSizeResponse struct {
-	JobID               string `json:"jobid"`
-	Jobstatus           int    `json:"jobstatus"`
-	SolidFireVolumeSize int64  `json:"solidFireVolumeSize"`
 }
 
 type GetUploadParamsForVolumeParams struct {
@@ -1825,6 +2281,416 @@ type GetVolumeiScsiNameResponse struct {
 	VolumeiScsiName string `json:"volumeiScsiName"`
 }
 
+type ImportVolumeParams struct {
+	p map[string]interface{}
+}
+
+func (p *ImportVolumeParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["account"]; found {
+		u.Set("account", v.(string))
+	}
+	if v, found := p.p["diskofferingid"]; found {
+		u.Set("diskofferingid", v.(string))
+	}
+	if v, found := p.p["domainid"]; found {
+		u.Set("domainid", v.(string))
+	}
+	if v, found := p.p["name"]; found {
+		u.Set("name", v.(string))
+	}
+	if v, found := p.p["path"]; found {
+		u.Set("path", v.(string))
+	}
+	if v, found := p.p["projectid"]; found {
+		u.Set("projectid", v.(string))
+	}
+	if v, found := p.p["storageid"]; found {
+		u.Set("storageid", v.(string))
+	}
+	return u
+}
+
+func (p *ImportVolumeParams) SetAccount(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["account"] = v
+}
+
+func (p *ImportVolumeParams) ResetAccount() {
+	if p.p != nil && p.p["account"] != nil {
+		delete(p.p, "account")
+	}
+}
+
+func (p *ImportVolumeParams) GetAccount() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["account"].(string)
+	return value, ok
+}
+
+func (p *ImportVolumeParams) SetDiskofferingid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["diskofferingid"] = v
+}
+
+func (p *ImportVolumeParams) ResetDiskofferingid() {
+	if p.p != nil && p.p["diskofferingid"] != nil {
+		delete(p.p, "diskofferingid")
+	}
+}
+
+func (p *ImportVolumeParams) GetDiskofferingid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["diskofferingid"].(string)
+	return value, ok
+}
+
+func (p *ImportVolumeParams) SetDomainid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["domainid"] = v
+}
+
+func (p *ImportVolumeParams) ResetDomainid() {
+	if p.p != nil && p.p["domainid"] != nil {
+		delete(p.p, "domainid")
+	}
+}
+
+func (p *ImportVolumeParams) GetDomainid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["domainid"].(string)
+	return value, ok
+}
+
+func (p *ImportVolumeParams) SetName(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["name"] = v
+}
+
+func (p *ImportVolumeParams) ResetName() {
+	if p.p != nil && p.p["name"] != nil {
+		delete(p.p, "name")
+	}
+}
+
+func (p *ImportVolumeParams) GetName() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["name"].(string)
+	return value, ok
+}
+
+func (p *ImportVolumeParams) SetPath(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["path"] = v
+}
+
+func (p *ImportVolumeParams) ResetPath() {
+	if p.p != nil && p.p["path"] != nil {
+		delete(p.p, "path")
+	}
+}
+
+func (p *ImportVolumeParams) GetPath() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["path"].(string)
+	return value, ok
+}
+
+func (p *ImportVolumeParams) SetProjectid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["projectid"] = v
+}
+
+func (p *ImportVolumeParams) ResetProjectid() {
+	if p.p != nil && p.p["projectid"] != nil {
+		delete(p.p, "projectid")
+	}
+}
+
+func (p *ImportVolumeParams) GetProjectid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *ImportVolumeParams) SetStorageid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["storageid"] = v
+}
+
+func (p *ImportVolumeParams) ResetStorageid() {
+	if p.p != nil && p.p["storageid"] != nil {
+		delete(p.p, "storageid")
+	}
+}
+
+func (p *ImportVolumeParams) GetStorageid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["storageid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ImportVolumeParams instance,
+// as then you are sure you have configured all required params
+func (s *VolumeService) NewImportVolumeParams(path string, storageid string) *ImportVolumeParams {
+	p := &ImportVolumeParams{}
+	p.p = make(map[string]interface{})
+	p.p["path"] = path
+	p.p["storageid"] = storageid
+	return p
+}
+
+// Import an unmanaged volume from a storage pool on a host into CloudStack
+func (s *VolumeService) ImportVolume(p *ImportVolumeParams) (*ImportVolumeResponse, error) {
+	resp, err := s.cs.newRequest("importVolume", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ImportVolumeResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		b, err = getRawValue(b)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type ImportVolumeResponse struct {
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
+}
+
+type ListElastistorVolumeParams struct {
+	p map[string]interface{}
+}
+
+func (p *ListElastistorVolumeParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	return u
+}
+
+func (p *ListElastistorVolumeParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *ListElastistorVolumeParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *ListElastistorVolumeParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ListElastistorVolumeParams instance,
+// as then you are sure you have configured all required params
+func (s *VolumeService) NewListElastistorVolumeParams(id string) *ListElastistorVolumeParams {
+	p := &ListElastistorVolumeParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// This is a courtesy helper function, which in some cases may not work as expected!
+func (s *VolumeService) GetElastistorVolumeByID(id string, opts ...OptionFunc) (*ElastistorVolume, int, error) {
+	p := &ListElastistorVolumeParams{}
+	p.p = make(map[string]interface{})
+
+	p.p["id"] = id
+
+	for _, fn := range append(s.cs.options, opts...) {
+		if err := fn(s.cs, p); err != nil {
+			return nil, -1, err
+		}
+	}
+
+	l, err := s.ListElastistorVolume(p)
+	if err != nil {
+		if strings.Contains(err.Error(), fmt.Sprintf(
+			"Invalid parameter id value=%s due to incorrect long value format, "+
+				"or entity does not exist", id)) {
+			return nil, 0, fmt.Errorf("No match found for %s: %+v", id, l)
+		}
+		return nil, -1, err
+	}
+
+	if l.Count == 0 {
+		return nil, l.Count, fmt.Errorf("No match found for %s: %+v", id, l)
+	}
+
+	if l.Count == 1 {
+		return l.ElastistorVolume[0], l.Count, nil
+	}
+	return nil, l.Count, fmt.Errorf("There is more then one result for ElastistorVolume UUID: %s!", id)
+}
+
+// Lists the volumes of elastistor
+func (s *VolumeService) ListElastistorVolume(p *ListElastistorVolumeParams) (*ListElastistorVolumeResponse, error) {
+	resp, err := s.cs.newRequest("listElastistorVolume", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ListElastistorVolumeResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type ListElastistorVolumeResponse struct {
+	Count            int                 `json:"count"`
+	ElastistorVolume []*ElastistorVolume `json:"elastistorvolume"`
+}
+
+type ElastistorVolume struct {
+	Compression   string `json:"compression"`
+	Deduplication string `json:"deduplication"`
+	Graceallowed  string `json:"graceallowed"`
+	Id            string `json:"id"`
+	JobID         string `json:"jobid"`
+	Jobstatus     int    `json:"jobstatus"`
+	Name          string `json:"name"`
+	Sync          string `json:"sync"`
+}
+
 type ListVolumesParams struct {
 	p map[string]interface{}
 }
@@ -1859,6 +2725,10 @@ func (p *ListVolumesParams) toURLValues() url.Values {
 	if v, found := p.p["ids"]; found {
 		vv := strings.Join(v.([]string), ",")
 		u.Set("ids", vv)
+	}
+	if v, found := p.p["isencrypted"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("isencrypted", vv)
 	}
 	if v, found := p.p["isrecursive"]; found {
 		vv := strconv.FormatBool(v.(bool))
@@ -1895,6 +2765,9 @@ func (p *ListVolumesParams) toURLValues() url.Values {
 	if v, found := p.p["retrieveonlyresourcecount"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("retrieveonlyresourcecount", vv)
+	}
+	if v, found := p.p["serviceofferingid"]; found {
+		u.Set("serviceofferingid", v.(string))
 	}
 	if v, found := p.p["state"]; found {
 		u.Set("state", v.(string))
@@ -2086,6 +2959,27 @@ func (p *ListVolumesParams) GetIds() ([]string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["ids"].([]string)
+	return value, ok
+}
+
+func (p *ListVolumesParams) SetIsencrypted(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["isencrypted"] = v
+}
+
+func (p *ListVolumesParams) ResetIsencrypted() {
+	if p.p != nil && p.p["isencrypted"] != nil {
+		delete(p.p, "isencrypted")
+	}
+}
+
+func (p *ListVolumesParams) GetIsencrypted() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["isencrypted"].(bool)
 	return value, ok
 }
 
@@ -2296,6 +3190,27 @@ func (p *ListVolumesParams) GetRetrieveonlyresourcecount() (bool, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["retrieveonlyresourcecount"].(bool)
+	return value, ok
+}
+
+func (p *ListVolumesParams) SetServiceofferingid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["serviceofferingid"] = v
+}
+
+func (p *ListVolumesParams) ResetServiceofferingid() {
+	if p.p != nil && p.p["serviceofferingid"] != nil {
+		delete(p.p, "serviceofferingid")
+	}
+}
+
+func (p *ListVolumesParams) GetServiceofferingid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["serviceofferingid"].(string)
 	return value, ok
 }
 
@@ -2537,74 +3452,259 @@ type ListVolumesResponse struct {
 }
 
 type Volume struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
+}
+
+type ListVolumesForImportParams struct {
+	p map[string]interface{}
+}
+
+func (p *ListVolumesForImportParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["keyword"]; found {
+		u.Set("keyword", v.(string))
+	}
+	if v, found := p.p["page"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("page", vv)
+	}
+	if v, found := p.p["pagesize"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("pagesize", vv)
+	}
+	if v, found := p.p["path"]; found {
+		u.Set("path", v.(string))
+	}
+	if v, found := p.p["storageid"]; found {
+		u.Set("storageid", v.(string))
+	}
+	return u
+}
+
+func (p *ListVolumesForImportParams) SetKeyword(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["keyword"] = v
+}
+
+func (p *ListVolumesForImportParams) ResetKeyword() {
+	if p.p != nil && p.p["keyword"] != nil {
+		delete(p.p, "keyword")
+	}
+}
+
+func (p *ListVolumesForImportParams) GetKeyword() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["keyword"].(string)
+	return value, ok
+}
+
+func (p *ListVolumesForImportParams) SetPage(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["page"] = v
+}
+
+func (p *ListVolumesForImportParams) ResetPage() {
+	if p.p != nil && p.p["page"] != nil {
+		delete(p.p, "page")
+	}
+}
+
+func (p *ListVolumesForImportParams) GetPage() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["page"].(int)
+	return value, ok
+}
+
+func (p *ListVolumesForImportParams) SetPagesize(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["pagesize"] = v
+}
+
+func (p *ListVolumesForImportParams) ResetPagesize() {
+	if p.p != nil && p.p["pagesize"] != nil {
+		delete(p.p, "pagesize")
+	}
+}
+
+func (p *ListVolumesForImportParams) GetPagesize() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["pagesize"].(int)
+	return value, ok
+}
+
+func (p *ListVolumesForImportParams) SetPath(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["path"] = v
+}
+
+func (p *ListVolumesForImportParams) ResetPath() {
+	if p.p != nil && p.p["path"] != nil {
+		delete(p.p, "path")
+	}
+}
+
+func (p *ListVolumesForImportParams) GetPath() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["path"].(string)
+	return value, ok
+}
+
+func (p *ListVolumesForImportParams) SetStorageid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["storageid"] = v
+}
+
+func (p *ListVolumesForImportParams) ResetStorageid() {
+	if p.p != nil && p.p["storageid"] != nil {
+		delete(p.p, "storageid")
+	}
+}
+
+func (p *ListVolumesForImportParams) GetStorageid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["storageid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ListVolumesForImportParams instance,
+// as then you are sure you have configured all required params
+func (s *VolumeService) NewListVolumesForImportParams(storageid string) *ListVolumesForImportParams {
+	p := &ListVolumesForImportParams{}
+	p.p = make(map[string]interface{})
+	p.p["storageid"] = storageid
+	return p
+}
+
+// Lists unmanaged volumes on a storage pool
+func (s *VolumeService) ListVolumesForImport(p *ListVolumesForImportParams) (*ListVolumesForImportResponse, error) {
+	resp, err := s.cs.newRequest("listVolumesForImport", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ListVolumesForImportResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type ListVolumesForImportResponse struct {
+	Count            int                 `json:"count"`
+	VolumesForImport []*VolumesForImport `json:"volumesforimport"`
+}
+
+type VolumesForImport struct {
+	Chaininfo     string            `json:"chaininfo"`
+	Details       map[string]string `json:"details"`
+	Encryptformat string            `json:"encryptformat"`
+	Format        string            `json:"format"`
+	Fullpath      string            `json:"fullpath"`
+	JobID         string            `json:"jobid"`
+	Jobstatus     int               `json:"jobstatus"`
+	Name          string            `json:"name"`
+	Path          string            `json:"path"`
+	Size          int64             `json:"size"`
+	Storage       string            `json:"storage"`
+	Storageid     string            `json:"storageid"`
+	Storagetype   string            `json:"storagetype"`
+	Virtualsize   int64             `json:"virtualsize"`
 }
 
 type ListVolumesMetricsParams struct {
@@ -2642,6 +3742,10 @@ func (p *ListVolumesMetricsParams) toURLValues() url.Values {
 		vv := strings.Join(v.([]string), ",")
 		u.Set("ids", vv)
 	}
+	if v, found := p.p["isencrypted"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("isencrypted", vv)
+	}
 	if v, found := p.p["isrecursive"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("isrecursive", vv)
@@ -2677,6 +3781,9 @@ func (p *ListVolumesMetricsParams) toURLValues() url.Values {
 	if v, found := p.p["retrieveonlyresourcecount"]; found {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("retrieveonlyresourcecount", vv)
+	}
+	if v, found := p.p["serviceofferingid"]; found {
+		u.Set("serviceofferingid", v.(string))
 	}
 	if v, found := p.p["state"]; found {
 		u.Set("state", v.(string))
@@ -2868,6 +3975,27 @@ func (p *ListVolumesMetricsParams) GetIds() ([]string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["ids"].([]string)
+	return value, ok
+}
+
+func (p *ListVolumesMetricsParams) SetIsencrypted(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["isencrypted"] = v
+}
+
+func (p *ListVolumesMetricsParams) ResetIsencrypted() {
+	if p.p != nil && p.p["isencrypted"] != nil {
+		delete(p.p, "isencrypted")
+	}
+}
+
+func (p *ListVolumesMetricsParams) GetIsencrypted() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["isencrypted"].(bool)
 	return value, ok
 }
 
@@ -3078,6 +4206,27 @@ func (p *ListVolumesMetricsParams) GetRetrieveonlyresourcecount() (bool, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["retrieveonlyresourcecount"].(bool)
+	return value, ok
+}
+
+func (p *ListVolumesMetricsParams) SetServiceofferingid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["serviceofferingid"] = v
+}
+
+func (p *ListVolumesMetricsParams) ResetServiceofferingid() {
+	if p.p != nil && p.p["serviceofferingid"] != nil {
+		delete(p.p, "serviceofferingid")
+	}
+}
+
+func (p *ListVolumesMetricsParams) GetServiceofferingid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["serviceofferingid"].(string)
 	return value, ok
 }
 
@@ -3319,76 +4468,81 @@ type ListVolumesMetricsResponse struct {
 }
 
 type VolumesMetric struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskiopstotal              int64  `json:"diskiopstotal"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Sizegb                     string `json:"sizegb"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskiopstotal              int64             `json:"diskiopstotal"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Sizegb                     string            `json:"sizegb"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
 type MigrateVolumeParams struct {
@@ -3546,74 +4700,79 @@ func (s *VolumeService) MigrateVolume(p *MigrateVolumeParams) (*MigrateVolumeRes
 }
 
 type MigrateVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
 type RecoverVolumeParams struct {
@@ -3677,74 +4836,79 @@ func (s *VolumeService) RecoverVolume(p *RecoverVolumeParams) (*RecoverVolumeRes
 }
 
 type RecoverVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
 type ResizeVolumeParams struct {
@@ -3952,74 +5116,161 @@ func (s *VolumeService) ResizeVolume(p *ResizeVolumeParams) (*ResizeVolumeRespon
 }
 
 type ResizeVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
+}
+
+type UnmanageVolumeParams struct {
+	p map[string]interface{}
+}
+
+func (p *UnmanageVolumeParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	return u
+}
+
+func (p *UnmanageVolumeParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *UnmanageVolumeParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *UnmanageVolumeParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new UnmanageVolumeParams instance,
+// as then you are sure you have configured all required params
+func (s *VolumeService) NewUnmanageVolumeParams(id string) *UnmanageVolumeParams {
+	p := &UnmanageVolumeParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// Unmanage a volume on storage pool.
+func (s *VolumeService) UnmanageVolume(p *UnmanageVolumeParams) (*UnmanageVolumeResponse, error) {
+	resp, err := s.cs.newRequest("unmanageVolume", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r UnmanageVolumeResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type UnmanageVolumeResponse struct {
+	Displaytext string `json:"displaytext"`
+	JobID       string `json:"jobid"`
+	Jobstatus   int    `json:"jobstatus"`
+	Success     bool   `json:"success"`
 }
 
 type UpdateVolumeParams struct {
@@ -4036,6 +5287,10 @@ func (p *UpdateVolumeParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["customid"]; found {
 		u.Set("customid", v.(string))
+	}
+	if v, found := p.p["deleteprotection"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("deleteprotection", vv)
 	}
 	if v, found := p.p["displayvolume"]; found {
 		vv := strconv.FormatBool(v.(bool))
@@ -4098,6 +5353,27 @@ func (p *UpdateVolumeParams) GetCustomid() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["customid"].(string)
+	return value, ok
+}
+
+func (p *UpdateVolumeParams) SetDeleteprotection(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["deleteprotection"] = v
+}
+
+func (p *UpdateVolumeParams) ResetDeleteprotection() {
+	if p.p != nil && p.p["deleteprotection"] != nil {
+		delete(p.p, "deleteprotection")
+	}
+}
+
+func (p *UpdateVolumeParams) GetDeleteprotection() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["deleteprotection"].(bool)
 	return value, ok
 }
 
@@ -4271,74 +5547,79 @@ func (s *VolumeService) UpdateVolume(p *UpdateVolumeParams) (*UpdateVolumeRespon
 }
 
 type UpdateVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
 type UploadVolumeParams struct {
@@ -4641,170 +5922,155 @@ func (s *VolumeService) UploadVolume(p *UploadVolumeParams) (*UploadVolumeRespon
 }
 
 type UploadVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }
 
-type ChangeOfferingForVolumeParams struct {
+type ListVolumesUsageHistoryParams struct {
 	p map[string]interface{}
 }
 
-func (p *ChangeOfferingForVolumeParams) toURLValues() url.Values {
+func (p *ListVolumesUsageHistoryParams) toURLValues() url.Values {
 	u := url.Values{}
 	if p.p == nil {
 		return u
 	}
-	if v, found := p.p["automigrate"]; found {
-		vv := strconv.FormatBool(v.(bool))
-		u.Set("automigrate", vv)
-	}
-	if v, found := p.p["diskofferingid"]; found {
-		u.Set("diskofferingid", v.(string))
+	if v, found := p.p["enddate"]; found {
+		u.Set("enddate", v.(string))
 	}
 	if v, found := p.p["id"]; found {
 		u.Set("id", v.(string))
 	}
-	if v, found := p.p["maxiops"]; found {
-		vv := strconv.FormatInt(v.(int64), 10)
-		u.Set("maxiops", vv)
+	if v, found := p.p["ids"]; found {
+		vv := strings.Join(v.([]string), ",")
+		u.Set("ids", vv)
 	}
-	if v, found := p.p["miniops"]; found {
-		vv := strconv.FormatInt(v.(int64), 10)
-		u.Set("miniops", vv)
+	if v, found := p.p["keyword"]; found {
+		u.Set("keyword", v.(string))
 	}
-	if v, found := p.p["shrinkok"]; found {
-		vv := strconv.FormatBool(v.(bool))
-		u.Set("shrinkok", vv)
+	if v, found := p.p["name"]; found {
+		u.Set("name", v.(string))
 	}
-	if v, found := p.p["size"]; found {
-		vv := strconv.FormatInt(v.(int64), 10)
-		u.Set("size", vv)
+	if v, found := p.p["page"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("page", vv)
+	}
+	if v, found := p.p["pagesize"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("pagesize", vv)
+	}
+	if v, found := p.p["startdate"]; found {
+		u.Set("startdate", v.(string))
 	}
 	return u
 }
 
-func (p *ChangeOfferingForVolumeParams) SetAutomigrate(v bool) {
+func (p *ListVolumesUsageHistoryParams) SetEnddate(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	p.p["automigrate"] = v
+	p.p["enddate"] = v
 }
 
-func (p *ChangeOfferingForVolumeParams) ResetAutomigrate() {
-	if p.p != nil && p.p["automigrate"] != nil {
-		delete(p.p, "automigrate")
+func (p *ListVolumesUsageHistoryParams) ResetEnddate() {
+	if p.p != nil && p.p["enddate"] != nil {
+		delete(p.p, "enddate")
 	}
 }
 
-func (p *ChangeOfferingForVolumeParams) GetAutomigrate() (bool, bool) {
+func (p *ListVolumesUsageHistoryParams) GetEnddate() (string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["automigrate"].(bool)
+	value, ok := p.p["enddate"].(string)
 	return value, ok
 }
 
-func (p *ChangeOfferingForVolumeParams) SetDiskofferingid(v string) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	p.p["diskofferingid"] = v
-}
-
-func (p *ChangeOfferingForVolumeParams) ResetDiskofferingid() {
-	if p.p != nil && p.p["diskofferingid"] != nil {
-		delete(p.p, "diskofferingid")
-	}
-}
-
-func (p *ChangeOfferingForVolumeParams) GetDiskofferingid() (string, bool) {
-	if p.p == nil {
-		p.p = make(map[string]interface{})
-	}
-	value, ok := p.p["diskofferingid"].(string)
-	return value, ok
-}
-
-func (p *ChangeOfferingForVolumeParams) SetId(v string) {
+func (p *ListVolumesUsageHistoryParams) SetId(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
 	p.p["id"] = v
 }
 
-func (p *ChangeOfferingForVolumeParams) ResetId() {
+func (p *ListVolumesUsageHistoryParams) ResetId() {
 	if p.p != nil && p.p["id"] != nil {
 		delete(p.p, "id")
 	}
 }
 
-func (p *ChangeOfferingForVolumeParams) GetId() (string, bool) {
+func (p *ListVolumesUsageHistoryParams) GetId() (string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -4812,202 +6078,434 @@ func (p *ChangeOfferingForVolumeParams) GetId() (string, bool) {
 	return value, ok
 }
 
-func (p *ChangeOfferingForVolumeParams) SetMaxiops(v int64) {
+func (p *ListVolumesUsageHistoryParams) SetIds(v []string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	p.p["maxiops"] = v
+	p.p["ids"] = v
 }
 
-func (p *ChangeOfferingForVolumeParams) ResetMaxiops() {
-	if p.p != nil && p.p["maxiops"] != nil {
-		delete(p.p, "maxiops")
+func (p *ListVolumesUsageHistoryParams) ResetIds() {
+	if p.p != nil && p.p["ids"] != nil {
+		delete(p.p, "ids")
 	}
 }
 
-func (p *ChangeOfferingForVolumeParams) GetMaxiops() (int64, bool) {
+func (p *ListVolumesUsageHistoryParams) GetIds() ([]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["maxiops"].(int64)
+	value, ok := p.p["ids"].([]string)
 	return value, ok
 }
 
-func (p *ChangeOfferingForVolumeParams) SetMiniops(v int64) {
+func (p *ListVolumesUsageHistoryParams) SetKeyword(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	p.p["miniops"] = v
+	p.p["keyword"] = v
 }
 
-func (p *ChangeOfferingForVolumeParams) ResetMiniops() {
-	if p.p != nil && p.p["miniops"] != nil {
-		delete(p.p, "miniops")
+func (p *ListVolumesUsageHistoryParams) ResetKeyword() {
+	if p.p != nil && p.p["keyword"] != nil {
+		delete(p.p, "keyword")
 	}
 }
 
-func (p *ChangeOfferingForVolumeParams) GetMiniops() (int64, bool) {
+func (p *ListVolumesUsageHistoryParams) GetKeyword() (string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["miniops"].(int64)
+	value, ok := p.p["keyword"].(string)
 	return value, ok
 }
 
-func (p *ChangeOfferingForVolumeParams) SetShrinkok(v bool) {
+func (p *ListVolumesUsageHistoryParams) SetName(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	p.p["shrinkok"] = v
+	p.p["name"] = v
 }
 
-func (p *ChangeOfferingForVolumeParams) ResetShrinkok() {
-	if p.p != nil && p.p["shrinkok"] != nil {
-		delete(p.p, "shrinkok")
+func (p *ListVolumesUsageHistoryParams) ResetName() {
+	if p.p != nil && p.p["name"] != nil {
+		delete(p.p, "name")
 	}
 }
 
-func (p *ChangeOfferingForVolumeParams) GetShrinkok() (bool, bool) {
+func (p *ListVolumesUsageHistoryParams) GetName() (string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["shrinkok"].(bool)
+	value, ok := p.p["name"].(string)
 	return value, ok
 }
 
-func (p *ChangeOfferingForVolumeParams) SetSize(v int64) {
+func (p *ListVolumesUsageHistoryParams) SetPage(v int) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	p.p["size"] = v
+	p.p["page"] = v
 }
 
-func (p *ChangeOfferingForVolumeParams) ResetSize() {
-	if p.p != nil && p.p["size"] != nil {
-		delete(p.p, "size")
+func (p *ListVolumesUsageHistoryParams) ResetPage() {
+	if p.p != nil && p.p["page"] != nil {
+		delete(p.p, "page")
 	}
 }
 
-func (p *ChangeOfferingForVolumeParams) GetSize() (int64, bool) {
+func (p *ListVolumesUsageHistoryParams) GetPage() (int, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["size"].(int64)
+	value, ok := p.p["page"].(int)
 	return value, ok
 }
 
-// You should always use this function to get a new ChangeOfferingForVolumeParams instance,
+func (p *ListVolumesUsageHistoryParams) SetPagesize(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["pagesize"] = v
+}
+
+func (p *ListVolumesUsageHistoryParams) ResetPagesize() {
+	if p.p != nil && p.p["pagesize"] != nil {
+		delete(p.p, "pagesize")
+	}
+}
+
+func (p *ListVolumesUsageHistoryParams) GetPagesize() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["pagesize"].(int)
+	return value, ok
+}
+
+func (p *ListVolumesUsageHistoryParams) SetStartdate(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["startdate"] = v
+}
+
+func (p *ListVolumesUsageHistoryParams) ResetStartdate() {
+	if p.p != nil && p.p["startdate"] != nil {
+		delete(p.p, "startdate")
+	}
+}
+
+func (p *ListVolumesUsageHistoryParams) GetStartdate() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["startdate"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ListVolumesUsageHistoryParams instance,
 // as then you are sure you have configured all required params
-func (s *VolumeService) NewChangeOfferingForVolumeParams(diskofferingid string, id string) *ChangeOfferingForVolumeParams {
-	p := &ChangeOfferingForVolumeParams{}
+func (s *VolumeService) NewListVolumesUsageHistoryParams() *ListVolumesUsageHistoryParams {
+	p := &ListVolumesUsageHistoryParams{}
 	p.p = make(map[string]interface{})
-	p.p["diskofferingid"] = diskofferingid
-	p.p["id"] = id
 	return p
 }
 
-// Change disk offering of the volume and also an option to auto migrate if required to apply the new disk offering
-func (s *VolumeService) ChangeOfferingForVolume(p *ChangeOfferingForVolumeParams) (*ChangeOfferingForVolumeResponse, error) {
-	resp, err := s.cs.newRequest("changeOfferingForVolume", p.toURLValues())
+// This is a courtesy helper function, which in some cases may not work as expected!
+func (s *VolumeService) GetVolumesUsageHistoryID(name string, opts ...OptionFunc) (string, int, error) {
+	p := &ListVolumesUsageHistoryParams{}
+	p.p = make(map[string]interface{})
+
+	p.p["name"] = name
+
+	for _, fn := range append(s.cs.options, opts...) {
+		if err := fn(s.cs, p); err != nil {
+			return "", -1, err
+		}
+	}
+
+	l, err := s.ListVolumesUsageHistory(p)
+	if err != nil {
+		return "", -1, err
+	}
+
+	if l.Count == 0 {
+		return "", l.Count, fmt.Errorf("No match found for %s: %+v", name, l)
+	}
+
+	if l.Count == 1 {
+		return l.VolumesUsageHistory[0].Id, l.Count, nil
+	}
+
+	if l.Count > 1 {
+		for _, v := range l.VolumesUsageHistory {
+			if v.Name == name {
+				return v.Id, l.Count, nil
+			}
+		}
+	}
+	return "", l.Count, fmt.Errorf("Could not find an exact match for %s: %+v", name, l)
+}
+
+// This is a courtesy helper function, which in some cases may not work as expected!
+func (s *VolumeService) GetVolumesUsageHistoryByName(name string, opts ...OptionFunc) (*VolumesUsageHistory, int, error) {
+	id, count, err := s.GetVolumesUsageHistoryID(name, opts...)
+	if err != nil {
+		return nil, count, err
+	}
+
+	r, count, err := s.GetVolumesUsageHistoryByID(id, opts...)
+	if err != nil {
+		return nil, count, err
+	}
+	return r, count, nil
+}
+
+// This is a courtesy helper function, which in some cases may not work as expected!
+func (s *VolumeService) GetVolumesUsageHistoryByID(id string, opts ...OptionFunc) (*VolumesUsageHistory, int, error) {
+	p := &ListVolumesUsageHistoryParams{}
+	p.p = make(map[string]interface{})
+
+	p.p["id"] = id
+
+	for _, fn := range append(s.cs.options, opts...) {
+		if err := fn(s.cs, p); err != nil {
+			return nil, -1, err
+		}
+	}
+
+	l, err := s.ListVolumesUsageHistory(p)
+	if err != nil {
+		if strings.Contains(err.Error(), fmt.Sprintf(
+			"Invalid parameter id value=%s due to incorrect long value format, "+
+				"or entity does not exist", id)) {
+			return nil, 0, fmt.Errorf("No match found for %s: %+v", id, l)
+		}
+		return nil, -1, err
+	}
+
+	if l.Count == 0 {
+		return nil, l.Count, fmt.Errorf("No match found for %s: %+v", id, l)
+	}
+
+	if l.Count == 1 {
+		return l.VolumesUsageHistory[0], l.Count, nil
+	}
+	return nil, l.Count, fmt.Errorf("There is more then one result for VolumesUsageHistory UUID: %s!", id)
+}
+
+// Lists volume stats
+func (s *VolumeService) ListVolumesUsageHistory(p *ListVolumesUsageHistoryParams) (*ListVolumesUsageHistoryResponse, error) {
+	resp, err := s.cs.newRequest("listVolumesUsageHistory", p.toURLValues())
 	if err != nil {
 		return nil, err
 	}
 
-	var r ChangeOfferingForVolumeResponse
+	var r ListVolumesUsageHistoryResponse
 	if err := json.Unmarshal(resp, &r); err != nil {
 		return nil, err
-	}
-
-	// If we have a async client, we need to wait for the async result
-	if s.cs.async {
-		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
-		if err != nil {
-			if err == AsyncTimeoutErr {
-				return &r, err
-			}
-			return nil, err
-		}
-
-		b, err = getRawValue(b)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := json.Unmarshal(b, &r); err != nil {
-			return nil, err
-		}
 	}
 
 	return &r, nil
 }
 
-type ChangeOfferingForVolumeResponse struct {
-	Account                    string `json:"account"`
-	Attached                   string `json:"attached"`
-	Chaininfo                  string `json:"chaininfo"`
-	Clusterid                  string `json:"clusterid"`
-	Clustername                string `json:"clustername"`
-	Created                    string `json:"created"`
-	Destroyed                  bool   `json:"destroyed"`
-	Deviceid                   int64  `json:"deviceid"`
-	DiskBytesReadRate          int64  `json:"diskBytesReadRate"`
-	DiskBytesWriteRate         int64  `json:"diskBytesWriteRate"`
-	DiskIopsReadRate           int64  `json:"diskIopsReadRate"`
-	DiskIopsWriteRate          int64  `json:"diskIopsWriteRate"`
-	Diskioread                 int64  `json:"diskioread"`
-	Diskiowrite                int64  `json:"diskiowrite"`
-	Diskkbsread                int64  `json:"diskkbsread"`
-	Diskkbswrite               int64  `json:"diskkbswrite"`
-	Diskofferingdisplaytext    string `json:"diskofferingdisplaytext"`
-	Diskofferingid             string `json:"diskofferingid"`
-	Diskofferingname           string `json:"diskofferingname"`
-	Displayvolume              bool   `json:"displayvolume"`
-	Domain                     string `json:"domain"`
-	Domainid                   string `json:"domainid"`
-	Externaluuid               string `json:"externaluuid"`
-	Hasannotations             bool   `json:"hasannotations"`
-	Hypervisor                 string `json:"hypervisor"`
-	Id                         string `json:"id"`
-	Isextractable              bool   `json:"isextractable"`
-	Isodisplaytext             string `json:"isodisplaytext"`
-	Isoid                      string `json:"isoid"`
-	Isoname                    string `json:"isoname"`
-	JobID                      string `json:"jobid"`
-	Jobstatus                  int    `json:"jobstatus"`
-	Maxiops                    int64  `json:"maxiops"`
-	Miniops                    int64  `json:"miniops"`
-	Name                       string `json:"name"`
-	Path                       string `json:"path"`
-	Physicalsize               int64  `json:"physicalsize"`
-	Podid                      string `json:"podid"`
-	Podname                    string `json:"podname"`
-	Project                    string `json:"project"`
-	Projectid                  string `json:"projectid"`
-	Provisioningtype           string `json:"provisioningtype"`
-	Quiescevm                  bool   `json:"quiescevm"`
-	Serviceofferingdisplaytext string `json:"serviceofferingdisplaytext"`
-	Serviceofferingid          string `json:"serviceofferingid"`
-	Serviceofferingname        string `json:"serviceofferingname"`
-	Size                       int64  `json:"size"`
-	Snapshotid                 string `json:"snapshotid"`
-	State                      string `json:"state"`
-	Status                     string `json:"status"`
-	Storage                    string `json:"storage"`
-	Storageid                  string `json:"storageid"`
-	Storagetype                string `json:"storagetype"`
-	Supportsstoragesnapshot    bool   `json:"supportsstoragesnapshot"`
-	Tags                       []Tags `json:"tags"`
-	Templatedisplaytext        string `json:"templatedisplaytext"`
-	Templateid                 string `json:"templateid"`
-	Templatename               string `json:"templatename"`
-	Type                       string `json:"type"`
-	Utilization                string `json:"utilization"`
-	Virtualmachineid           string `json:"virtualmachineid"`
-	Virtualsize                int64  `json:"virtualsize"`
-	Vmdisplayname              string `json:"vmdisplayname"`
-	Vmname                     string `json:"vmname"`
-	Vmstate                    string `json:"vmstate"`
-	Vmtype                     string `json:"vmtype"`
-	Zoneid                     string `json:"zoneid"`
-	Zonename                   string `json:"zonename"`
+type ListVolumesUsageHistoryResponse struct {
+	Count               int                    `json:"count"`
+	VolumesUsageHistory []*VolumesUsageHistory `json:"volume"`
+}
+
+type VolumesUsageHistory struct {
+	Id        string   `json:"id"`
+	JobID     string   `json:"jobid"`
+	Jobstatus int      `json:"jobstatus"`
+	Name      string   `json:"name"`
+	Stats     []string `json:"stats"`
+}
+
+type AssignVolumeParams struct {
+	p map[string]interface{}
+}
+
+func (p *AssignVolumeParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["accountid"]; found {
+		u.Set("accountid", v.(string))
+	}
+	if v, found := p.p["projectid"]; found {
+		u.Set("projectid", v.(string))
+	}
+	if v, found := p.p["volumeid"]; found {
+		u.Set("volumeid", v.(string))
+	}
+	return u
+}
+
+func (p *AssignVolumeParams) SetAccountid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["accountid"] = v
+}
+
+func (p *AssignVolumeParams) ResetAccountid() {
+	if p.p != nil && p.p["accountid"] != nil {
+		delete(p.p, "accountid")
+	}
+}
+
+func (p *AssignVolumeParams) GetAccountid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["accountid"].(string)
+	return value, ok
+}
+
+func (p *AssignVolumeParams) SetProjectid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["projectid"] = v
+}
+
+func (p *AssignVolumeParams) ResetProjectid() {
+	if p.p != nil && p.p["projectid"] != nil {
+		delete(p.p, "projectid")
+	}
+}
+
+func (p *AssignVolumeParams) GetProjectid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *AssignVolumeParams) SetVolumeid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["volumeid"] = v
+}
+
+func (p *AssignVolumeParams) ResetVolumeid() {
+	if p.p != nil && p.p["volumeid"] != nil {
+		delete(p.p, "volumeid")
+	}
+}
+
+func (p *AssignVolumeParams) GetVolumeid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["volumeid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new AssignVolumeParams instance,
+// as then you are sure you have configured all required params
+func (s *VolumeService) NewAssignVolumeParams(volumeid string) *AssignVolumeParams {
+	p := &AssignVolumeParams{}
+	p.p = make(map[string]interface{})
+	p.p["volumeid"] = volumeid
+	return p
+}
+
+// Changes ownership of a Volume from one account to another.
+func (s *VolumeService) AssignVolume(p *AssignVolumeParams) (*AssignVolumeResponse, error) {
+	resp, err := s.cs.newRequest("assignVolume", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var nested struct {
+		Response AssignVolumeResponse `json:"volume"`
+	}
+	if err := json.Unmarshal(resp, &nested); err != nil {
+		return nil, err
+	}
+	r := nested.Response
+
+	return &r, nil
+}
+
+type AssignVolumeResponse struct {
+	Account                    string            `json:"account"`
+	Attached                   string            `json:"attached"`
+	Chaininfo                  string            `json:"chaininfo"`
+	Clusterid                  string            `json:"clusterid"`
+	Clustername                string            `json:"clustername"`
+	Created                    string            `json:"created"`
+	Deleteprotection           bool              `json:"deleteprotection"`
+	Destroyed                  bool              `json:"destroyed"`
+	Deviceid                   int64             `json:"deviceid"`
+	DiskBytesReadRate          int64             `json:"diskBytesReadRate"`
+	DiskBytesWriteRate         int64             `json:"diskBytesWriteRate"`
+	DiskIopsReadRate           int64             `json:"diskIopsReadRate"`
+	DiskIopsWriteRate          int64             `json:"diskIopsWriteRate"`
+	Diskioread                 int64             `json:"diskioread"`
+	Diskiowrite                int64             `json:"diskiowrite"`
+	Diskkbsread                int64             `json:"diskkbsread"`
+	Diskkbswrite               int64             `json:"diskkbswrite"`
+	Diskofferingdisplaytext    string            `json:"diskofferingdisplaytext"`
+	Diskofferingid             string            `json:"diskofferingid"`
+	Diskofferingname           string            `json:"diskofferingname"`
+	Displayvolume              bool              `json:"displayvolume"`
+	Domain                     string            `json:"domain"`
+	Domainid                   string            `json:"domainid"`
+	Domainpath                 string            `json:"domainpath"`
+	Encryptformat              string            `json:"encryptformat"`
+	Externaluuid               string            `json:"externaluuid"`
+	Hasannotations             bool              `json:"hasannotations"`
+	Hypervisor                 string            `json:"hypervisor"`
+	Id                         string            `json:"id"`
+	Isextractable              bool              `json:"isextractable"`
+	Isodisplaytext             string            `json:"isodisplaytext"`
+	Isoid                      string            `json:"isoid"`
+	Isoname                    string            `json:"isoname"`
+	JobID                      string            `json:"jobid"`
+	Jobstatus                  int               `json:"jobstatus"`
+	Maxiops                    int64             `json:"maxiops"`
+	Miniops                    int64             `json:"miniops"`
+	Name                       string            `json:"name"`
+	Path                       string            `json:"path"`
+	Physicalsize               int64             `json:"physicalsize"`
+	Podid                      string            `json:"podid"`
+	Podname                    string            `json:"podname"`
+	Project                    string            `json:"project"`
+	Projectid                  string            `json:"projectid"`
+	Provisioningtype           string            `json:"provisioningtype"`
+	Quiescevm                  bool              `json:"quiescevm"`
+	Serviceofferingdisplaytext string            `json:"serviceofferingdisplaytext"`
+	Serviceofferingid          string            `json:"serviceofferingid"`
+	Serviceofferingname        string            `json:"serviceofferingname"`
+	Size                       int64             `json:"size"`
+	Snapshotid                 string            `json:"snapshotid"`
+	State                      string            `json:"state"`
+	Status                     string            `json:"status"`
+	Storage                    string            `json:"storage"`
+	Storageid                  string            `json:"storageid"`
+	Storagetype                string            `json:"storagetype"`
+	Supportsstoragesnapshot    bool              `json:"supportsstoragesnapshot"`
+	Tags                       []Tags            `json:"tags"`
+	Templatedisplaytext        string            `json:"templatedisplaytext"`
+	Templateid                 string            `json:"templateid"`
+	Templatename               string            `json:"templatename"`
+	Type                       string            `json:"type"`
+	Utilization                string            `json:"utilization"`
+	Virtualmachineid           string            `json:"virtualmachineid"`
+	Virtualsize                int64             `json:"virtualsize"`
+	Vmdisplayname              string            `json:"vmdisplayname"`
+	Vmname                     string            `json:"vmname"`
+	Vmstate                    string            `json:"vmstate"`
+	Vmtype                     string            `json:"vmtype"`
+	Volumecheckresult          map[string]string `json:"volumecheckresult"`
+	Volumerepairresult         map[string]string `json:"volumerepairresult"`
+	Zoneid                     string            `json:"zoneid"`
+	Zonename                   string            `json:"zonename"`
 }

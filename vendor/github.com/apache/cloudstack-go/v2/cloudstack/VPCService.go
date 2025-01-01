@@ -33,9 +33,9 @@ type VPCServiceIface interface {
 	CreateStaticRoute(p *CreateStaticRouteParams) (*CreateStaticRouteResponse, error)
 	NewCreateStaticRouteParams(cidr string, gatewayid string) *CreateStaticRouteParams
 	CreateVPC(p *CreateVPCParams) (*CreateVPCResponse, error)
-	NewCreateVPCParams(cidr string, displaytext string, name string, vpcofferingid string, zoneid string) *CreateVPCParams
+	NewCreateVPCParams(displaytext string, name string, vpcofferingid string, zoneid string) *CreateVPCParams
 	CreateVPCOffering(p *CreateVPCOfferingParams) (*CreateVPCOfferingResponse, error)
-	NewCreateVPCOfferingParams(displaytext string, name string, supportedservices []string) *CreateVPCOfferingParams
+	NewCreateVPCOfferingParams(displaytext string, name string) *CreateVPCOfferingParams
 	DeletePrivateGateway(p *DeletePrivateGatewayParams) (*DeletePrivateGatewayResponse, error)
 	NewDeletePrivateGatewayParams(id string) *DeletePrivateGatewayParams
 	DeleteStaticRoute(p *DeleteStaticRouteParams) (*DeleteStaticRouteResponse, error)
@@ -60,6 +60,8 @@ type VPCServiceIface interface {
 	GetVPCID(name string, opts ...OptionFunc) (string, int, error)
 	GetVPCByName(name string, opts ...OptionFunc) (*VPC, int, error)
 	GetVPCByID(id string, opts ...OptionFunc) (*VPC, int, error)
+	MigrateVPC(p *MigrateVPCParams) (*MigrateVPCResponse, error)
+	NewMigrateVPCParams(vpcid string, vpcofferingid string) *MigrateVPCParams
 	RestartVPC(p *RestartVPCParams) (*RestartVPCResponse, error)
 	NewRestartVPCParams(id string) *RestartVPCParams
 	UpdateVPC(p *UpdateVPCParams) (*UpdateVPCResponse, error)
@@ -401,6 +403,7 @@ type CreatePrivateGatewayResponse struct {
 	Associatednetworkid string `json:"associatednetworkid"`
 	Domain              string `json:"domain"`
 	Domainid            string `json:"domainid"`
+	Domainpath          string `json:"domainpath"`
 	Gateway             string `json:"gateway"`
 	Hasannotations      bool   `json:"hasannotations"`
 	Id                  string `json:"id"`
@@ -526,19 +529,20 @@ func (s *VPCService) CreateStaticRoute(p *CreateStaticRouteParams) (*CreateStati
 }
 
 type CreateStaticRouteResponse struct {
-	Account   string `json:"account"`
-	Cidr      string `json:"cidr"`
-	Domain    string `json:"domain"`
-	Domainid  string `json:"domainid"`
-	Gatewayid string `json:"gatewayid"`
-	Id        string `json:"id"`
-	JobID     string `json:"jobid"`
-	Jobstatus int    `json:"jobstatus"`
-	Project   string `json:"project"`
-	Projectid string `json:"projectid"`
-	State     string `json:"state"`
-	Tags      []Tags `json:"tags"`
-	Vpcid     string `json:"vpcid"`
+	Account    string `json:"account"`
+	Cidr       string `json:"cidr"`
+	Domain     string `json:"domain"`
+	Domainid   string `json:"domainid"`
+	Domainpath string `json:"domainpath"`
+	Gatewayid  string `json:"gatewayid"`
+	Id         string `json:"id"`
+	JobID      string `json:"jobid"`
+	Jobstatus  int    `json:"jobstatus"`
+	Project    string `json:"project"`
+	Projectid  string `json:"projectid"`
+	State      string `json:"state"`
+	Tags       []Tags `json:"tags"`
+	Vpcid      string `json:"vpcid"`
 }
 
 type CreateVPCParams struct {
@@ -553,8 +557,20 @@ func (p *CreateVPCParams) toURLValues() url.Values {
 	if v, found := p.p["account"]; found {
 		u.Set("account", v.(string))
 	}
+	if v, found := p.p["asnumber"]; found {
+		vv := strconv.FormatInt(v.(int64), 10)
+		u.Set("asnumber", vv)
+	}
+	if v, found := p.p["bgppeerids"]; found {
+		vv := strings.Join(v.([]string), ",")
+		u.Set("bgppeerids", vv)
+	}
 	if v, found := p.p["cidr"]; found {
 		u.Set("cidr", v.(string))
+	}
+	if v, found := p.p["cidrsize"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("cidrsize", vv)
 	}
 	if v, found := p.p["displaytext"]; found {
 		u.Set("displaytext", v.(string))
@@ -628,6 +644,48 @@ func (p *CreateVPCParams) GetAccount() (string, bool) {
 	return value, ok
 }
 
+func (p *CreateVPCParams) SetAsnumber(v int64) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["asnumber"] = v
+}
+
+func (p *CreateVPCParams) ResetAsnumber() {
+	if p.p != nil && p.p["asnumber"] != nil {
+		delete(p.p, "asnumber")
+	}
+}
+
+func (p *CreateVPCParams) GetAsnumber() (int64, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["asnumber"].(int64)
+	return value, ok
+}
+
+func (p *CreateVPCParams) SetBgppeerids(v []string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["bgppeerids"] = v
+}
+
+func (p *CreateVPCParams) ResetBgppeerids() {
+	if p.p != nil && p.p["bgppeerids"] != nil {
+		delete(p.p, "bgppeerids")
+	}
+}
+
+func (p *CreateVPCParams) GetBgppeerids() ([]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["bgppeerids"].([]string)
+	return value, ok
+}
+
 func (p *CreateVPCParams) SetCidr(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -646,6 +704,27 @@ func (p *CreateVPCParams) GetCidr() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["cidr"].(string)
+	return value, ok
+}
+
+func (p *CreateVPCParams) SetCidrsize(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["cidrsize"] = v
+}
+
+func (p *CreateVPCParams) ResetCidrsize() {
+	if p.p != nil && p.p["cidrsize"] != nil {
+		delete(p.p, "cidrsize")
+	}
+}
+
+func (p *CreateVPCParams) GetCidrsize() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["cidrsize"].(int)
 	return value, ok
 }
 
@@ -966,10 +1045,9 @@ func (p *CreateVPCParams) GetZoneid() (string, bool) {
 
 // You should always use this function to get a new CreateVPCParams instance,
 // as then you are sure you have configured all required params
-func (s *VPCService) NewCreateVPCParams(cidr string, displaytext string, name string, vpcofferingid string, zoneid string) *CreateVPCParams {
+func (s *VPCService) NewCreateVPCParams(displaytext string, name string, vpcofferingid string, zoneid string) *CreateVPCParams {
 	p := &CreateVPCParams{}
 	p.p = make(map[string]interface{})
-	p.p["cidr"] = cidr
 	p.p["displaytext"] = displaytext
 	p.p["name"] = name
 	p.p["vpcofferingid"] = vpcofferingid
@@ -1014,6 +1092,9 @@ func (s *VPCService) CreateVPC(p *CreateVPCParams) (*CreateVPCResponse, error) {
 
 type CreateVPCResponse struct {
 	Account              string                     `json:"account"`
+	Asnumber             int64                      `json:"asnumber"`
+	Asnumberid           string                     `json:"asnumberid"`
+	Bgppeers             []interface{}              `json:"bgppeers"`
 	Cidr                 string                     `json:"cidr"`
 	Created              string                     `json:"created"`
 	Displaytext          string                     `json:"displaytext"`
@@ -1022,10 +1103,13 @@ type CreateVPCResponse struct {
 	Dns2                 string                     `json:"dns2"`
 	Domain               string                     `json:"domain"`
 	Domainid             string                     `json:"domainid"`
+	Domainpath           string                     `json:"domainpath"`
 	Fordisplay           bool                       `json:"fordisplay"`
 	Hasannotations       bool                       `json:"hasannotations"`
 	Icon                 interface{}                `json:"icon"`
 	Id                   string                     `json:"id"`
+	Ip4routes            []interface{}              `json:"ip4routes"`
+	Ip4routing           string                     `json:"ip4routing"`
 	Ip6dns1              string                     `json:"ip6dns1"`
 	Ip6dns2              string                     `json:"ip6dns2"`
 	Ip6routes            []interface{}              `json:"ip6routes"`
@@ -1091,11 +1175,25 @@ func (p *CreateVPCOfferingParams) toURLValues() url.Values {
 		vv := strconv.FormatBool(v.(bool))
 		u.Set("enable", vv)
 	}
+	if v, found := p.p["fornsx"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("fornsx", vv)
+	}
 	if v, found := p.p["internetprotocol"]; found {
 		u.Set("internetprotocol", v.(string))
 	}
 	if v, found := p.p["name"]; found {
 		u.Set("name", v.(string))
+	}
+	if v, found := p.p["networkmode"]; found {
+		u.Set("networkmode", v.(string))
+	}
+	if v, found := p.p["nsxsupportlb"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("nsxsupportlb", vv)
+	}
+	if v, found := p.p["routingmode"]; found {
+		u.Set("routingmode", v.(string))
 	}
 	if v, found := p.p["servicecapabilitylist"]; found {
 		m := v.(map[string]string)
@@ -1113,6 +1211,10 @@ func (p *CreateVPCOfferingParams) toURLValues() url.Values {
 			u.Set(fmt.Sprintf("serviceproviderlist[%d].service", i), k)
 			u.Set(fmt.Sprintf("serviceproviderlist[%d].provider", i), m[k])
 		}
+	}
+	if v, found := p.p["specifyasnumber"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("specifyasnumber", vv)
 	}
 	if v, found := p.p["supportedservices"]; found {
 		vv := strings.Join(v.([]string), ",")
@@ -1188,6 +1290,27 @@ func (p *CreateVPCOfferingParams) GetEnable() (bool, bool) {
 	return value, ok
 }
 
+func (p *CreateVPCOfferingParams) SetFornsx(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["fornsx"] = v
+}
+
+func (p *CreateVPCOfferingParams) ResetFornsx() {
+	if p.p != nil && p.p["fornsx"] != nil {
+		delete(p.p, "fornsx")
+	}
+}
+
+func (p *CreateVPCOfferingParams) GetFornsx() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["fornsx"].(bool)
+	return value, ok
+}
+
 func (p *CreateVPCOfferingParams) SetInternetprotocol(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -1227,6 +1350,69 @@ func (p *CreateVPCOfferingParams) GetName() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["name"].(string)
+	return value, ok
+}
+
+func (p *CreateVPCOfferingParams) SetNetworkmode(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["networkmode"] = v
+}
+
+func (p *CreateVPCOfferingParams) ResetNetworkmode() {
+	if p.p != nil && p.p["networkmode"] != nil {
+		delete(p.p, "networkmode")
+	}
+}
+
+func (p *CreateVPCOfferingParams) GetNetworkmode() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["networkmode"].(string)
+	return value, ok
+}
+
+func (p *CreateVPCOfferingParams) SetNsxsupportlb(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["nsxsupportlb"] = v
+}
+
+func (p *CreateVPCOfferingParams) ResetNsxsupportlb() {
+	if p.p != nil && p.p["nsxsupportlb"] != nil {
+		delete(p.p, "nsxsupportlb")
+	}
+}
+
+func (p *CreateVPCOfferingParams) GetNsxsupportlb() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["nsxsupportlb"].(bool)
+	return value, ok
+}
+
+func (p *CreateVPCOfferingParams) SetRoutingmode(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["routingmode"] = v
+}
+
+func (p *CreateVPCOfferingParams) ResetRoutingmode() {
+	if p.p != nil && p.p["routingmode"] != nil {
+		delete(p.p, "routingmode")
+	}
+}
+
+func (p *CreateVPCOfferingParams) GetRoutingmode() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["routingmode"].(string)
 	return value, ok
 }
 
@@ -1293,6 +1479,27 @@ func (p *CreateVPCOfferingParams) GetServiceproviderlist() (map[string]string, b
 	return value, ok
 }
 
+func (p *CreateVPCOfferingParams) SetSpecifyasnumber(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["specifyasnumber"] = v
+}
+
+func (p *CreateVPCOfferingParams) ResetSpecifyasnumber() {
+	if p.p != nil && p.p["specifyasnumber"] != nil {
+		delete(p.p, "specifyasnumber")
+	}
+}
+
+func (p *CreateVPCOfferingParams) GetSpecifyasnumber() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["specifyasnumber"].(bool)
+	return value, ok
+}
+
 func (p *CreateVPCOfferingParams) SetSupportedservices(v []string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -1337,12 +1544,11 @@ func (p *CreateVPCOfferingParams) GetZoneid() ([]string, bool) {
 
 // You should always use this function to get a new CreateVPCOfferingParams instance,
 // as then you are sure you have configured all required params
-func (s *VPCService) NewCreateVPCOfferingParams(displaytext string, name string, supportedservices []string) *CreateVPCOfferingParams {
+func (s *VPCService) NewCreateVPCOfferingParams(displaytext string, name string) *CreateVPCOfferingParams {
 	p := &CreateVPCOfferingParams{}
 	p.p = make(map[string]interface{})
 	p.p["displaytext"] = displaytext
 	p.p["name"] = name
-	p.p["supportedservices"] = supportedservices
 	return p
 }
 
@@ -1387,13 +1593,17 @@ type CreateVPCOfferingResponse struct {
 	Distributedvpcrouter   bool                               `json:"distributedvpcrouter"`
 	Domain                 string                             `json:"domain"`
 	Domainid               string                             `json:"domainid"`
+	Fornsx                 bool                               `json:"fornsx"`
 	Id                     string                             `json:"id"`
 	Internetprotocol       string                             `json:"internetprotocol"`
 	Isdefault              bool                               `json:"isdefault"`
 	JobID                  string                             `json:"jobid"`
 	Jobstatus              int                                `json:"jobstatus"`
 	Name                   string                             `json:"name"`
+	Networkmode            string                             `json:"networkmode"`
+	Routingmode            string                             `json:"routingmode"`
 	Service                []CreateVPCOfferingResponseService `json:"service"`
+	Specifyasnumber        bool                               `json:"specifyasnumber"`
 	State                  string                             `json:"state"`
 	SupportsregionLevelvpc bool                               `json:"supportsregionLevelvpc"`
 	Zone                   string                             `json:"zone"`
@@ -2147,6 +2357,7 @@ type PrivateGateway struct {
 	Associatednetworkid string `json:"associatednetworkid"`
 	Domain              string `json:"domain"`
 	Domainid            string `json:"domainid"`
+	Domainpath          string `json:"domainpath"`
 	Gateway             string `json:"gateway"`
 	Hasannotations      bool   `json:"hasannotations"`
 	Id                  string `json:"id"`
@@ -2560,19 +2771,20 @@ type ListStaticRoutesResponse struct {
 }
 
 type StaticRoute struct {
-	Account   string `json:"account"`
-	Cidr      string `json:"cidr"`
-	Domain    string `json:"domain"`
-	Domainid  string `json:"domainid"`
-	Gatewayid string `json:"gatewayid"`
-	Id        string `json:"id"`
-	JobID     string `json:"jobid"`
-	Jobstatus int    `json:"jobstatus"`
-	Project   string `json:"project"`
-	Projectid string `json:"projectid"`
-	State     string `json:"state"`
-	Tags      []Tags `json:"tags"`
-	Vpcid     string `json:"vpcid"`
+	Account    string `json:"account"`
+	Cidr       string `json:"cidr"`
+	Domain     string `json:"domain"`
+	Domainid   string `json:"domainid"`
+	Domainpath string `json:"domainpath"`
+	Gatewayid  string `json:"gatewayid"`
+	Id         string `json:"id"`
+	JobID      string `json:"jobid"`
+	Jobstatus  int    `json:"jobstatus"`
+	Project    string `json:"project"`
+	Projectid  string `json:"projectid"`
+	State      string `json:"state"`
+	Tags       []Tags `json:"tags"`
+	Vpcid      string `json:"vpcid"`
 }
 
 type ListVPCOfferingsParams struct {
@@ -2972,13 +3184,17 @@ type VPCOffering struct {
 	Distributedvpcrouter   bool                 `json:"distributedvpcrouter"`
 	Domain                 string               `json:"domain"`
 	Domainid               string               `json:"domainid"`
+	Fornsx                 bool                 `json:"fornsx"`
 	Id                     string               `json:"id"`
 	Internetprotocol       string               `json:"internetprotocol"`
 	Isdefault              bool                 `json:"isdefault"`
 	JobID                  string               `json:"jobid"`
 	Jobstatus              int                  `json:"jobstatus"`
 	Name                   string               `json:"name"`
+	Networkmode            string               `json:"networkmode"`
+	Routingmode            string               `json:"routingmode"`
 	Service                []VPCOfferingService `json:"service"`
+	Specifyasnumber        bool                 `json:"specifyasnumber"`
 	State                  string               `json:"state"`
 	SupportsregionLevelvpc bool                 `json:"supportsregionLevelvpc"`
 	Zone                   string               `json:"zone"`
@@ -3624,6 +3840,9 @@ type ListVPCsResponse struct {
 
 type VPC struct {
 	Account              string               `json:"account"`
+	Asnumber             int64                `json:"asnumber"`
+	Asnumberid           string               `json:"asnumberid"`
+	Bgppeers             []interface{}        `json:"bgppeers"`
 	Cidr                 string               `json:"cidr"`
 	Created              string               `json:"created"`
 	Displaytext          string               `json:"displaytext"`
@@ -3632,10 +3851,13 @@ type VPC struct {
 	Dns2                 string               `json:"dns2"`
 	Domain               string               `json:"domain"`
 	Domainid             string               `json:"domainid"`
+	Domainpath           string               `json:"domainpath"`
 	Fordisplay           bool                 `json:"fordisplay"`
 	Hasannotations       bool                 `json:"hasannotations"`
 	Icon                 interface{}          `json:"icon"`
 	Id                   string               `json:"id"`
+	Ip4routes            []interface{}        `json:"ip4routes"`
+	Ip4routing           string               `json:"ip4routing"`
 	Ip6dns1              string               `json:"ip6dns1"`
 	Ip6dns2              string               `json:"ip6dns2"`
 	Ip6routes            []interface{}        `json:"ip6routes"`
@@ -3676,6 +3898,229 @@ type VPCServiceInternalProvider struct {
 }
 
 type VPCServiceInternalCapability struct {
+	Canchooseservicecapability bool   `json:"canchooseservicecapability"`
+	Name                       string `json:"name"`
+	Value                      string `json:"value"`
+}
+
+type MigrateVPCParams struct {
+	p map[string]interface{}
+}
+
+func (p *MigrateVPCParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["resume"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("resume", vv)
+	}
+	if v, found := p.p["tiernetworkofferings"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("tiernetworkofferings[%d].key", i), k)
+			u.Set(fmt.Sprintf("tiernetworkofferings[%d].value", i), m[k])
+		}
+	}
+	if v, found := p.p["vpcid"]; found {
+		u.Set("vpcid", v.(string))
+	}
+	if v, found := p.p["vpcofferingid"]; found {
+		u.Set("vpcofferingid", v.(string))
+	}
+	return u
+}
+
+func (p *MigrateVPCParams) SetResume(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["resume"] = v
+}
+
+func (p *MigrateVPCParams) ResetResume() {
+	if p.p != nil && p.p["resume"] != nil {
+		delete(p.p, "resume")
+	}
+}
+
+func (p *MigrateVPCParams) GetResume() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["resume"].(bool)
+	return value, ok
+}
+
+func (p *MigrateVPCParams) SetTiernetworkofferings(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["tiernetworkofferings"] = v
+}
+
+func (p *MigrateVPCParams) ResetTiernetworkofferings() {
+	if p.p != nil && p.p["tiernetworkofferings"] != nil {
+		delete(p.p, "tiernetworkofferings")
+	}
+}
+
+func (p *MigrateVPCParams) GetTiernetworkofferings() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["tiernetworkofferings"].(map[string]string)
+	return value, ok
+}
+
+func (p *MigrateVPCParams) SetVpcid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["vpcid"] = v
+}
+
+func (p *MigrateVPCParams) ResetVpcid() {
+	if p.p != nil && p.p["vpcid"] != nil {
+		delete(p.p, "vpcid")
+	}
+}
+
+func (p *MigrateVPCParams) GetVpcid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["vpcid"].(string)
+	return value, ok
+}
+
+func (p *MigrateVPCParams) SetVpcofferingid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["vpcofferingid"] = v
+}
+
+func (p *MigrateVPCParams) ResetVpcofferingid() {
+	if p.p != nil && p.p["vpcofferingid"] != nil {
+		delete(p.p, "vpcofferingid")
+	}
+}
+
+func (p *MigrateVPCParams) GetVpcofferingid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["vpcofferingid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new MigrateVPCParams instance,
+// as then you are sure you have configured all required params
+func (s *VPCService) NewMigrateVPCParams(vpcid string, vpcofferingid string) *MigrateVPCParams {
+	p := &MigrateVPCParams{}
+	p.p = make(map[string]interface{})
+	p.p["vpcid"] = vpcid
+	p.p["vpcofferingid"] = vpcofferingid
+	return p
+}
+
+// moves a vpc to another physical network
+func (s *VPCService) MigrateVPC(p *MigrateVPCParams) (*MigrateVPCResponse, error) {
+	resp, err := s.cs.newRequest("migrateVPC", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r MigrateVPCResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		b, err = getRawValue(b)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type MigrateVPCResponse struct {
+	Account              string                      `json:"account"`
+	Asnumber             int64                       `json:"asnumber"`
+	Asnumberid           string                      `json:"asnumberid"`
+	Bgppeers             []interface{}               `json:"bgppeers"`
+	Cidr                 string                      `json:"cidr"`
+	Created              string                      `json:"created"`
+	Displaytext          string                      `json:"displaytext"`
+	Distributedvpcrouter bool                        `json:"distributedvpcrouter"`
+	Dns1                 string                      `json:"dns1"`
+	Dns2                 string                      `json:"dns2"`
+	Domain               string                      `json:"domain"`
+	Domainid             string                      `json:"domainid"`
+	Domainpath           string                      `json:"domainpath"`
+	Fordisplay           bool                        `json:"fordisplay"`
+	Hasannotations       bool                        `json:"hasannotations"`
+	Icon                 interface{}                 `json:"icon"`
+	Id                   string                      `json:"id"`
+	Ip4routes            []interface{}               `json:"ip4routes"`
+	Ip4routing           string                      `json:"ip4routing"`
+	Ip6dns1              string                      `json:"ip6dns1"`
+	Ip6dns2              string                      `json:"ip6dns2"`
+	Ip6routes            []interface{}               `json:"ip6routes"`
+	JobID                string                      `json:"jobid"`
+	Jobstatus            int                         `json:"jobstatus"`
+	Name                 string                      `json:"name"`
+	Network              []*Network                  `json:"network"`
+	Networkdomain        string                      `json:"networkdomain"`
+	Project              string                      `json:"project"`
+	Projectid            string                      `json:"projectid"`
+	Publicmtu            int                         `json:"publicmtu"`
+	Redundantvpcrouter   bool                        `json:"redundantvpcrouter"`
+	Regionlevelvpc       bool                        `json:"regionlevelvpc"`
+	Restartrequired      bool                        `json:"restartrequired"`
+	Service              []MigrateVPCResponseService `json:"service"`
+	State                string                      `json:"state"`
+	Tags                 []Tags                      `json:"tags"`
+	Vpcofferingid        string                      `json:"vpcofferingid"`
+	Vpcofferingname      string                      `json:"vpcofferingname"`
+	Zoneid               string                      `json:"zoneid"`
+	Zonename             string                      `json:"zonename"`
+}
+
+type MigrateVPCResponseService struct {
+	Capability []MigrateVPCResponseServiceCapability `json:"capability"`
+	Name       string                                `json:"name"`
+	Provider   []MigrateVPCResponseServiceProvider   `json:"provider"`
+}
+
+type MigrateVPCResponseServiceProvider struct {
+	Canenableindividualservice   bool     `json:"canenableindividualservice"`
+	Destinationphysicalnetworkid string   `json:"destinationphysicalnetworkid"`
+	Id                           string   `json:"id"`
+	Name                         string   `json:"name"`
+	Physicalnetworkid            string   `json:"physicalnetworkid"`
+	Servicelist                  []string `json:"servicelist"`
+	State                        string   `json:"state"`
+}
+
+type MigrateVPCResponseServiceCapability struct {
 	Canchooseservicecapability bool   `json:"canchooseservicecapability"`
 	Name                       string `json:"name"`
 	Value                      string `json:"value"`
@@ -4066,6 +4511,9 @@ func (s *VPCService) UpdateVPC(p *UpdateVPCParams) (*UpdateVPCResponse, error) {
 
 type UpdateVPCResponse struct {
 	Account              string                     `json:"account"`
+	Asnumber             int64                      `json:"asnumber"`
+	Asnumberid           string                     `json:"asnumberid"`
+	Bgppeers             []interface{}              `json:"bgppeers"`
 	Cidr                 string                     `json:"cidr"`
 	Created              string                     `json:"created"`
 	Displaytext          string                     `json:"displaytext"`
@@ -4074,10 +4522,13 @@ type UpdateVPCResponse struct {
 	Dns2                 string                     `json:"dns2"`
 	Domain               string                     `json:"domain"`
 	Domainid             string                     `json:"domainid"`
+	Domainpath           string                     `json:"domainpath"`
 	Fordisplay           bool                       `json:"fordisplay"`
 	Hasannotations       bool                       `json:"hasannotations"`
 	Icon                 interface{}                `json:"icon"`
 	Id                   string                     `json:"id"`
+	Ip4routes            []interface{}              `json:"ip4routes"`
+	Ip4routing           string                     `json:"ip4routing"`
 	Ip6dns1              string                     `json:"ip6dns1"`
 	Ip6dns2              string                     `json:"ip6dns2"`
 	Ip6routes            []interface{}              `json:"ip6routes"`
@@ -4354,13 +4805,17 @@ type UpdateVPCOfferingResponse struct {
 	Distributedvpcrouter   bool                               `json:"distributedvpcrouter"`
 	Domain                 string                             `json:"domain"`
 	Domainid               string                             `json:"domainid"`
+	Fornsx                 bool                               `json:"fornsx"`
 	Id                     string                             `json:"id"`
 	Internetprotocol       string                             `json:"internetprotocol"`
 	Isdefault              bool                               `json:"isdefault"`
 	JobID                  string                             `json:"jobid"`
 	Jobstatus              int                                `json:"jobstatus"`
 	Name                   string                             `json:"name"`
+	Networkmode            string                             `json:"networkmode"`
+	Routingmode            string                             `json:"routingmode"`
 	Service                []UpdateVPCOfferingResponseService `json:"service"`
+	Specifyasnumber        bool                               `json:"specifyasnumber"`
 	State                  string                             `json:"state"`
 	SupportsregionLevelvpc bool                               `json:"supportsregionLevelvpc"`
 	Zone                   string                             `json:"zone"`
