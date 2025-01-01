@@ -79,6 +79,8 @@ type AutoScaleServiceIface interface {
 	NewUpdateAutoScaleVmGroupParams(id string) *UpdateAutoScaleVmGroupParams
 	UpdateAutoScaleVmProfile(p *UpdateAutoScaleVmProfileParams) (*UpdateAutoScaleVmProfileResponse, error)
 	NewUpdateAutoScaleVmProfileParams(id string) *UpdateAutoScaleVmProfileParams
+	UpdateCondition(p *UpdateConditionParams) (*UpdateConditionResponse, error)
+	NewUpdateConditionParams(id string, relationaloperator string, threshold int64) *UpdateConditionParams
 }
 
 type CreateAutoScalePolicyParams struct {
@@ -268,6 +270,7 @@ type CreateAutoScalePolicyResponse struct {
 	Conditions []string `json:"conditions"`
 	Domain     string   `json:"domain"`
 	Domainid   string   `json:"domainid"`
+	Domainpath string   `json:"domainpath"`
 	Duration   int      `json:"duration"`
 	Id         string   `json:"id"`
 	JobID      string   `json:"jobid"`
@@ -569,6 +572,7 @@ type CreateAutoScaleVmGroupResponse struct {
 	Created                      string   `json:"created"`
 	Domain                       string   `json:"domain"`
 	Domainid                     string   `json:"domainid"`
+	Domainpath                   string   `json:"domainpath"`
 	Fordisplay                   bool     `json:"fordisplay"`
 	Hasannotations               bool     `json:"hasannotations"`
 	Id                           string   `json:"id"`
@@ -1005,6 +1009,7 @@ type CreateAutoScaleVmProfileResponse struct {
 	Autoscaleuserid      string            `json:"autoscaleuserid"`
 	Domain               string            `json:"domain"`
 	Domainid             string            `json:"domainid"`
+	Domainpath           string            `json:"domainpath"`
 	Expungevmgraceperiod int               `json:"expungevmgraceperiod"`
 	Fordisplay           bool              `json:"fordisplay"`
 	Id                   string            `json:"id"`
@@ -1233,6 +1238,7 @@ type CreateConditionResponse struct {
 	Countername        string `json:"countername"`
 	Domain             string `json:"domain"`
 	Domainid           string `json:"domainid"`
+	Domainpath         string `json:"domainpath"`
 	Id                 string `json:"id"`
 	JobID              string `json:"jobid"`
 	Jobstatus          int    `json:"jobstatus"`
@@ -1932,6 +1938,7 @@ type DisableAutoScaleVmGroupResponse struct {
 	Created                      string   `json:"created"`
 	Domain                       string   `json:"domain"`
 	Domainid                     string   `json:"domainid"`
+	Domainpath                   string   `json:"domainpath"`
 	Fordisplay                   bool     `json:"fordisplay"`
 	Hasannotations               bool     `json:"hasannotations"`
 	Id                           string   `json:"id"`
@@ -2043,6 +2050,7 @@ type EnableAutoScaleVmGroupResponse struct {
 	Created                      string   `json:"created"`
 	Domain                       string   `json:"domain"`
 	Domainid                     string   `json:"domainid"`
+	Domainpath                   string   `json:"domainpath"`
 	Fordisplay                   bool     `json:"fordisplay"`
 	Hasannotations               bool     `json:"hasannotations"`
 	Id                           string   `json:"id"`
@@ -2511,6 +2519,7 @@ type AutoScalePolicy struct {
 	Conditions []string `json:"conditions"`
 	Domain     string   `json:"domain"`
 	Domainid   string   `json:"domainid"`
+	Domainpath string   `json:"domainpath"`
 	Duration   int      `json:"duration"`
 	Id         string   `json:"id"`
 	JobID      string   `json:"jobid"`
@@ -3017,6 +3026,7 @@ type AutoScaleVmGroup struct {
 	Created                      string   `json:"created"`
 	Domain                       string   `json:"domain"`
 	Domainid                     string   `json:"domainid"`
+	Domainpath                   string   `json:"domainpath"`
 	Fordisplay                   bool     `json:"fordisplay"`
 	Hasannotations               bool     `json:"hasannotations"`
 	Id                           string   `json:"id"`
@@ -3459,6 +3469,7 @@ type AutoScaleVmProfile struct {
 	Autoscaleuserid      string            `json:"autoscaleuserid"`
 	Domain               string            `json:"domain"`
 	Domainid             string            `json:"domainid"`
+	Domainpath           string            `json:"domainpath"`
 	Expungevmgraceperiod int               `json:"expungevmgraceperiod"`
 	Fordisplay           bool              `json:"fordisplay"`
 	Id                   string            `json:"id"`
@@ -3825,6 +3836,7 @@ type Condition struct {
 	Countername        string `json:"countername"`
 	Domain             string `json:"domain"`
 	Domainid           string `json:"domainid"`
+	Domainpath         string `json:"domainpath"`
 	Id                 string `json:"id"`
 	JobID              string `json:"jobid"`
 	Jobstatus          int    `json:"jobstatus"`
@@ -4324,6 +4336,7 @@ type UpdateAutoScalePolicyResponse struct {
 	Conditions []string `json:"conditions"`
 	Domain     string   `json:"domain"`
 	Domainid   string   `json:"domainid"`
+	Domainpath string   `json:"domainpath"`
 	Duration   int      `json:"duration"`
 	Id         string   `json:"id"`
 	JobID      string   `json:"jobid"`
@@ -4620,6 +4633,7 @@ type UpdateAutoScaleVmGroupResponse struct {
 	Created                      string   `json:"created"`
 	Domain                       string   `json:"domain"`
 	Domainid                     string   `json:"domainid"`
+	Domainpath                   string   `json:"domainpath"`
 	Fordisplay                   bool     `json:"fordisplay"`
 	Hasannotations               bool     `json:"hasannotations"`
 	Id                           string   `json:"id"`
@@ -5006,6 +5020,7 @@ type UpdateAutoScaleVmProfileResponse struct {
 	Autoscaleuserid      string            `json:"autoscaleuserid"`
 	Domain               string            `json:"domain"`
 	Domainid             string            `json:"domainid"`
+	Domainpath           string            `json:"domainpath"`
 	Expungevmgraceperiod int               `json:"expungevmgraceperiod"`
 	Fordisplay           bool              `json:"fordisplay"`
 	Id                   string            `json:"id"`
@@ -5022,4 +5037,137 @@ type UpdateAutoScaleVmProfileResponse struct {
 	Userdataname         string            `json:"userdataname"`
 	Userdatapolicy       string            `json:"userdatapolicy"`
 	Zoneid               string            `json:"zoneid"`
+}
+
+type UpdateConditionParams struct {
+	p map[string]interface{}
+}
+
+func (p *UpdateConditionParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	if v, found := p.p["relationaloperator"]; found {
+		u.Set("relationaloperator", v.(string))
+	}
+	if v, found := p.p["threshold"]; found {
+		vv := strconv.FormatInt(v.(int64), 10)
+		u.Set("threshold", vv)
+	}
+	return u
+}
+
+func (p *UpdateConditionParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *UpdateConditionParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *UpdateConditionParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+func (p *UpdateConditionParams) SetRelationaloperator(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["relationaloperator"] = v
+}
+
+func (p *UpdateConditionParams) ResetRelationaloperator() {
+	if p.p != nil && p.p["relationaloperator"] != nil {
+		delete(p.p, "relationaloperator")
+	}
+}
+
+func (p *UpdateConditionParams) GetRelationaloperator() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["relationaloperator"].(string)
+	return value, ok
+}
+
+func (p *UpdateConditionParams) SetThreshold(v int64) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["threshold"] = v
+}
+
+func (p *UpdateConditionParams) ResetThreshold() {
+	if p.p != nil && p.p["threshold"] != nil {
+		delete(p.p, "threshold")
+	}
+}
+
+func (p *UpdateConditionParams) GetThreshold() (int64, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["threshold"].(int64)
+	return value, ok
+}
+
+// You should always use this function to get a new UpdateConditionParams instance,
+// as then you are sure you have configured all required params
+func (s *AutoScaleService) NewUpdateConditionParams(id string, relationaloperator string, threshold int64) *UpdateConditionParams {
+	p := &UpdateConditionParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	p.p["relationaloperator"] = relationaloperator
+	p.p["threshold"] = threshold
+	return p
+}
+
+// Updates a condition for VM auto scaling
+func (s *AutoScaleService) UpdateCondition(p *UpdateConditionParams) (*UpdateConditionResponse, error) {
+	resp, err := s.cs.newRequest("updateCondition", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r UpdateConditionResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type UpdateConditionResponse struct {
+	Displaytext string `json:"displaytext"`
+	JobID       string `json:"jobid"`
+	Jobstatus   int    `json:"jobstatus"`
+	Success     bool   `json:"success"`
 }

@@ -54,6 +54,8 @@ type VirtualMachineServiceIface interface {
 	GetVirtualMachinesMetricID(name string, opts ...OptionFunc) (string, int, error)
 	GetVirtualMachinesMetricByName(name string, opts ...OptionFunc) (*VirtualMachinesMetric, int, error)
 	GetVirtualMachinesMetricByID(id string, opts ...OptionFunc) (*VirtualMachinesMetric, int, error)
+	ListVmsForImport(p *ListVmsForImportParams) (*ListVmsForImportResponse, error)
+	NewListVmsForImportParams(host string, hypervisor string, zoneid string) *ListVmsForImportParams
 	MigrateVirtualMachine(p *MigrateVirtualMachineParams) (*MigrateVirtualMachineResponse, error)
 	NewMigrateVirtualMachineParams(virtualmachineid string) *MigrateVirtualMachineParams
 	MigrateVirtualMachineWithVolume(p *MigrateVirtualMachineWithVolumeParams) (*MigrateVirtualMachineWithVolumeResponse, error)
@@ -66,6 +68,8 @@ type VirtualMachineServiceIface interface {
 	NewRemoveNicFromVirtualMachineParams(nicid string, virtualmachineid string) *RemoveNicFromVirtualMachineParams
 	ResetPasswordForVirtualMachine(p *ResetPasswordForVirtualMachineParams) (*ResetPasswordForVirtualMachineResponse, error)
 	NewResetPasswordForVirtualMachineParams(id string) *ResetPasswordForVirtualMachineParams
+	ResetUserDataForVirtualMachine(p *ResetUserDataForVirtualMachineParams) (*ResetUserDataForVirtualMachineResponse, error)
+	NewResetUserDataForVirtualMachineParams(id string) *ResetUserDataForVirtualMachineParams
 	RestoreVirtualMachine(p *RestoreVirtualMachineParams) (*RestoreVirtualMachineResponse, error)
 	NewRestoreVirtualMachineParams(virtualmachineid string) *RestoreVirtualMachineParams
 	ScaleVirtualMachine(p *ScaleVirtualMachineParams) (*ScaleVirtualMachineResponse, error)
@@ -83,6 +87,23 @@ type VirtualMachineServiceIface interface {
 	GetVirtualMachinesUsageHistoryID(name string, opts ...OptionFunc) (string, int, error)
 	GetVirtualMachinesUsageHistoryByName(name string, opts ...OptionFunc) (*VirtualMachinesUsageHistory, int, error)
 	GetVirtualMachinesUsageHistoryByID(id string, opts ...OptionFunc) (*VirtualMachinesUsageHistory, int, error)
+	ImportVm(p *ImportVmParams) (*ImportVmResponse, error)
+	NewImportVmParams(clusterid string, hypervisor string, importsource string, name string, serviceofferingid string, zoneid string) *ImportVmParams
+	UnmanageVirtualMachine(p *UnmanageVirtualMachineParams) (*UnmanageVirtualMachineResponse, error)
+	NewUnmanageVirtualMachineParams(id string) *UnmanageVirtualMachineParams
+	ListUnmanagedInstances(p *ListUnmanagedInstancesParams) (*ListUnmanagedInstancesResponse, error)
+	NewListUnmanagedInstancesParams(clusterid string) *ListUnmanagedInstancesParams
+	ImportUnmanagedInstance(p *ImportUnmanagedInstanceParams) (*ImportUnmanagedInstanceResponse, error)
+	NewImportUnmanagedInstanceParams(clusterid string, name string, serviceofferingid string) *ImportUnmanagedInstanceParams
+	CreateVMSchedule(p *CreateVMScheduleParams) (*CreateVMScheduleResponse, error)
+	NewCreateVMScheduleParams(action string, schedule string, timezone string, virtualmachineid string) *CreateVMScheduleParams
+	UpdateVMSchedule(p *UpdateVMScheduleParams) (*UpdateVMScheduleResponse, error)
+	NewUpdateVMScheduleParams(id string) *UpdateVMScheduleParams
+	ListVMSchedule(p *ListVMScheduleParams) (*ListVMScheduleResponse, error)
+	NewListVMScheduleParams(virtualmachineid string) *ListVMScheduleParams
+	GetVMScheduleByID(id string, virtualmachineid string, opts ...OptionFunc) (*VMSchedule, int, error)
+	DeleteVMSchedule(p *DeleteVMScheduleParams) (*DeleteVMScheduleResponse, error)
+	NewDeleteVMScheduleParams(virtualmachineid string) *DeleteVMScheduleParams
 }
 
 type AddNicToVirtualMachineParams struct {
@@ -279,6 +300,7 @@ type AddNicToVirtualMachineResponse struct {
 	Cpuspeed              int                                           `json:"cpuspeed"`
 	Cpuused               string                                        `json:"cpuused"`
 	Created               string                                        `json:"created"`
+	Deleteprotection      bool                                          `json:"deleteprotection"`
 	Details               map[string]string                             `json:"details"`
 	Diskioread            int64                                         `json:"diskioread"`
 	Diskiowrite           int64                                         `json:"diskiowrite"`
@@ -290,6 +312,7 @@ type AddNicToVirtualMachineResponse struct {
 	Displayvm             bool                                          `json:"displayvm"`
 	Domain                string                                        `json:"domain"`
 	Domainid              string                                        `json:"domainid"`
+	Domainpath            string                                        `json:"domainpath"`
 	Forvirtualnetwork     bool                                          `json:"forvirtualnetwork"`
 	Group                 string                                        `json:"group"`
 	Groupid               string                                        `json:"groupid"`
@@ -303,6 +326,7 @@ type AddNicToVirtualMachineResponse struct {
 	Icon                  interface{}                                   `json:"icon"`
 	Id                    string                                        `json:"id"`
 	Instancename          string                                        `json:"instancename"`
+	Ipaddress             string                                        `json:"ipaddress"`
 	Isdynamicallyscalable bool                                          `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                        `json:"isodisplaytext"`
 	Isoid                 string                                        `json:"isoid"`
@@ -340,6 +364,7 @@ type AddNicToVirtualMachineResponse struct {
 	State                 string                                        `json:"state"`
 	Tags                  []Tags                                        `json:"tags"`
 	Templatedisplaytext   string                                        `json:"templatedisplaytext"`
+	Templateformat        string                                        `json:"templateformat"`
 	Templateid            string                                        `json:"templateid"`
 	Templatename          string                                        `json:"templatename"`
 	Templatetype          string                                        `json:"templatetype"`
@@ -351,6 +376,7 @@ type AddNicToVirtualMachineResponse struct {
 	Userid                string                                        `json:"userid"`
 	Username              string                                        `json:"username"`
 	Vgpu                  string                                        `json:"vgpu"`
+	Vmtype                string                                        `json:"vmtype"`
 	Vnfdetails            map[string]string                             `json:"vnfdetails"`
 	Vnfnics               []string                                      `json:"vnfnics"`
 	Zoneid                string                                        `json:"zoneid"`
@@ -362,6 +388,7 @@ type AddNicToVirtualMachineResponseSecuritygroup struct {
 	Description         string                                            `json:"description"`
 	Domain              string                                            `json:"domain"`
 	Domainid            string                                            `json:"domainid"`
+	Domainpath          string                                            `json:"domainpath"`
 	Egressrule          []AddNicToVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                            `json:"id"`
 	Ingressrule         []AddNicToVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -387,16 +414,18 @@ type AddNicToVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type AddNicToVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *AddNicToVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -621,6 +650,7 @@ type AssignVirtualMachineResponse struct {
 	Cpuspeed              int                                         `json:"cpuspeed"`
 	Cpuused               string                                      `json:"cpuused"`
 	Created               string                                      `json:"created"`
+	Deleteprotection      bool                                        `json:"deleteprotection"`
 	Details               map[string]string                           `json:"details"`
 	Diskioread            int64                                       `json:"diskioread"`
 	Diskiowrite           int64                                       `json:"diskiowrite"`
@@ -632,6 +662,7 @@ type AssignVirtualMachineResponse struct {
 	Displayvm             bool                                        `json:"displayvm"`
 	Domain                string                                      `json:"domain"`
 	Domainid              string                                      `json:"domainid"`
+	Domainpath            string                                      `json:"domainpath"`
 	Forvirtualnetwork     bool                                        `json:"forvirtualnetwork"`
 	Group                 string                                      `json:"group"`
 	Groupid               string                                      `json:"groupid"`
@@ -645,6 +676,7 @@ type AssignVirtualMachineResponse struct {
 	Icon                  interface{}                                 `json:"icon"`
 	Id                    string                                      `json:"id"`
 	Instancename          string                                      `json:"instancename"`
+	Ipaddress             string                                      `json:"ipaddress"`
 	Isdynamicallyscalable bool                                        `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                      `json:"isodisplaytext"`
 	Isoid                 string                                      `json:"isoid"`
@@ -682,6 +714,7 @@ type AssignVirtualMachineResponse struct {
 	State                 string                                      `json:"state"`
 	Tags                  []Tags                                      `json:"tags"`
 	Templatedisplaytext   string                                      `json:"templatedisplaytext"`
+	Templateformat        string                                      `json:"templateformat"`
 	Templateid            string                                      `json:"templateid"`
 	Templatename          string                                      `json:"templatename"`
 	Templatetype          string                                      `json:"templatetype"`
@@ -693,6 +726,7 @@ type AssignVirtualMachineResponse struct {
 	Userid                string                                      `json:"userid"`
 	Username              string                                      `json:"username"`
 	Vgpu                  string                                      `json:"vgpu"`
+	Vmtype                string                                      `json:"vmtype"`
 	Vnfdetails            map[string]string                           `json:"vnfdetails"`
 	Vnfnics               []string                                    `json:"vnfnics"`
 	Zoneid                string                                      `json:"zoneid"`
@@ -704,6 +738,7 @@ type AssignVirtualMachineResponseSecuritygroup struct {
 	Description         string                                          `json:"description"`
 	Domain              string                                          `json:"domain"`
 	Domainid            string                                          `json:"domainid"`
+	Domainpath          string                                          `json:"domainpath"`
 	Egressrule          []AssignVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                          `json:"id"`
 	Ingressrule         []AssignVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -729,16 +764,18 @@ type AssignVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type AssignVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *AssignVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -993,6 +1030,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 	Cpuspeed              int                                                   `json:"cpuspeed"`
 	Cpuused               string                                                `json:"cpuused"`
 	Created               string                                                `json:"created"`
+	Deleteprotection      bool                                                  `json:"deleteprotection"`
 	Details               map[string]string                                     `json:"details"`
 	Diskioread            int64                                                 `json:"diskioread"`
 	Diskiowrite           int64                                                 `json:"diskiowrite"`
@@ -1004,6 +1042,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 	Displayvm             bool                                                  `json:"displayvm"`
 	Domain                string                                                `json:"domain"`
 	Domainid              string                                                `json:"domainid"`
+	Domainpath            string                                                `json:"domainpath"`
 	Forvirtualnetwork     bool                                                  `json:"forvirtualnetwork"`
 	Group                 string                                                `json:"group"`
 	Groupid               string                                                `json:"groupid"`
@@ -1017,6 +1056,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 	Icon                  interface{}                                           `json:"icon"`
 	Id                    string                                                `json:"id"`
 	Instancename          string                                                `json:"instancename"`
+	Ipaddress             string                                                `json:"ipaddress"`
 	Isdynamicallyscalable bool                                                  `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                                `json:"isodisplaytext"`
 	Isoid                 string                                                `json:"isoid"`
@@ -1054,6 +1094,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 	State                 string                                                `json:"state"`
 	Tags                  []Tags                                                `json:"tags"`
 	Templatedisplaytext   string                                                `json:"templatedisplaytext"`
+	Templateformat        string                                                `json:"templateformat"`
 	Templateid            string                                                `json:"templateid"`
 	Templatename          string                                                `json:"templatename"`
 	Templatetype          string                                                `json:"templatetype"`
@@ -1065,6 +1106,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 	Userid                string                                                `json:"userid"`
 	Username              string                                                `json:"username"`
 	Vgpu                  string                                                `json:"vgpu"`
+	Vmtype                string                                                `json:"vmtype"`
 	Vnfdetails            map[string]string                                     `json:"vnfdetails"`
 	Vnfnics               []string                                              `json:"vnfnics"`
 	Zoneid                string                                                `json:"zoneid"`
@@ -1076,6 +1118,7 @@ type ChangeServiceForVirtualMachineResponseSecuritygroup struct {
 	Description         string                                                    `json:"description"`
 	Domain              string                                                    `json:"domain"`
 	Domainid            string                                                    `json:"domainid"`
+	Domainpath          string                                                    `json:"domainpath"`
 	Egressrule          []ChangeServiceForVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                                    `json:"id"`
 	Ingressrule         []ChangeServiceForVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -1101,16 +1144,18 @@ type ChangeServiceForVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type ChangeServiceForVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *ChangeServiceForVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -1240,8 +1285,8 @@ func (p *DeployVirtualMachineParams) toURLValues() url.Values {
 	if v, found := p.p["datadiskofferinglist"]; found {
 		m := v.(map[string]string)
 		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("datadiskofferinglist[%d].key", i), k)
-			u.Set(fmt.Sprintf("datadiskofferinglist[%d].value", i), m[k])
+			u.Set(fmt.Sprintf("datadiskofferinglist[%d].disk", i), k)
+			u.Set(fmt.Sprintf("datadiskofferinglist[%d].diskOffering", i), m[k])
 		}
 	}
 	if v, found := p.p["deploymentplanner"]; found {
@@ -2604,6 +2649,7 @@ type DeployVirtualMachineResponse struct {
 	Cpuspeed              int                                         `json:"cpuspeed"`
 	Cpuused               string                                      `json:"cpuused"`
 	Created               string                                      `json:"created"`
+	Deleteprotection      bool                                        `json:"deleteprotection"`
 	Details               map[string]string                           `json:"details"`
 	Diskioread            int64                                       `json:"diskioread"`
 	Diskiowrite           int64                                       `json:"diskiowrite"`
@@ -2615,6 +2661,7 @@ type DeployVirtualMachineResponse struct {
 	Displayvm             bool                                        `json:"displayvm"`
 	Domain                string                                      `json:"domain"`
 	Domainid              string                                      `json:"domainid"`
+	Domainpath            string                                      `json:"domainpath"`
 	Forvirtualnetwork     bool                                        `json:"forvirtualnetwork"`
 	Group                 string                                      `json:"group"`
 	Groupid               string                                      `json:"groupid"`
@@ -2628,6 +2675,7 @@ type DeployVirtualMachineResponse struct {
 	Icon                  interface{}                                 `json:"icon"`
 	Id                    string                                      `json:"id"`
 	Instancename          string                                      `json:"instancename"`
+	Ipaddress             string                                      `json:"ipaddress"`
 	Isdynamicallyscalable bool                                        `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                      `json:"isodisplaytext"`
 	Isoid                 string                                      `json:"isoid"`
@@ -2665,6 +2713,7 @@ type DeployVirtualMachineResponse struct {
 	State                 string                                      `json:"state"`
 	Tags                  []Tags                                      `json:"tags"`
 	Templatedisplaytext   string                                      `json:"templatedisplaytext"`
+	Templateformat        string                                      `json:"templateformat"`
 	Templateid            string                                      `json:"templateid"`
 	Templatename          string                                      `json:"templatename"`
 	Templatetype          string                                      `json:"templatetype"`
@@ -2676,6 +2725,7 @@ type DeployVirtualMachineResponse struct {
 	Userid                string                                      `json:"userid"`
 	Username              string                                      `json:"username"`
 	Vgpu                  string                                      `json:"vgpu"`
+	Vmtype                string                                      `json:"vmtype"`
 	Vnfdetails            map[string]string                           `json:"vnfdetails"`
 	Vnfnics               []string                                    `json:"vnfnics"`
 	Zoneid                string                                      `json:"zoneid"`
@@ -2687,6 +2737,7 @@ type DeployVirtualMachineResponseSecuritygroup struct {
 	Description         string                                          `json:"description"`
 	Domain              string                                          `json:"domain"`
 	Domainid            string                                          `json:"domainid"`
+	Domainpath          string                                          `json:"domainpath"`
 	Egressrule          []DeployVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                          `json:"id"`
 	Ingressrule         []DeployVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -2712,16 +2763,18 @@ type DeployVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type DeployVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *DeployVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -2894,6 +2947,7 @@ type DestroyVirtualMachineResponse struct {
 	Cpuspeed              int                                          `json:"cpuspeed"`
 	Cpuused               string                                       `json:"cpuused"`
 	Created               string                                       `json:"created"`
+	Deleteprotection      bool                                         `json:"deleteprotection"`
 	Details               map[string]string                            `json:"details"`
 	Diskioread            int64                                        `json:"diskioread"`
 	Diskiowrite           int64                                        `json:"diskiowrite"`
@@ -2905,6 +2959,7 @@ type DestroyVirtualMachineResponse struct {
 	Displayvm             bool                                         `json:"displayvm"`
 	Domain                string                                       `json:"domain"`
 	Domainid              string                                       `json:"domainid"`
+	Domainpath            string                                       `json:"domainpath"`
 	Forvirtualnetwork     bool                                         `json:"forvirtualnetwork"`
 	Group                 string                                       `json:"group"`
 	Groupid               string                                       `json:"groupid"`
@@ -2918,6 +2973,7 @@ type DestroyVirtualMachineResponse struct {
 	Icon                  interface{}                                  `json:"icon"`
 	Id                    string                                       `json:"id"`
 	Instancename          string                                       `json:"instancename"`
+	Ipaddress             string                                       `json:"ipaddress"`
 	Isdynamicallyscalable bool                                         `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                       `json:"isodisplaytext"`
 	Isoid                 string                                       `json:"isoid"`
@@ -2955,6 +3011,7 @@ type DestroyVirtualMachineResponse struct {
 	State                 string                                       `json:"state"`
 	Tags                  []Tags                                       `json:"tags"`
 	Templatedisplaytext   string                                       `json:"templatedisplaytext"`
+	Templateformat        string                                       `json:"templateformat"`
 	Templateid            string                                       `json:"templateid"`
 	Templatename          string                                       `json:"templatename"`
 	Templatetype          string                                       `json:"templatetype"`
@@ -2966,6 +3023,7 @@ type DestroyVirtualMachineResponse struct {
 	Userid                string                                       `json:"userid"`
 	Username              string                                       `json:"username"`
 	Vgpu                  string                                       `json:"vgpu"`
+	Vmtype                string                                       `json:"vmtype"`
 	Vnfdetails            map[string]string                            `json:"vnfdetails"`
 	Vnfnics               []string                                     `json:"vnfnics"`
 	Zoneid                string                                       `json:"zoneid"`
@@ -2977,6 +3035,7 @@ type DestroyVirtualMachineResponseSecuritygroup struct {
 	Description         string                                           `json:"description"`
 	Domain              string                                           `json:"domain"`
 	Domainid            string                                           `json:"domainid"`
+	Domainpath          string                                           `json:"domainpath"`
 	Egressrule          []DestroyVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                           `json:"id"`
 	Ingressrule         []DestroyVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -3002,16 +3061,18 @@ type DestroyVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type DestroyVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *DestroyVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -4303,6 +4364,7 @@ type VirtualMachine struct {
 	Cpuspeed              int                           `json:"cpuspeed"`
 	Cpuused               string                        `json:"cpuused"`
 	Created               string                        `json:"created"`
+	Deleteprotection      bool                          `json:"deleteprotection"`
 	Details               map[string]string             `json:"details"`
 	Diskioread            int64                         `json:"diskioread"`
 	Diskiowrite           int64                         `json:"diskiowrite"`
@@ -4314,6 +4376,7 @@ type VirtualMachine struct {
 	Displayvm             bool                          `json:"displayvm"`
 	Domain                string                        `json:"domain"`
 	Domainid              string                        `json:"domainid"`
+	Domainpath            string                        `json:"domainpath"`
 	Forvirtualnetwork     bool                          `json:"forvirtualnetwork"`
 	Group                 string                        `json:"group"`
 	Groupid               string                        `json:"groupid"`
@@ -4327,6 +4390,7 @@ type VirtualMachine struct {
 	Icon                  interface{}                   `json:"icon"`
 	Id                    string                        `json:"id"`
 	Instancename          string                        `json:"instancename"`
+	Ipaddress             string                        `json:"ipaddress"`
 	Isdynamicallyscalable bool                          `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                        `json:"isodisplaytext"`
 	Isoid                 string                        `json:"isoid"`
@@ -4364,6 +4428,7 @@ type VirtualMachine struct {
 	State                 string                        `json:"state"`
 	Tags                  []Tags                        `json:"tags"`
 	Templatedisplaytext   string                        `json:"templatedisplaytext"`
+	Templateformat        string                        `json:"templateformat"`
 	Templateid            string                        `json:"templateid"`
 	Templatename          string                        `json:"templatename"`
 	Templatetype          string                        `json:"templatetype"`
@@ -4375,6 +4440,7 @@ type VirtualMachine struct {
 	Userid                string                        `json:"userid"`
 	Username              string                        `json:"username"`
 	Vgpu                  string                        `json:"vgpu"`
+	Vmtype                string                        `json:"vmtype"`
 	Vnfdetails            map[string]string             `json:"vnfdetails"`
 	Vnfnics               []string                      `json:"vnfnics"`
 	Zoneid                string                        `json:"zoneid"`
@@ -4386,6 +4452,7 @@ type VirtualMachineSecuritygroup struct {
 	Description         string                            `json:"description"`
 	Domain              string                            `json:"domain"`
 	Domainid            string                            `json:"domainid"`
+	Domainpath          string                            `json:"domainpath"`
 	Egressrule          []VirtualMachineSecuritygroupRule `json:"egressrule"`
 	Id                  string                            `json:"id"`
 	Ingressrule         []VirtualMachineSecuritygroupRule `json:"ingressrule"`
@@ -4411,16 +4478,18 @@ type VirtualMachineSecuritygroupRule struct {
 }
 
 type VirtualMachineAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *VirtualMachine) UnmarshalJSON(b []byte) error {
@@ -5565,6 +5634,7 @@ type VirtualMachinesMetric struct {
 	Cputotal              string                               `json:"cputotal"`
 	Cpuused               string                               `json:"cpuused"`
 	Created               string                               `json:"created"`
+	Deleteprotection      bool                                 `json:"deleteprotection"`
 	Details               map[string]string                    `json:"details"`
 	Diskiopstotal         int64                                `json:"diskiopstotal"`
 	Diskioread            int64                                `json:"diskioread"`
@@ -5579,6 +5649,7 @@ type VirtualMachinesMetric struct {
 	Displayvm             bool                                 `json:"displayvm"`
 	Domain                string                               `json:"domain"`
 	Domainid              string                               `json:"domainid"`
+	Domainpath            string                               `json:"domainpath"`
 	Forvirtualnetwork     bool                                 `json:"forvirtualnetwork"`
 	Group                 string                               `json:"group"`
 	Groupid               string                               `json:"groupid"`
@@ -5633,6 +5704,7 @@ type VirtualMachinesMetric struct {
 	State                 string                               `json:"state"`
 	Tags                  []Tags                               `json:"tags"`
 	Templatedisplaytext   string                               `json:"templatedisplaytext"`
+	Templateformat        string                               `json:"templateformat"`
 	Templateid            string                               `json:"templateid"`
 	Templatename          string                               `json:"templatename"`
 	Templatetype          string                               `json:"templatetype"`
@@ -5644,6 +5716,7 @@ type VirtualMachinesMetric struct {
 	Userid                string                               `json:"userid"`
 	Username              string                               `json:"username"`
 	Vgpu                  string                               `json:"vgpu"`
+	Vmtype                string                               `json:"vmtype"`
 	Vnfdetails            map[string]string                    `json:"vnfdetails"`
 	Vnfnics               []string                             `json:"vnfnics"`
 	Zoneid                string                               `json:"zoneid"`
@@ -5655,6 +5728,7 @@ type VirtualMachinesMetricSecuritygroup struct {
 	Description         string                                   `json:"description"`
 	Domain              string                                   `json:"domain"`
 	Domainid            string                                   `json:"domainid"`
+	Domainpath          string                                   `json:"domainpath"`
 	Egressrule          []VirtualMachinesMetricSecuritygroupRule `json:"egressrule"`
 	Id                  string                                   `json:"id"`
 	Ingressrule         []VirtualMachinesMetricSecuritygroupRule `json:"ingressrule"`
@@ -5680,16 +5754,18 @@ type VirtualMachinesMetricSecuritygroupRule struct {
 }
 
 type VirtualMachinesMetricAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *VirtualMachinesMetric) UnmarshalJSON(b []byte) error {
@@ -5717,6 +5793,276 @@ func (r *VirtualMachinesMetric) UnmarshalJSON(b []byte) error {
 
 	type alias VirtualMachinesMetric
 	return json.Unmarshal(b, (*alias)(r))
+}
+
+type ListVmsForImportParams struct {
+	p map[string]interface{}
+}
+
+func (p *ListVmsForImportParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["host"]; found {
+		u.Set("host", v.(string))
+	}
+	if v, found := p.p["hypervisor"]; found {
+		u.Set("hypervisor", v.(string))
+	}
+	if v, found := p.p["keyword"]; found {
+		u.Set("keyword", v.(string))
+	}
+	if v, found := p.p["page"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("page", vv)
+	}
+	if v, found := p.p["pagesize"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("pagesize", vv)
+	}
+	if v, found := p.p["password"]; found {
+		u.Set("password", v.(string))
+	}
+	if v, found := p.p["username"]; found {
+		u.Set("username", v.(string))
+	}
+	if v, found := p.p["zoneid"]; found {
+		u.Set("zoneid", v.(string))
+	}
+	return u
+}
+
+func (p *ListVmsForImportParams) SetHost(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["host"] = v
+}
+
+func (p *ListVmsForImportParams) ResetHost() {
+	if p.p != nil && p.p["host"] != nil {
+		delete(p.p, "host")
+	}
+}
+
+func (p *ListVmsForImportParams) GetHost() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["host"].(string)
+	return value, ok
+}
+
+func (p *ListVmsForImportParams) SetHypervisor(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["hypervisor"] = v
+}
+
+func (p *ListVmsForImportParams) ResetHypervisor() {
+	if p.p != nil && p.p["hypervisor"] != nil {
+		delete(p.p, "hypervisor")
+	}
+}
+
+func (p *ListVmsForImportParams) GetHypervisor() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["hypervisor"].(string)
+	return value, ok
+}
+
+func (p *ListVmsForImportParams) SetKeyword(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["keyword"] = v
+}
+
+func (p *ListVmsForImportParams) ResetKeyword() {
+	if p.p != nil && p.p["keyword"] != nil {
+		delete(p.p, "keyword")
+	}
+}
+
+func (p *ListVmsForImportParams) GetKeyword() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["keyword"].(string)
+	return value, ok
+}
+
+func (p *ListVmsForImportParams) SetPage(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["page"] = v
+}
+
+func (p *ListVmsForImportParams) ResetPage() {
+	if p.p != nil && p.p["page"] != nil {
+		delete(p.p, "page")
+	}
+}
+
+func (p *ListVmsForImportParams) GetPage() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["page"].(int)
+	return value, ok
+}
+
+func (p *ListVmsForImportParams) SetPagesize(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["pagesize"] = v
+}
+
+func (p *ListVmsForImportParams) ResetPagesize() {
+	if p.p != nil && p.p["pagesize"] != nil {
+		delete(p.p, "pagesize")
+	}
+}
+
+func (p *ListVmsForImportParams) GetPagesize() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["pagesize"].(int)
+	return value, ok
+}
+
+func (p *ListVmsForImportParams) SetPassword(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["password"] = v
+}
+
+func (p *ListVmsForImportParams) ResetPassword() {
+	if p.p != nil && p.p["password"] != nil {
+		delete(p.p, "password")
+	}
+}
+
+func (p *ListVmsForImportParams) GetPassword() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["password"].(string)
+	return value, ok
+}
+
+func (p *ListVmsForImportParams) SetUsername(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["username"] = v
+}
+
+func (p *ListVmsForImportParams) ResetUsername() {
+	if p.p != nil && p.p["username"] != nil {
+		delete(p.p, "username")
+	}
+}
+
+func (p *ListVmsForImportParams) GetUsername() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["username"].(string)
+	return value, ok
+}
+
+func (p *ListVmsForImportParams) SetZoneid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["zoneid"] = v
+}
+
+func (p *ListVmsForImportParams) ResetZoneid() {
+	if p.p != nil && p.p["zoneid"] != nil {
+		delete(p.p, "zoneid")
+	}
+}
+
+func (p *ListVmsForImportParams) GetZoneid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["zoneid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ListVmsForImportParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewListVmsForImportParams(host string, hypervisor string, zoneid string) *ListVmsForImportParams {
+	p := &ListVmsForImportParams{}
+	p.p = make(map[string]interface{})
+	p.p["host"] = host
+	p.p["hypervisor"] = hypervisor
+	p.p["zoneid"] = zoneid
+	return p
+}
+
+// Lists virtual machines on a unmanaged host
+func (s *VirtualMachineService) ListVmsForImport(p *ListVmsForImportParams) (*ListVmsForImportResponse, error) {
+	resp, err := s.cs.newRequest("listVmsForImport", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ListVmsForImportResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type ListVmsForImportResponse struct {
+	Count        int             `json:"count"`
+	VmsForImport []*VmsForImport `json:"vmsforimport"`
+}
+
+type VmsForImport struct {
+	Clusterid        string             `json:"clusterid"`
+	Clustername      string             `json:"clustername"`
+	Cpucorepersocket int                `json:"cpucorepersocket"`
+	Cpunumber        int                `json:"cpunumber"`
+	Cpuspeed         int                `json:"cpuspeed"`
+	Disk             []VmsForImportDisk `json:"disk"`
+	Hostid           string             `json:"hostid"`
+	Hostname         string             `json:"hostname"`
+	JobID            string             `json:"jobid"`
+	Jobstatus        int                `json:"jobstatus"`
+	Memory           int                `json:"memory"`
+	Name             string             `json:"name"`
+	Nic              []Nic              `json:"nic"`
+	Osdisplayname    string             `json:"osdisplayname"`
+	Osid             string             `json:"osid"`
+	Powerstate       string             `json:"powerstate"`
+}
+
+type VmsForImportDisk struct {
+	Capacity       int64  `json:"capacity"`
+	Controller     string `json:"controller"`
+	Controllerunit int    `json:"controllerunit"`
+	Datastorehost  string `json:"datastorehost"`
+	Datastorename  string `json:"datastorename"`
+	Datastorepath  string `json:"datastorepath"`
+	Datastoretype  string `json:"datastoretype"`
+	Id             string `json:"id"`
+	Imagepath      string `json:"imagepath"`
+	Label          string `json:"label"`
+	Position       int    `json:"position"`
 }
 
 type MigrateVirtualMachineParams struct {
@@ -5885,6 +6231,7 @@ type MigrateVirtualMachineResponse struct {
 	Cpuspeed              int                                          `json:"cpuspeed"`
 	Cpuused               string                                       `json:"cpuused"`
 	Created               string                                       `json:"created"`
+	Deleteprotection      bool                                         `json:"deleteprotection"`
 	Details               map[string]string                            `json:"details"`
 	Diskioread            int64                                        `json:"diskioread"`
 	Diskiowrite           int64                                        `json:"diskiowrite"`
@@ -5896,6 +6243,7 @@ type MigrateVirtualMachineResponse struct {
 	Displayvm             bool                                         `json:"displayvm"`
 	Domain                string                                       `json:"domain"`
 	Domainid              string                                       `json:"domainid"`
+	Domainpath            string                                       `json:"domainpath"`
 	Forvirtualnetwork     bool                                         `json:"forvirtualnetwork"`
 	Group                 string                                       `json:"group"`
 	Groupid               string                                       `json:"groupid"`
@@ -5909,6 +6257,7 @@ type MigrateVirtualMachineResponse struct {
 	Icon                  interface{}                                  `json:"icon"`
 	Id                    string                                       `json:"id"`
 	Instancename          string                                       `json:"instancename"`
+	Ipaddress             string                                       `json:"ipaddress"`
 	Isdynamicallyscalable bool                                         `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                       `json:"isodisplaytext"`
 	Isoid                 string                                       `json:"isoid"`
@@ -5946,6 +6295,7 @@ type MigrateVirtualMachineResponse struct {
 	State                 string                                       `json:"state"`
 	Tags                  []Tags                                       `json:"tags"`
 	Templatedisplaytext   string                                       `json:"templatedisplaytext"`
+	Templateformat        string                                       `json:"templateformat"`
 	Templateid            string                                       `json:"templateid"`
 	Templatename          string                                       `json:"templatename"`
 	Templatetype          string                                       `json:"templatetype"`
@@ -5957,6 +6307,7 @@ type MigrateVirtualMachineResponse struct {
 	Userid                string                                       `json:"userid"`
 	Username              string                                       `json:"username"`
 	Vgpu                  string                                       `json:"vgpu"`
+	Vmtype                string                                       `json:"vmtype"`
 	Vnfdetails            map[string]string                            `json:"vnfdetails"`
 	Vnfnics               []string                                     `json:"vnfnics"`
 	Zoneid                string                                       `json:"zoneid"`
@@ -5968,6 +6319,7 @@ type MigrateVirtualMachineResponseSecuritygroup struct {
 	Description         string                                           `json:"description"`
 	Domain              string                                           `json:"domain"`
 	Domainid            string                                           `json:"domainid"`
+	Domainpath          string                                           `json:"domainpath"`
 	Egressrule          []MigrateVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                           `json:"id"`
 	Ingressrule         []MigrateVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -5993,16 +6345,18 @@ type MigrateVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type MigrateVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *MigrateVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -6217,6 +6571,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 	Cpuspeed              int                                                    `json:"cpuspeed"`
 	Cpuused               string                                                 `json:"cpuused"`
 	Created               string                                                 `json:"created"`
+	Deleteprotection      bool                                                   `json:"deleteprotection"`
 	Details               map[string]string                                      `json:"details"`
 	Diskioread            int64                                                  `json:"diskioread"`
 	Diskiowrite           int64                                                  `json:"diskiowrite"`
@@ -6228,6 +6583,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 	Displayvm             bool                                                   `json:"displayvm"`
 	Domain                string                                                 `json:"domain"`
 	Domainid              string                                                 `json:"domainid"`
+	Domainpath            string                                                 `json:"domainpath"`
 	Forvirtualnetwork     bool                                                   `json:"forvirtualnetwork"`
 	Group                 string                                                 `json:"group"`
 	Groupid               string                                                 `json:"groupid"`
@@ -6241,6 +6597,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 	Icon                  interface{}                                            `json:"icon"`
 	Id                    string                                                 `json:"id"`
 	Instancename          string                                                 `json:"instancename"`
+	Ipaddress             string                                                 `json:"ipaddress"`
 	Isdynamicallyscalable bool                                                   `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                                 `json:"isodisplaytext"`
 	Isoid                 string                                                 `json:"isoid"`
@@ -6278,6 +6635,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 	State                 string                                                 `json:"state"`
 	Tags                  []Tags                                                 `json:"tags"`
 	Templatedisplaytext   string                                                 `json:"templatedisplaytext"`
+	Templateformat        string                                                 `json:"templateformat"`
 	Templateid            string                                                 `json:"templateid"`
 	Templatename          string                                                 `json:"templatename"`
 	Templatetype          string                                                 `json:"templatetype"`
@@ -6289,6 +6647,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 	Userid                string                                                 `json:"userid"`
 	Username              string                                                 `json:"username"`
 	Vgpu                  string                                                 `json:"vgpu"`
+	Vmtype                string                                                 `json:"vmtype"`
 	Vnfdetails            map[string]string                                      `json:"vnfdetails"`
 	Vnfnics               []string                                               `json:"vnfnics"`
 	Zoneid                string                                                 `json:"zoneid"`
@@ -6300,6 +6659,7 @@ type MigrateVirtualMachineWithVolumeResponseSecuritygroup struct {
 	Description         string                                                     `json:"description"`
 	Domain              string                                                     `json:"domain"`
 	Domainid            string                                                     `json:"domainid"`
+	Domainpath          string                                                     `json:"domainpath"`
 	Egressrule          []MigrateVirtualMachineWithVolumeResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                                     `json:"id"`
 	Ingressrule         []MigrateVirtualMachineWithVolumeResponseSecuritygroupRule `json:"ingressrule"`
@@ -6325,16 +6685,18 @@ type MigrateVirtualMachineWithVolumeResponseSecuritygroupRule struct {
 }
 
 type MigrateVirtualMachineWithVolumeResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *MigrateVirtualMachineWithVolumeResponse) UnmarshalJSON(b []byte) error {
@@ -6507,6 +6869,7 @@ type RebootVirtualMachineResponse struct {
 	Cpuspeed              int                                         `json:"cpuspeed"`
 	Cpuused               string                                      `json:"cpuused"`
 	Created               string                                      `json:"created"`
+	Deleteprotection      bool                                        `json:"deleteprotection"`
 	Details               map[string]string                           `json:"details"`
 	Diskioread            int64                                       `json:"diskioread"`
 	Diskiowrite           int64                                       `json:"diskiowrite"`
@@ -6518,6 +6881,7 @@ type RebootVirtualMachineResponse struct {
 	Displayvm             bool                                        `json:"displayvm"`
 	Domain                string                                      `json:"domain"`
 	Domainid              string                                      `json:"domainid"`
+	Domainpath            string                                      `json:"domainpath"`
 	Forvirtualnetwork     bool                                        `json:"forvirtualnetwork"`
 	Group                 string                                      `json:"group"`
 	Groupid               string                                      `json:"groupid"`
@@ -6531,6 +6895,7 @@ type RebootVirtualMachineResponse struct {
 	Icon                  interface{}                                 `json:"icon"`
 	Id                    string                                      `json:"id"`
 	Instancename          string                                      `json:"instancename"`
+	Ipaddress             string                                      `json:"ipaddress"`
 	Isdynamicallyscalable bool                                        `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                      `json:"isodisplaytext"`
 	Isoid                 string                                      `json:"isoid"`
@@ -6568,6 +6933,7 @@ type RebootVirtualMachineResponse struct {
 	State                 string                                      `json:"state"`
 	Tags                  []Tags                                      `json:"tags"`
 	Templatedisplaytext   string                                      `json:"templatedisplaytext"`
+	Templateformat        string                                      `json:"templateformat"`
 	Templateid            string                                      `json:"templateid"`
 	Templatename          string                                      `json:"templatename"`
 	Templatetype          string                                      `json:"templatetype"`
@@ -6579,6 +6945,7 @@ type RebootVirtualMachineResponse struct {
 	Userid                string                                      `json:"userid"`
 	Username              string                                      `json:"username"`
 	Vgpu                  string                                      `json:"vgpu"`
+	Vmtype                string                                      `json:"vmtype"`
 	Vnfdetails            map[string]string                           `json:"vnfdetails"`
 	Vnfnics               []string                                    `json:"vnfnics"`
 	Zoneid                string                                      `json:"zoneid"`
@@ -6590,6 +6957,7 @@ type RebootVirtualMachineResponseSecuritygroup struct {
 	Description         string                                          `json:"description"`
 	Domain              string                                          `json:"domain"`
 	Domainid            string                                          `json:"domainid"`
+	Domainpath          string                                          `json:"domainpath"`
 	Egressrule          []RebootVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                          `json:"id"`
 	Ingressrule         []RebootVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -6615,16 +6983,18 @@ type RebootVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type RebootVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *RebootVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -6727,6 +7097,7 @@ type RecoverVirtualMachineResponse struct {
 	Cpuspeed              int                                          `json:"cpuspeed"`
 	Cpuused               string                                       `json:"cpuused"`
 	Created               string                                       `json:"created"`
+	Deleteprotection      bool                                         `json:"deleteprotection"`
 	Details               map[string]string                            `json:"details"`
 	Diskioread            int64                                        `json:"diskioread"`
 	Diskiowrite           int64                                        `json:"diskiowrite"`
@@ -6738,6 +7109,7 @@ type RecoverVirtualMachineResponse struct {
 	Displayvm             bool                                         `json:"displayvm"`
 	Domain                string                                       `json:"domain"`
 	Domainid              string                                       `json:"domainid"`
+	Domainpath            string                                       `json:"domainpath"`
 	Forvirtualnetwork     bool                                         `json:"forvirtualnetwork"`
 	Group                 string                                       `json:"group"`
 	Groupid               string                                       `json:"groupid"`
@@ -6751,6 +7123,7 @@ type RecoverVirtualMachineResponse struct {
 	Icon                  interface{}                                  `json:"icon"`
 	Id                    string                                       `json:"id"`
 	Instancename          string                                       `json:"instancename"`
+	Ipaddress             string                                       `json:"ipaddress"`
 	Isdynamicallyscalable bool                                         `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                       `json:"isodisplaytext"`
 	Isoid                 string                                       `json:"isoid"`
@@ -6788,6 +7161,7 @@ type RecoverVirtualMachineResponse struct {
 	State                 string                                       `json:"state"`
 	Tags                  []Tags                                       `json:"tags"`
 	Templatedisplaytext   string                                       `json:"templatedisplaytext"`
+	Templateformat        string                                       `json:"templateformat"`
 	Templateid            string                                       `json:"templateid"`
 	Templatename          string                                       `json:"templatename"`
 	Templatetype          string                                       `json:"templatetype"`
@@ -6799,6 +7173,7 @@ type RecoverVirtualMachineResponse struct {
 	Userid                string                                       `json:"userid"`
 	Username              string                                       `json:"username"`
 	Vgpu                  string                                       `json:"vgpu"`
+	Vmtype                string                                       `json:"vmtype"`
 	Vnfdetails            map[string]string                            `json:"vnfdetails"`
 	Vnfnics               []string                                     `json:"vnfnics"`
 	Zoneid                string                                       `json:"zoneid"`
@@ -6810,6 +7185,7 @@ type RecoverVirtualMachineResponseSecuritygroup struct {
 	Description         string                                           `json:"description"`
 	Domain              string                                           `json:"domain"`
 	Domainid            string                                           `json:"domainid"`
+	Domainpath          string                                           `json:"domainpath"`
 	Egressrule          []RecoverVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                           `json:"id"`
 	Ingressrule         []RecoverVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -6835,16 +7211,18 @@ type RecoverVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type RecoverVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *RecoverVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -6992,6 +7370,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 	Cpuspeed              int                                                `json:"cpuspeed"`
 	Cpuused               string                                             `json:"cpuused"`
 	Created               string                                             `json:"created"`
+	Deleteprotection      bool                                               `json:"deleteprotection"`
 	Details               map[string]string                                  `json:"details"`
 	Diskioread            int64                                              `json:"diskioread"`
 	Diskiowrite           int64                                              `json:"diskiowrite"`
@@ -7003,6 +7382,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 	Displayvm             bool                                               `json:"displayvm"`
 	Domain                string                                             `json:"domain"`
 	Domainid              string                                             `json:"domainid"`
+	Domainpath            string                                             `json:"domainpath"`
 	Forvirtualnetwork     bool                                               `json:"forvirtualnetwork"`
 	Group                 string                                             `json:"group"`
 	Groupid               string                                             `json:"groupid"`
@@ -7016,6 +7396,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 	Icon                  interface{}                                        `json:"icon"`
 	Id                    string                                             `json:"id"`
 	Instancename          string                                             `json:"instancename"`
+	Ipaddress             string                                             `json:"ipaddress"`
 	Isdynamicallyscalable bool                                               `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                             `json:"isodisplaytext"`
 	Isoid                 string                                             `json:"isoid"`
@@ -7053,6 +7434,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 	State                 string                                             `json:"state"`
 	Tags                  []Tags                                             `json:"tags"`
 	Templatedisplaytext   string                                             `json:"templatedisplaytext"`
+	Templateformat        string                                             `json:"templateformat"`
 	Templateid            string                                             `json:"templateid"`
 	Templatename          string                                             `json:"templatename"`
 	Templatetype          string                                             `json:"templatetype"`
@@ -7064,6 +7446,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 	Userid                string                                             `json:"userid"`
 	Username              string                                             `json:"username"`
 	Vgpu                  string                                             `json:"vgpu"`
+	Vmtype                string                                             `json:"vmtype"`
 	Vnfdetails            map[string]string                                  `json:"vnfdetails"`
 	Vnfnics               []string                                           `json:"vnfnics"`
 	Zoneid                string                                             `json:"zoneid"`
@@ -7075,6 +7458,7 @@ type RemoveNicFromVirtualMachineResponseSecuritygroup struct {
 	Description         string                                                 `json:"description"`
 	Domain              string                                                 `json:"domain"`
 	Domainid            string                                                 `json:"domainid"`
+	Domainpath          string                                                 `json:"domainpath"`
 	Egressrule          []RemoveNicFromVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                                 `json:"id"`
 	Ingressrule         []RemoveNicFromVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -7100,16 +7484,18 @@ type RemoveNicFromVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type RemoveNicFromVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *RemoveNicFromVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -7256,6 +7642,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 	Cpuspeed              int                                                   `json:"cpuspeed"`
 	Cpuused               string                                                `json:"cpuused"`
 	Created               string                                                `json:"created"`
+	Deleteprotection      bool                                                  `json:"deleteprotection"`
 	Details               map[string]string                                     `json:"details"`
 	Diskioread            int64                                                 `json:"diskioread"`
 	Diskiowrite           int64                                                 `json:"diskiowrite"`
@@ -7267,6 +7654,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 	Displayvm             bool                                                  `json:"displayvm"`
 	Domain                string                                                `json:"domain"`
 	Domainid              string                                                `json:"domainid"`
+	Domainpath            string                                                `json:"domainpath"`
 	Forvirtualnetwork     bool                                                  `json:"forvirtualnetwork"`
 	Group                 string                                                `json:"group"`
 	Groupid               string                                                `json:"groupid"`
@@ -7280,6 +7668,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 	Icon                  interface{}                                           `json:"icon"`
 	Id                    string                                                `json:"id"`
 	Instancename          string                                                `json:"instancename"`
+	Ipaddress             string                                                `json:"ipaddress"`
 	Isdynamicallyscalable bool                                                  `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                                `json:"isodisplaytext"`
 	Isoid                 string                                                `json:"isoid"`
@@ -7317,6 +7706,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 	State                 string                                                `json:"state"`
 	Tags                  []Tags                                                `json:"tags"`
 	Templatedisplaytext   string                                                `json:"templatedisplaytext"`
+	Templateformat        string                                                `json:"templateformat"`
 	Templateid            string                                                `json:"templateid"`
 	Templatename          string                                                `json:"templatename"`
 	Templatetype          string                                                `json:"templatetype"`
@@ -7328,6 +7718,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 	Userid                string                                                `json:"userid"`
 	Username              string                                                `json:"username"`
 	Vgpu                  string                                                `json:"vgpu"`
+	Vmtype                string                                                `json:"vmtype"`
 	Vnfdetails            map[string]string                                     `json:"vnfdetails"`
 	Vnfnics               []string                                              `json:"vnfnics"`
 	Zoneid                string                                                `json:"zoneid"`
@@ -7339,6 +7730,7 @@ type ResetPasswordForVirtualMachineResponseSecuritygroup struct {
 	Description         string                                                    `json:"description"`
 	Domain              string                                                    `json:"domain"`
 	Domainid            string                                                    `json:"domainid"`
+	Domainpath          string                                                    `json:"domainpath"`
 	Egressrule          []ResetPasswordForVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                                    `json:"id"`
 	Ingressrule         []ResetPasswordForVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -7364,16 +7756,18 @@ type ResetPasswordForVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type ResetPasswordForVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *ResetPasswordForVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -7403,6 +7797,382 @@ func (r *ResetPasswordForVirtualMachineResponse) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, (*alias)(r))
 }
 
+type ResetUserDataForVirtualMachineParams struct {
+	p map[string]interface{}
+}
+
+func (p *ResetUserDataForVirtualMachineParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["account"]; found {
+		u.Set("account", v.(string))
+	}
+	if v, found := p.p["domainid"]; found {
+		u.Set("domainid", v.(string))
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	if v, found := p.p["projectid"]; found {
+		u.Set("projectid", v.(string))
+	}
+	if v, found := p.p["userdata"]; found {
+		u.Set("userdata", v.(string))
+	}
+	if v, found := p.p["userdatadetails"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("userdatadetails[%d].key", i), k)
+			u.Set(fmt.Sprintf("userdatadetails[%d].value", i), m[k])
+		}
+	}
+	if v, found := p.p["userdataid"]; found {
+		u.Set("userdataid", v.(string))
+	}
+	return u
+}
+
+func (p *ResetUserDataForVirtualMachineParams) SetAccount(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["account"] = v
+}
+
+func (p *ResetUserDataForVirtualMachineParams) ResetAccount() {
+	if p.p != nil && p.p["account"] != nil {
+		delete(p.p, "account")
+	}
+}
+
+func (p *ResetUserDataForVirtualMachineParams) GetAccount() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["account"].(string)
+	return value, ok
+}
+
+func (p *ResetUserDataForVirtualMachineParams) SetDomainid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["domainid"] = v
+}
+
+func (p *ResetUserDataForVirtualMachineParams) ResetDomainid() {
+	if p.p != nil && p.p["domainid"] != nil {
+		delete(p.p, "domainid")
+	}
+}
+
+func (p *ResetUserDataForVirtualMachineParams) GetDomainid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["domainid"].(string)
+	return value, ok
+}
+
+func (p *ResetUserDataForVirtualMachineParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *ResetUserDataForVirtualMachineParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *ResetUserDataForVirtualMachineParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+func (p *ResetUserDataForVirtualMachineParams) SetProjectid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["projectid"] = v
+}
+
+func (p *ResetUserDataForVirtualMachineParams) ResetProjectid() {
+	if p.p != nil && p.p["projectid"] != nil {
+		delete(p.p, "projectid")
+	}
+}
+
+func (p *ResetUserDataForVirtualMachineParams) GetProjectid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *ResetUserDataForVirtualMachineParams) SetUserdata(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["userdata"] = v
+}
+
+func (p *ResetUserDataForVirtualMachineParams) ResetUserdata() {
+	if p.p != nil && p.p["userdata"] != nil {
+		delete(p.p, "userdata")
+	}
+}
+
+func (p *ResetUserDataForVirtualMachineParams) GetUserdata() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["userdata"].(string)
+	return value, ok
+}
+
+func (p *ResetUserDataForVirtualMachineParams) SetUserdatadetails(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["userdatadetails"] = v
+}
+
+func (p *ResetUserDataForVirtualMachineParams) ResetUserdatadetails() {
+	if p.p != nil && p.p["userdatadetails"] != nil {
+		delete(p.p, "userdatadetails")
+	}
+}
+
+func (p *ResetUserDataForVirtualMachineParams) GetUserdatadetails() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["userdatadetails"].(map[string]string)
+	return value, ok
+}
+
+func (p *ResetUserDataForVirtualMachineParams) SetUserdataid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["userdataid"] = v
+}
+
+func (p *ResetUserDataForVirtualMachineParams) ResetUserdataid() {
+	if p.p != nil && p.p["userdataid"] != nil {
+		delete(p.p, "userdataid")
+	}
+}
+
+func (p *ResetUserDataForVirtualMachineParams) GetUserdataid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["userdataid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ResetUserDataForVirtualMachineParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewResetUserDataForVirtualMachineParams(id string) *ResetUserDataForVirtualMachineParams {
+	p := &ResetUserDataForVirtualMachineParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// Resets the UserData for virtual machine. The virtual machine must be in a "Stopped" state.
+func (s *VirtualMachineService) ResetUserDataForVirtualMachine(p *ResetUserDataForVirtualMachineParams) (*ResetUserDataForVirtualMachineResponse, error) {
+	resp, err := s.cs.newRequest("resetUserDataForVirtualMachine", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ResetUserDataForVirtualMachineResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type ResetUserDataForVirtualMachineResponse struct {
+	Account               string                                                `json:"account"`
+	Affinitygroup         []ResetUserDataForVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Autoscalevmgroupid    string                                                `json:"autoscalevmgroupid"`
+	Autoscalevmgroupname  string                                                `json:"autoscalevmgroupname"`
+	Backupofferingid      string                                                `json:"backupofferingid"`
+	Backupofferingname    string                                                `json:"backupofferingname"`
+	Bootmode              string                                                `json:"bootmode"`
+	Boottype              string                                                `json:"boottype"`
+	Cpunumber             int                                                   `json:"cpunumber"`
+	Cpuspeed              int                                                   `json:"cpuspeed"`
+	Cpuused               string                                                `json:"cpuused"`
+	Created               string                                                `json:"created"`
+	Deleteprotection      bool                                                  `json:"deleteprotection"`
+	Details               map[string]string                                     `json:"details"`
+	Diskioread            int64                                                 `json:"diskioread"`
+	Diskiowrite           int64                                                 `json:"diskiowrite"`
+	Diskkbsread           int64                                                 `json:"diskkbsread"`
+	Diskkbswrite          int64                                                 `json:"diskkbswrite"`
+	Diskofferingid        string                                                `json:"diskofferingid"`
+	Diskofferingname      string                                                `json:"diskofferingname"`
+	Displayname           string                                                `json:"displayname"`
+	Displayvm             bool                                                  `json:"displayvm"`
+	Domain                string                                                `json:"domain"`
+	Domainid              string                                                `json:"domainid"`
+	Domainpath            string                                                `json:"domainpath"`
+	Forvirtualnetwork     bool                                                  `json:"forvirtualnetwork"`
+	Group                 string                                                `json:"group"`
+	Groupid               string                                                `json:"groupid"`
+	Guestosid             string                                                `json:"guestosid"`
+	Haenable              bool                                                  `json:"haenable"`
+	Hasannotations        bool                                                  `json:"hasannotations"`
+	Hostcontrolstate      string                                                `json:"hostcontrolstate"`
+	Hostid                string                                                `json:"hostid"`
+	Hostname              string                                                `json:"hostname"`
+	Hypervisor            string                                                `json:"hypervisor"`
+	Icon                  interface{}                                           `json:"icon"`
+	Id                    string                                                `json:"id"`
+	Instancename          string                                                `json:"instancename"`
+	Ipaddress             string                                                `json:"ipaddress"`
+	Isdynamicallyscalable bool                                                  `json:"isdynamicallyscalable"`
+	Isodisplaytext        string                                                `json:"isodisplaytext"`
+	Isoid                 string                                                `json:"isoid"`
+	Isoname               string                                                `json:"isoname"`
+	JobID                 string                                                `json:"jobid"`
+	Jobstatus             int                                                   `json:"jobstatus"`
+	Keypairs              string                                                `json:"keypairs"`
+	Lastupdated           string                                                `json:"lastupdated"`
+	Memory                int                                                   `json:"memory"`
+	Memoryintfreekbs      int64                                                 `json:"memoryintfreekbs"`
+	Memorykbs             int64                                                 `json:"memorykbs"`
+	Memorytargetkbs       int64                                                 `json:"memorytargetkbs"`
+	Name                  string                                                `json:"name"`
+	Networkkbsread        int64                                                 `json:"networkkbsread"`
+	Networkkbswrite       int64                                                 `json:"networkkbswrite"`
+	Nic                   []Nic                                                 `json:"nic"`
+	Osdisplayname         string                                                `json:"osdisplayname"`
+	Ostypeid              string                                                `json:"ostypeid"`
+	Password              string                                                `json:"password"`
+	Passwordenabled       bool                                                  `json:"passwordenabled"`
+	Pooltype              string                                                `json:"pooltype"`
+	Project               string                                                `json:"project"`
+	Projectid             string                                                `json:"projectid"`
+	Publicip              string                                                `json:"publicip"`
+	Publicipid            string                                                `json:"publicipid"`
+	Readonlydetails       string                                                `json:"readonlydetails"`
+	Receivedbytes         int64                                                 `json:"receivedbytes"`
+	Rootdeviceid          int64                                                 `json:"rootdeviceid"`
+	Rootdevicetype        string                                                `json:"rootdevicetype"`
+	Securitygroup         []ResetUserDataForVirtualMachineResponseSecuritygroup `json:"securitygroup"`
+	Sentbytes             int64                                                 `json:"sentbytes"`
+	Serviceofferingid     string                                                `json:"serviceofferingid"`
+	Serviceofferingname   string                                                `json:"serviceofferingname"`
+	Servicestate          string                                                `json:"servicestate"`
+	State                 string                                                `json:"state"`
+	Tags                  []Tags                                                `json:"tags"`
+	Templatedisplaytext   string                                                `json:"templatedisplaytext"`
+	Templateformat        string                                                `json:"templateformat"`
+	Templateid            string                                                `json:"templateid"`
+	Templatename          string                                                `json:"templatename"`
+	Templatetype          string                                                `json:"templatetype"`
+	Userdata              string                                                `json:"userdata"`
+	Userdatadetails       string                                                `json:"userdatadetails"`
+	Userdataid            string                                                `json:"userdataid"`
+	Userdataname          string                                                `json:"userdataname"`
+	Userdatapolicy        string                                                `json:"userdatapolicy"`
+	Userid                string                                                `json:"userid"`
+	Username              string                                                `json:"username"`
+	Vgpu                  string                                                `json:"vgpu"`
+	Vmtype                string                                                `json:"vmtype"`
+	Vnfdetails            map[string]string                                     `json:"vnfdetails"`
+	Vnfnics               []string                                              `json:"vnfnics"`
+	Zoneid                string                                                `json:"zoneid"`
+	Zonename              string                                                `json:"zonename"`
+}
+
+type ResetUserDataForVirtualMachineResponseSecuritygroup struct {
+	Account             string                                                    `json:"account"`
+	Description         string                                                    `json:"description"`
+	Domain              string                                                    `json:"domain"`
+	Domainid            string                                                    `json:"domainid"`
+	Domainpath          string                                                    `json:"domainpath"`
+	Egressrule          []ResetUserDataForVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
+	Id                  string                                                    `json:"id"`
+	Ingressrule         []ResetUserDataForVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
+	Name                string                                                    `json:"name"`
+	Project             string                                                    `json:"project"`
+	Projectid           string                                                    `json:"projectid"`
+	Tags                []Tags                                                    `json:"tags"`
+	Virtualmachinecount int                                                       `json:"virtualmachinecount"`
+	Virtualmachineids   []interface{}                                             `json:"virtualmachineids"`
+}
+
+type ResetUserDataForVirtualMachineResponseSecuritygroupRule struct {
+	Account           string `json:"account"`
+	Cidr              string `json:"cidr"`
+	Endport           int    `json:"endport"`
+	Icmpcode          int    `json:"icmpcode"`
+	Icmptype          int    `json:"icmptype"`
+	Protocol          string `json:"protocol"`
+	Ruleid            string `json:"ruleid"`
+	Securitygroupname string `json:"securitygroupname"`
+	Startport         int    `json:"startport"`
+	Tags              []Tags `json:"tags"`
+}
+
+type ResetUserDataForVirtualMachineResponseAffinitygroup struct {
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
+}
+
+func (r *ResetUserDataForVirtualMachineResponse) UnmarshalJSON(b []byte) error {
+	var m map[string]interface{}
+	err := json.Unmarshal(b, &m)
+	if err != nil {
+		return err
+	}
+
+	if success, ok := m["success"].(string); ok {
+		m["success"] = success == "true"
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	if ostypeid, ok := m["ostypeid"].(float64); ok {
+		m["ostypeid"] = strconv.Itoa(int(ostypeid))
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	type alias ResetUserDataForVirtualMachineResponse
+	return json.Unmarshal(b, (*alias)(r))
+}
+
 type RestoreVirtualMachineParams struct {
 	p map[string]interface{}
 }
@@ -7412,6 +8182,23 @@ func (p *RestoreVirtualMachineParams) toURLValues() url.Values {
 	if p.p == nil {
 		return u
 	}
+	if v, found := p.p["details"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("details[%d].%s", i, k), m[k])
+		}
+	}
+	if v, found := p.p["diskofferingid"]; found {
+		u.Set("diskofferingid", v.(string))
+	}
+	if v, found := p.p["expunge"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("expunge", vv)
+	}
+	if v, found := p.p["rootdisksize"]; found {
+		vv := strconv.FormatInt(v.(int64), 10)
+		u.Set("rootdisksize", vv)
+	}
 	if v, found := p.p["templateid"]; found {
 		u.Set("templateid", v.(string))
 	}
@@ -7419,6 +8206,90 @@ func (p *RestoreVirtualMachineParams) toURLValues() url.Values {
 		u.Set("virtualmachineid", v.(string))
 	}
 	return u
+}
+
+func (p *RestoreVirtualMachineParams) SetDetails(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["details"] = v
+}
+
+func (p *RestoreVirtualMachineParams) ResetDetails() {
+	if p.p != nil && p.p["details"] != nil {
+		delete(p.p, "details")
+	}
+}
+
+func (p *RestoreVirtualMachineParams) GetDetails() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["details"].(map[string]string)
+	return value, ok
+}
+
+func (p *RestoreVirtualMachineParams) SetDiskofferingid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["diskofferingid"] = v
+}
+
+func (p *RestoreVirtualMachineParams) ResetDiskofferingid() {
+	if p.p != nil && p.p["diskofferingid"] != nil {
+		delete(p.p, "diskofferingid")
+	}
+}
+
+func (p *RestoreVirtualMachineParams) GetDiskofferingid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["diskofferingid"].(string)
+	return value, ok
+}
+
+func (p *RestoreVirtualMachineParams) SetExpunge(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["expunge"] = v
+}
+
+func (p *RestoreVirtualMachineParams) ResetExpunge() {
+	if p.p != nil && p.p["expunge"] != nil {
+		delete(p.p, "expunge")
+	}
+}
+
+func (p *RestoreVirtualMachineParams) GetExpunge() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["expunge"].(bool)
+	return value, ok
+}
+
+func (p *RestoreVirtualMachineParams) SetRootdisksize(v int64) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["rootdisksize"] = v
+}
+
+func (p *RestoreVirtualMachineParams) ResetRootdisksize() {
+	if p.p != nil && p.p["rootdisksize"] != nil {
+		delete(p.p, "rootdisksize")
+	}
+}
+
+func (p *RestoreVirtualMachineParams) GetRootdisksize() (int64, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["rootdisksize"].(int64)
+	return value, ok
 }
 
 func (p *RestoreVirtualMachineParams) SetTemplateid(v string) {
@@ -7520,6 +8391,7 @@ type RestoreVirtualMachineResponse struct {
 	Cpuspeed              int                                          `json:"cpuspeed"`
 	Cpuused               string                                       `json:"cpuused"`
 	Created               string                                       `json:"created"`
+	Deleteprotection      bool                                         `json:"deleteprotection"`
 	Details               map[string]string                            `json:"details"`
 	Diskioread            int64                                        `json:"diskioread"`
 	Diskiowrite           int64                                        `json:"diskiowrite"`
@@ -7531,6 +8403,7 @@ type RestoreVirtualMachineResponse struct {
 	Displayvm             bool                                         `json:"displayvm"`
 	Domain                string                                       `json:"domain"`
 	Domainid              string                                       `json:"domainid"`
+	Domainpath            string                                       `json:"domainpath"`
 	Forvirtualnetwork     bool                                         `json:"forvirtualnetwork"`
 	Group                 string                                       `json:"group"`
 	Groupid               string                                       `json:"groupid"`
@@ -7544,6 +8417,7 @@ type RestoreVirtualMachineResponse struct {
 	Icon                  interface{}                                  `json:"icon"`
 	Id                    string                                       `json:"id"`
 	Instancename          string                                       `json:"instancename"`
+	Ipaddress             string                                       `json:"ipaddress"`
 	Isdynamicallyscalable bool                                         `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                       `json:"isodisplaytext"`
 	Isoid                 string                                       `json:"isoid"`
@@ -7581,6 +8455,7 @@ type RestoreVirtualMachineResponse struct {
 	State                 string                                       `json:"state"`
 	Tags                  []Tags                                       `json:"tags"`
 	Templatedisplaytext   string                                       `json:"templatedisplaytext"`
+	Templateformat        string                                       `json:"templateformat"`
 	Templateid            string                                       `json:"templateid"`
 	Templatename          string                                       `json:"templatename"`
 	Templatetype          string                                       `json:"templatetype"`
@@ -7592,6 +8467,7 @@ type RestoreVirtualMachineResponse struct {
 	Userid                string                                       `json:"userid"`
 	Username              string                                       `json:"username"`
 	Vgpu                  string                                       `json:"vgpu"`
+	Vmtype                string                                       `json:"vmtype"`
 	Vnfdetails            map[string]string                            `json:"vnfdetails"`
 	Vnfnics               []string                                     `json:"vnfnics"`
 	Zoneid                string                                       `json:"zoneid"`
@@ -7603,6 +8479,7 @@ type RestoreVirtualMachineResponseSecuritygroup struct {
 	Description         string                                           `json:"description"`
 	Domain              string                                           `json:"domain"`
 	Domainid            string                                           `json:"domainid"`
+	Domainpath          string                                           `json:"domainpath"`
 	Egressrule          []RestoreVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                           `json:"id"`
 	Ingressrule         []RestoreVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -7628,16 +8505,18 @@ type RestoreVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type RestoreVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *RestoreVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -8140,6 +9019,7 @@ type StartVirtualMachineResponse struct {
 	Cpuspeed              int                                        `json:"cpuspeed"`
 	Cpuused               string                                     `json:"cpuused"`
 	Created               string                                     `json:"created"`
+	Deleteprotection      bool                                       `json:"deleteprotection"`
 	Details               map[string]string                          `json:"details"`
 	Diskioread            int64                                      `json:"diskioread"`
 	Diskiowrite           int64                                      `json:"diskiowrite"`
@@ -8151,6 +9031,7 @@ type StartVirtualMachineResponse struct {
 	Displayvm             bool                                       `json:"displayvm"`
 	Domain                string                                     `json:"domain"`
 	Domainid              string                                     `json:"domainid"`
+	Domainpath            string                                     `json:"domainpath"`
 	Forvirtualnetwork     bool                                       `json:"forvirtualnetwork"`
 	Group                 string                                     `json:"group"`
 	Groupid               string                                     `json:"groupid"`
@@ -8164,6 +9045,7 @@ type StartVirtualMachineResponse struct {
 	Icon                  interface{}                                `json:"icon"`
 	Id                    string                                     `json:"id"`
 	Instancename          string                                     `json:"instancename"`
+	Ipaddress             string                                     `json:"ipaddress"`
 	Isdynamicallyscalable bool                                       `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                     `json:"isodisplaytext"`
 	Isoid                 string                                     `json:"isoid"`
@@ -8201,6 +9083,7 @@ type StartVirtualMachineResponse struct {
 	State                 string                                     `json:"state"`
 	Tags                  []Tags                                     `json:"tags"`
 	Templatedisplaytext   string                                     `json:"templatedisplaytext"`
+	Templateformat        string                                     `json:"templateformat"`
 	Templateid            string                                     `json:"templateid"`
 	Templatename          string                                     `json:"templatename"`
 	Templatetype          string                                     `json:"templatetype"`
@@ -8212,6 +9095,7 @@ type StartVirtualMachineResponse struct {
 	Userid                string                                     `json:"userid"`
 	Username              string                                     `json:"username"`
 	Vgpu                  string                                     `json:"vgpu"`
+	Vmtype                string                                     `json:"vmtype"`
 	Vnfdetails            map[string]string                          `json:"vnfdetails"`
 	Vnfnics               []string                                   `json:"vnfnics"`
 	Zoneid                string                                     `json:"zoneid"`
@@ -8223,6 +9107,7 @@ type StartVirtualMachineResponseSecuritygroup struct {
 	Description         string                                         `json:"description"`
 	Domain              string                                         `json:"domain"`
 	Domainid            string                                         `json:"domainid"`
+	Domainpath          string                                         `json:"domainpath"`
 	Egressrule          []StartVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                         `json:"id"`
 	Ingressrule         []StartVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -8248,16 +9133,18 @@ type StartVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type StartVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *StartVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -8405,6 +9292,7 @@ type StopVirtualMachineResponse struct {
 	Cpuspeed              int                                       `json:"cpuspeed"`
 	Cpuused               string                                    `json:"cpuused"`
 	Created               string                                    `json:"created"`
+	Deleteprotection      bool                                      `json:"deleteprotection"`
 	Details               map[string]string                         `json:"details"`
 	Diskioread            int64                                     `json:"diskioread"`
 	Diskiowrite           int64                                     `json:"diskiowrite"`
@@ -8416,6 +9304,7 @@ type StopVirtualMachineResponse struct {
 	Displayvm             bool                                      `json:"displayvm"`
 	Domain                string                                    `json:"domain"`
 	Domainid              string                                    `json:"domainid"`
+	Domainpath            string                                    `json:"domainpath"`
 	Forvirtualnetwork     bool                                      `json:"forvirtualnetwork"`
 	Group                 string                                    `json:"group"`
 	Groupid               string                                    `json:"groupid"`
@@ -8429,6 +9318,7 @@ type StopVirtualMachineResponse struct {
 	Icon                  interface{}                               `json:"icon"`
 	Id                    string                                    `json:"id"`
 	Instancename          string                                    `json:"instancename"`
+	Ipaddress             string                                    `json:"ipaddress"`
 	Isdynamicallyscalable bool                                      `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                    `json:"isodisplaytext"`
 	Isoid                 string                                    `json:"isoid"`
@@ -8466,6 +9356,7 @@ type StopVirtualMachineResponse struct {
 	State                 string                                    `json:"state"`
 	Tags                  []Tags                                    `json:"tags"`
 	Templatedisplaytext   string                                    `json:"templatedisplaytext"`
+	Templateformat        string                                    `json:"templateformat"`
 	Templateid            string                                    `json:"templateid"`
 	Templatename          string                                    `json:"templatename"`
 	Templatetype          string                                    `json:"templatetype"`
@@ -8477,6 +9368,7 @@ type StopVirtualMachineResponse struct {
 	Userid                string                                    `json:"userid"`
 	Username              string                                    `json:"username"`
 	Vgpu                  string                                    `json:"vgpu"`
+	Vmtype                string                                    `json:"vmtype"`
 	Vnfdetails            map[string]string                         `json:"vnfdetails"`
 	Vnfnics               []string                                  `json:"vnfnics"`
 	Zoneid                string                                    `json:"zoneid"`
@@ -8488,6 +9380,7 @@ type StopVirtualMachineResponseSecuritygroup struct {
 	Description         string                                        `json:"description"`
 	Domain              string                                        `json:"domain"`
 	Domainid            string                                        `json:"domainid"`
+	Domainpath          string                                        `json:"domainpath"`
 	Egressrule          []StopVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                        `json:"id"`
 	Ingressrule         []StopVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -8513,16 +9406,18 @@ type StopVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type StopVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *StopVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -8670,6 +9565,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 	Cpuspeed              int                                                      `json:"cpuspeed"`
 	Cpuused               string                                                   `json:"cpuused"`
 	Created               string                                                   `json:"created"`
+	Deleteprotection      bool                                                     `json:"deleteprotection"`
 	Details               map[string]string                                        `json:"details"`
 	Diskioread            int64                                                    `json:"diskioread"`
 	Diskiowrite           int64                                                    `json:"diskiowrite"`
@@ -8681,6 +9577,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 	Displayvm             bool                                                     `json:"displayvm"`
 	Domain                string                                                   `json:"domain"`
 	Domainid              string                                                   `json:"domainid"`
+	Domainpath            string                                                   `json:"domainpath"`
 	Forvirtualnetwork     bool                                                     `json:"forvirtualnetwork"`
 	Group                 string                                                   `json:"group"`
 	Groupid               string                                                   `json:"groupid"`
@@ -8694,6 +9591,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 	Icon                  interface{}                                              `json:"icon"`
 	Id                    string                                                   `json:"id"`
 	Instancename          string                                                   `json:"instancename"`
+	Ipaddress             string                                                   `json:"ipaddress"`
 	Isdynamicallyscalable bool                                                     `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                                   `json:"isodisplaytext"`
 	Isoid                 string                                                   `json:"isoid"`
@@ -8731,6 +9629,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 	State                 string                                                   `json:"state"`
 	Tags                  []Tags                                                   `json:"tags"`
 	Templatedisplaytext   string                                                   `json:"templatedisplaytext"`
+	Templateformat        string                                                   `json:"templateformat"`
 	Templateid            string                                                   `json:"templateid"`
 	Templatename          string                                                   `json:"templatename"`
 	Templatetype          string                                                   `json:"templatetype"`
@@ -8742,6 +9641,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 	Userid                string                                                   `json:"userid"`
 	Username              string                                                   `json:"username"`
 	Vgpu                  string                                                   `json:"vgpu"`
+	Vmtype                string                                                   `json:"vmtype"`
 	Vnfdetails            map[string]string                                        `json:"vnfdetails"`
 	Vnfnics               []string                                                 `json:"vnfnics"`
 	Zoneid                string                                                   `json:"zoneid"`
@@ -8753,6 +9653,7 @@ type UpdateDefaultNicForVirtualMachineResponseSecuritygroup struct {
 	Description         string                                                       `json:"description"`
 	Domain              string                                                       `json:"domain"`
 	Domainid            string                                                       `json:"domainid"`
+	Domainpath          string                                                       `json:"domainpath"`
 	Egressrule          []UpdateDefaultNicForVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                                       `json:"id"`
 	Ingressrule         []UpdateDefaultNicForVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -8778,16 +9679,18 @@ type UpdateDefaultNicForVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type UpdateDefaultNicForVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *UpdateDefaultNicForVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -8832,6 +9735,10 @@ func (p *UpdateVirtualMachineParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["customid"]; found {
 		u.Set("customid", v.(string))
+	}
+	if v, found := p.p["deleteprotection"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("deleteprotection", vv)
 	}
 	if v, found := p.p["details"]; found {
 		m := v.(map[string]string)
@@ -8943,6 +9850,27 @@ func (p *UpdateVirtualMachineParams) GetCustomid() (string, bool) {
 		p.p = make(map[string]interface{})
 	}
 	value, ok := p.p["customid"].(string)
+	return value, ok
+}
+
+func (p *UpdateVirtualMachineParams) SetDeleteprotection(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["deleteprotection"] = v
+}
+
+func (p *UpdateVirtualMachineParams) ResetDeleteprotection() {
+	if p.p != nil && p.p["deleteprotection"] != nil {
+		delete(p.p, "deleteprotection")
+	}
+}
+
+func (p *UpdateVirtualMachineParams) GetDeleteprotection() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["deleteprotection"].(bool)
 	return value, ok
 }
 
@@ -9354,6 +10282,7 @@ type UpdateVirtualMachineResponse struct {
 	Cpuspeed              int                                         `json:"cpuspeed"`
 	Cpuused               string                                      `json:"cpuused"`
 	Created               string                                      `json:"created"`
+	Deleteprotection      bool                                        `json:"deleteprotection"`
 	Details               map[string]string                           `json:"details"`
 	Diskioread            int64                                       `json:"diskioread"`
 	Diskiowrite           int64                                       `json:"diskiowrite"`
@@ -9365,6 +10294,7 @@ type UpdateVirtualMachineResponse struct {
 	Displayvm             bool                                        `json:"displayvm"`
 	Domain                string                                      `json:"domain"`
 	Domainid              string                                      `json:"domainid"`
+	Domainpath            string                                      `json:"domainpath"`
 	Forvirtualnetwork     bool                                        `json:"forvirtualnetwork"`
 	Group                 string                                      `json:"group"`
 	Groupid               string                                      `json:"groupid"`
@@ -9378,6 +10308,7 @@ type UpdateVirtualMachineResponse struct {
 	Icon                  interface{}                                 `json:"icon"`
 	Id                    string                                      `json:"id"`
 	Instancename          string                                      `json:"instancename"`
+	Ipaddress             string                                      `json:"ipaddress"`
 	Isdynamicallyscalable bool                                        `json:"isdynamicallyscalable"`
 	Isodisplaytext        string                                      `json:"isodisplaytext"`
 	Isoid                 string                                      `json:"isoid"`
@@ -9415,6 +10346,7 @@ type UpdateVirtualMachineResponse struct {
 	State                 string                                      `json:"state"`
 	Tags                  []Tags                                      `json:"tags"`
 	Templatedisplaytext   string                                      `json:"templatedisplaytext"`
+	Templateformat        string                                      `json:"templateformat"`
 	Templateid            string                                      `json:"templateid"`
 	Templatename          string                                      `json:"templatename"`
 	Templatetype          string                                      `json:"templatetype"`
@@ -9426,6 +10358,7 @@ type UpdateVirtualMachineResponse struct {
 	Userid                string                                      `json:"userid"`
 	Username              string                                      `json:"username"`
 	Vgpu                  string                                      `json:"vgpu"`
+	Vmtype                string                                      `json:"vmtype"`
 	Vnfdetails            map[string]string                           `json:"vnfdetails"`
 	Vnfnics               []string                                    `json:"vnfnics"`
 	Zoneid                string                                      `json:"zoneid"`
@@ -9437,6 +10370,7 @@ type UpdateVirtualMachineResponseSecuritygroup struct {
 	Description         string                                          `json:"description"`
 	Domain              string                                          `json:"domain"`
 	Domainid            string                                          `json:"domainid"`
+	Domainpath          string                                          `json:"domainpath"`
 	Egressrule          []UpdateVirtualMachineResponseSecuritygroupRule `json:"egressrule"`
 	Id                  string                                          `json:"id"`
 	Ingressrule         []UpdateVirtualMachineResponseSecuritygroupRule `json:"ingressrule"`
@@ -9462,16 +10396,18 @@ type UpdateVirtualMachineResponseSecuritygroupRule struct {
 }
 
 type UpdateVirtualMachineResponseAffinitygroup struct {
-	Account           string   `json:"account"`
-	Description       string   `json:"description"`
-	Domain            string   `json:"domain"`
-	Domainid          string   `json:"domainid"`
-	Id                string   `json:"id"`
-	Name              string   `json:"name"`
-	Project           string   `json:"project"`
-	Projectid         string   `json:"projectid"`
-	Type              string   `json:"type"`
-	VirtualmachineIds []string `json:"virtualmachineIds"`
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
 }
 
 func (r *UpdateVirtualMachineResponse) UnmarshalJSON(b []byte) error {
@@ -9826,4 +10762,2860 @@ type VirtualMachinesUsageHistory struct {
 	Jobstatus   int      `json:"jobstatus"`
 	Name        string   `json:"name"`
 	Stats       []string `json:"stats"`
+}
+
+type ImportVmParams struct {
+	p map[string]interface{}
+}
+
+func (p *ImportVmParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["account"]; found {
+		u.Set("account", v.(string))
+	}
+	if v, found := p.p["clusterid"]; found {
+		u.Set("clusterid", v.(string))
+	}
+	if v, found := p.p["clustername"]; found {
+		u.Set("clustername", v.(string))
+	}
+	if v, found := p.p["convertinstancehostid"]; found {
+		u.Set("convertinstancehostid", v.(string))
+	}
+	if v, found := p.p["convertinstancepoolid"]; found {
+		u.Set("convertinstancepoolid", v.(string))
+	}
+	if v, found := p.p["datacentername"]; found {
+		u.Set("datacentername", v.(string))
+	}
+	if v, found := p.p["datadiskofferinglist"]; found {
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("datadiskofferinglist[%d].%s", i, key), val)
+			}
+		}
+	}
+	if v, found := p.p["details"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("details[%d].%s", i, k), m[k])
+		}
+	}
+	if v, found := p.p["diskpath"]; found {
+		u.Set("diskpath", v.(string))
+	}
+	if v, found := p.p["displayname"]; found {
+		u.Set("displayname", v.(string))
+	}
+	if v, found := p.p["domainid"]; found {
+		u.Set("domainid", v.(string))
+	}
+	if v, found := p.p["existingvcenterid"]; found {
+		u.Set("existingvcenterid", v.(string))
+	}
+	if v, found := p.p["forced"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("forced", vv)
+	}
+	if v, found := p.p["forcemstoimportvmfiles"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("forcemstoimportvmfiles", vv)
+	}
+	if v, found := p.p["host"]; found {
+		u.Set("host", v.(string))
+	}
+	if v, found := p.p["hostid"]; found {
+		u.Set("hostid", v.(string))
+	}
+	if v, found := p.p["hostip"]; found {
+		u.Set("hostip", v.(string))
+	}
+	if v, found := p.p["hostname"]; found {
+		u.Set("hostname", v.(string))
+	}
+	if v, found := p.p["hypervisor"]; found {
+		u.Set("hypervisor", v.(string))
+	}
+	if v, found := p.p["importsource"]; found {
+		u.Set("importsource", v.(string))
+	}
+	if v, found := p.p["migrateallowed"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("migrateallowed", vv)
+	}
+	if v, found := p.p["name"]; found {
+		u.Set("name", v.(string))
+	}
+	if v, found := p.p["networkid"]; found {
+		u.Set("networkid", v.(string))
+	}
+	if v, found := p.p["nicipaddresslist"]; found {
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("nicipaddresslist[%d].%s", i, key), val)
+			}
+		}
+	}
+	if v, found := p.p["nicnetworklist"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("nicnetworklist[%d].nic", i), k)
+			u.Set(fmt.Sprintf("nicnetworklist[%d].network", i), m[k])
+		}
+	}
+	if v, found := p.p["password"]; found {
+		u.Set("password", v.(string))
+	}
+	if v, found := p.p["projectid"]; found {
+		u.Set("projectid", v.(string))
+	}
+	if v, found := p.p["serviceofferingid"]; found {
+		u.Set("serviceofferingid", v.(string))
+	}
+	if v, found := p.p["storageid"]; found {
+		u.Set("storageid", v.(string))
+	}
+	if v, found := p.p["templateid"]; found {
+		u.Set("templateid", v.(string))
+	}
+	if v, found := p.p["temppath"]; found {
+		u.Set("temppath", v.(string))
+	}
+	if v, found := p.p["username"]; found {
+		u.Set("username", v.(string))
+	}
+	if v, found := p.p["vcenter"]; found {
+		u.Set("vcenter", v.(string))
+	}
+	if v, found := p.p["zoneid"]; found {
+		u.Set("zoneid", v.(string))
+	}
+	return u
+}
+
+func (p *ImportVmParams) SetAccount(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["account"] = v
+}
+
+func (p *ImportVmParams) ResetAccount() {
+	if p.p != nil && p.p["account"] != nil {
+		delete(p.p, "account")
+	}
+}
+
+func (p *ImportVmParams) GetAccount() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["account"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetClusterid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["clusterid"] = v
+}
+
+func (p *ImportVmParams) ResetClusterid() {
+	if p.p != nil && p.p["clusterid"] != nil {
+		delete(p.p, "clusterid")
+	}
+}
+
+func (p *ImportVmParams) GetClusterid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["clusterid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetClustername(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["clustername"] = v
+}
+
+func (p *ImportVmParams) ResetClustername() {
+	if p.p != nil && p.p["clustername"] != nil {
+		delete(p.p, "clustername")
+	}
+}
+
+func (p *ImportVmParams) GetClustername() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["clustername"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetConvertinstancehostid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["convertinstancehostid"] = v
+}
+
+func (p *ImportVmParams) ResetConvertinstancehostid() {
+	if p.p != nil && p.p["convertinstancehostid"] != nil {
+		delete(p.p, "convertinstancehostid")
+	}
+}
+
+func (p *ImportVmParams) GetConvertinstancehostid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["convertinstancehostid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetConvertinstancepoolid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["convertinstancepoolid"] = v
+}
+
+func (p *ImportVmParams) ResetConvertinstancepoolid() {
+	if p.p != nil && p.p["convertinstancepoolid"] != nil {
+		delete(p.p, "convertinstancepoolid")
+	}
+}
+
+func (p *ImportVmParams) GetConvertinstancepoolid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["convertinstancepoolid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetDatacentername(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["datacentername"] = v
+}
+
+func (p *ImportVmParams) ResetDatacentername() {
+	if p.p != nil && p.p["datacentername"] != nil {
+		delete(p.p, "datacentername")
+	}
+}
+
+func (p *ImportVmParams) GetDatacentername() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["datacentername"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetDatadiskofferinglist(v []map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["datadiskofferinglist"] = v
+}
+
+func (p *ImportVmParams) ResetDatadiskofferinglist() {
+	if p.p != nil && p.p["datadiskofferinglist"] != nil {
+		delete(p.p, "datadiskofferinglist")
+	}
+}
+
+func (p *ImportVmParams) GetDatadiskofferinglist() ([]map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["datadiskofferinglist"].([]map[string]string)
+	return value, ok
+}
+
+func (p *ImportVmParams) AddDatadiskofferinglist(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["datadiskofferinglist"]
+	if !found {
+		p.p["datadiskofferinglist"] = []map[string]string{}
+		val = p.p["datadiskofferinglist"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["datadiskofferinglist"] = l
+}
+
+func (p *ImportVmParams) SetDetails(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["details"] = v
+}
+
+func (p *ImportVmParams) ResetDetails() {
+	if p.p != nil && p.p["details"] != nil {
+		delete(p.p, "details")
+	}
+}
+
+func (p *ImportVmParams) GetDetails() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["details"].(map[string]string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetDiskpath(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["diskpath"] = v
+}
+
+func (p *ImportVmParams) ResetDiskpath() {
+	if p.p != nil && p.p["diskpath"] != nil {
+		delete(p.p, "diskpath")
+	}
+}
+
+func (p *ImportVmParams) GetDiskpath() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["diskpath"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetDisplayname(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["displayname"] = v
+}
+
+func (p *ImportVmParams) ResetDisplayname() {
+	if p.p != nil && p.p["displayname"] != nil {
+		delete(p.p, "displayname")
+	}
+}
+
+func (p *ImportVmParams) GetDisplayname() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["displayname"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetDomainid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["domainid"] = v
+}
+
+func (p *ImportVmParams) ResetDomainid() {
+	if p.p != nil && p.p["domainid"] != nil {
+		delete(p.p, "domainid")
+	}
+}
+
+func (p *ImportVmParams) GetDomainid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["domainid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetExistingvcenterid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["existingvcenterid"] = v
+}
+
+func (p *ImportVmParams) ResetExistingvcenterid() {
+	if p.p != nil && p.p["existingvcenterid"] != nil {
+		delete(p.p, "existingvcenterid")
+	}
+}
+
+func (p *ImportVmParams) GetExistingvcenterid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["existingvcenterid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetForced(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["forced"] = v
+}
+
+func (p *ImportVmParams) ResetForced() {
+	if p.p != nil && p.p["forced"] != nil {
+		delete(p.p, "forced")
+	}
+}
+
+func (p *ImportVmParams) GetForced() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["forced"].(bool)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetForcemstoimportvmfiles(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["forcemstoimportvmfiles"] = v
+}
+
+func (p *ImportVmParams) ResetForcemstoimportvmfiles() {
+	if p.p != nil && p.p["forcemstoimportvmfiles"] != nil {
+		delete(p.p, "forcemstoimportvmfiles")
+	}
+}
+
+func (p *ImportVmParams) GetForcemstoimportvmfiles() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["forcemstoimportvmfiles"].(bool)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetHost(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["host"] = v
+}
+
+func (p *ImportVmParams) ResetHost() {
+	if p.p != nil && p.p["host"] != nil {
+		delete(p.p, "host")
+	}
+}
+
+func (p *ImportVmParams) GetHost() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["host"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetHostid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["hostid"] = v
+}
+
+func (p *ImportVmParams) ResetHostid() {
+	if p.p != nil && p.p["hostid"] != nil {
+		delete(p.p, "hostid")
+	}
+}
+
+func (p *ImportVmParams) GetHostid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["hostid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetHostip(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["hostip"] = v
+}
+
+func (p *ImportVmParams) ResetHostip() {
+	if p.p != nil && p.p["hostip"] != nil {
+		delete(p.p, "hostip")
+	}
+}
+
+func (p *ImportVmParams) GetHostip() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["hostip"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetHostname(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["hostname"] = v
+}
+
+func (p *ImportVmParams) ResetHostname() {
+	if p.p != nil && p.p["hostname"] != nil {
+		delete(p.p, "hostname")
+	}
+}
+
+func (p *ImportVmParams) GetHostname() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["hostname"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetHypervisor(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["hypervisor"] = v
+}
+
+func (p *ImportVmParams) ResetHypervisor() {
+	if p.p != nil && p.p["hypervisor"] != nil {
+		delete(p.p, "hypervisor")
+	}
+}
+
+func (p *ImportVmParams) GetHypervisor() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["hypervisor"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetImportsource(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["importsource"] = v
+}
+
+func (p *ImportVmParams) ResetImportsource() {
+	if p.p != nil && p.p["importsource"] != nil {
+		delete(p.p, "importsource")
+	}
+}
+
+func (p *ImportVmParams) GetImportsource() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["importsource"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetMigrateallowed(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["migrateallowed"] = v
+}
+
+func (p *ImportVmParams) ResetMigrateallowed() {
+	if p.p != nil && p.p["migrateallowed"] != nil {
+		delete(p.p, "migrateallowed")
+	}
+}
+
+func (p *ImportVmParams) GetMigrateallowed() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["migrateallowed"].(bool)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetName(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["name"] = v
+}
+
+func (p *ImportVmParams) ResetName() {
+	if p.p != nil && p.p["name"] != nil {
+		delete(p.p, "name")
+	}
+}
+
+func (p *ImportVmParams) GetName() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["name"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetNetworkid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["networkid"] = v
+}
+
+func (p *ImportVmParams) ResetNetworkid() {
+	if p.p != nil && p.p["networkid"] != nil {
+		delete(p.p, "networkid")
+	}
+}
+
+func (p *ImportVmParams) GetNetworkid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["networkid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetNicipaddresslist(v []map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["nicipaddresslist"] = v
+}
+
+func (p *ImportVmParams) ResetNicipaddresslist() {
+	if p.p != nil && p.p["nicipaddresslist"] != nil {
+		delete(p.p, "nicipaddresslist")
+	}
+}
+
+func (p *ImportVmParams) GetNicipaddresslist() ([]map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["nicipaddresslist"].([]map[string]string)
+	return value, ok
+}
+
+func (p *ImportVmParams) AddNicipaddresslist(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["nicipaddresslist"]
+	if !found {
+		p.p["nicipaddresslist"] = []map[string]string{}
+		val = p.p["nicipaddresslist"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["nicipaddresslist"] = l
+}
+
+func (p *ImportVmParams) SetNicnetworklist(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["nicnetworklist"] = v
+}
+
+func (p *ImportVmParams) ResetNicnetworklist() {
+	if p.p != nil && p.p["nicnetworklist"] != nil {
+		delete(p.p, "nicnetworklist")
+	}
+}
+
+func (p *ImportVmParams) GetNicnetworklist() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["nicnetworklist"].(map[string]string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetPassword(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["password"] = v
+}
+
+func (p *ImportVmParams) ResetPassword() {
+	if p.p != nil && p.p["password"] != nil {
+		delete(p.p, "password")
+	}
+}
+
+func (p *ImportVmParams) GetPassword() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["password"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetProjectid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["projectid"] = v
+}
+
+func (p *ImportVmParams) ResetProjectid() {
+	if p.p != nil && p.p["projectid"] != nil {
+		delete(p.p, "projectid")
+	}
+}
+
+func (p *ImportVmParams) GetProjectid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetServiceofferingid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["serviceofferingid"] = v
+}
+
+func (p *ImportVmParams) ResetServiceofferingid() {
+	if p.p != nil && p.p["serviceofferingid"] != nil {
+		delete(p.p, "serviceofferingid")
+	}
+}
+
+func (p *ImportVmParams) GetServiceofferingid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["serviceofferingid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetStorageid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["storageid"] = v
+}
+
+func (p *ImportVmParams) ResetStorageid() {
+	if p.p != nil && p.p["storageid"] != nil {
+		delete(p.p, "storageid")
+	}
+}
+
+func (p *ImportVmParams) GetStorageid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["storageid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetTemplateid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["templateid"] = v
+}
+
+func (p *ImportVmParams) ResetTemplateid() {
+	if p.p != nil && p.p["templateid"] != nil {
+		delete(p.p, "templateid")
+	}
+}
+
+func (p *ImportVmParams) GetTemplateid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["templateid"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetTemppath(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["temppath"] = v
+}
+
+func (p *ImportVmParams) ResetTemppath() {
+	if p.p != nil && p.p["temppath"] != nil {
+		delete(p.p, "temppath")
+	}
+}
+
+func (p *ImportVmParams) GetTemppath() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["temppath"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetUsername(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["username"] = v
+}
+
+func (p *ImportVmParams) ResetUsername() {
+	if p.p != nil && p.p["username"] != nil {
+		delete(p.p, "username")
+	}
+}
+
+func (p *ImportVmParams) GetUsername() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["username"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetVcenter(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["vcenter"] = v
+}
+
+func (p *ImportVmParams) ResetVcenter() {
+	if p.p != nil && p.p["vcenter"] != nil {
+		delete(p.p, "vcenter")
+	}
+}
+
+func (p *ImportVmParams) GetVcenter() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["vcenter"].(string)
+	return value, ok
+}
+
+func (p *ImportVmParams) SetZoneid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["zoneid"] = v
+}
+
+func (p *ImportVmParams) ResetZoneid() {
+	if p.p != nil && p.p["zoneid"] != nil {
+		delete(p.p, "zoneid")
+	}
+}
+
+func (p *ImportVmParams) GetZoneid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["zoneid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ImportVmParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewImportVmParams(clusterid string, hypervisor string, importsource string, name string, serviceofferingid string, zoneid string) *ImportVmParams {
+	p := &ImportVmParams{}
+	p.p = make(map[string]interface{})
+	p.p["clusterid"] = clusterid
+	p.p["hypervisor"] = hypervisor
+	p.p["importsource"] = importsource
+	p.p["name"] = name
+	p.p["serviceofferingid"] = serviceofferingid
+	p.p["zoneid"] = zoneid
+	return p
+}
+
+// Import virtual machine from a unmanaged host into CloudStack
+func (s *VirtualMachineService) ImportVm(p *ImportVmParams) (*ImportVmResponse, error) {
+	resp, err := s.cs.newRequest("importVm", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ImportVmResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		b, err = getRawValue(b)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type ImportVmResponse struct {
+	Account               string                          `json:"account"`
+	Affinitygroup         []ImportVmResponseAffinitygroup `json:"affinitygroup"`
+	Autoscalevmgroupid    string                          `json:"autoscalevmgroupid"`
+	Autoscalevmgroupname  string                          `json:"autoscalevmgroupname"`
+	Backupofferingid      string                          `json:"backupofferingid"`
+	Backupofferingname    string                          `json:"backupofferingname"`
+	Bootmode              string                          `json:"bootmode"`
+	Boottype              string                          `json:"boottype"`
+	Cpunumber             int                             `json:"cpunumber"`
+	Cpuspeed              int                             `json:"cpuspeed"`
+	Cpuused               string                          `json:"cpuused"`
+	Created               string                          `json:"created"`
+	Deleteprotection      bool                            `json:"deleteprotection"`
+	Details               map[string]string               `json:"details"`
+	Diskioread            int64                           `json:"diskioread"`
+	Diskiowrite           int64                           `json:"diskiowrite"`
+	Diskkbsread           int64                           `json:"diskkbsread"`
+	Diskkbswrite          int64                           `json:"diskkbswrite"`
+	Diskofferingid        string                          `json:"diskofferingid"`
+	Diskofferingname      string                          `json:"diskofferingname"`
+	Displayname           string                          `json:"displayname"`
+	Displayvm             bool                            `json:"displayvm"`
+	Domain                string                          `json:"domain"`
+	Domainid              string                          `json:"domainid"`
+	Domainpath            string                          `json:"domainpath"`
+	Forvirtualnetwork     bool                            `json:"forvirtualnetwork"`
+	Group                 string                          `json:"group"`
+	Groupid               string                          `json:"groupid"`
+	Guestosid             string                          `json:"guestosid"`
+	Haenable              bool                            `json:"haenable"`
+	Hasannotations        bool                            `json:"hasannotations"`
+	Hostcontrolstate      string                          `json:"hostcontrolstate"`
+	Hostid                string                          `json:"hostid"`
+	Hostname              string                          `json:"hostname"`
+	Hypervisor            string                          `json:"hypervisor"`
+	Icon                  interface{}                     `json:"icon"`
+	Id                    string                          `json:"id"`
+	Instancename          string                          `json:"instancename"`
+	Ipaddress             string                          `json:"ipaddress"`
+	Isdynamicallyscalable bool                            `json:"isdynamicallyscalable"`
+	Isodisplaytext        string                          `json:"isodisplaytext"`
+	Isoid                 string                          `json:"isoid"`
+	Isoname               string                          `json:"isoname"`
+	JobID                 string                          `json:"jobid"`
+	Jobstatus             int                             `json:"jobstatus"`
+	Keypairs              string                          `json:"keypairs"`
+	Lastupdated           string                          `json:"lastupdated"`
+	Memory                int                             `json:"memory"`
+	Memoryintfreekbs      int64                           `json:"memoryintfreekbs"`
+	Memorykbs             int64                           `json:"memorykbs"`
+	Memorytargetkbs       int64                           `json:"memorytargetkbs"`
+	Name                  string                          `json:"name"`
+	Networkkbsread        int64                           `json:"networkkbsread"`
+	Networkkbswrite       int64                           `json:"networkkbswrite"`
+	Nic                   []Nic                           `json:"nic"`
+	Osdisplayname         string                          `json:"osdisplayname"`
+	Ostypeid              string                          `json:"ostypeid"`
+	Password              string                          `json:"password"`
+	Passwordenabled       bool                            `json:"passwordenabled"`
+	Pooltype              string                          `json:"pooltype"`
+	Project               string                          `json:"project"`
+	Projectid             string                          `json:"projectid"`
+	Publicip              string                          `json:"publicip"`
+	Publicipid            string                          `json:"publicipid"`
+	Readonlydetails       string                          `json:"readonlydetails"`
+	Receivedbytes         int64                           `json:"receivedbytes"`
+	Rootdeviceid          int64                           `json:"rootdeviceid"`
+	Rootdevicetype        string                          `json:"rootdevicetype"`
+	Securitygroup         []ImportVmResponseSecuritygroup `json:"securitygroup"`
+	Sentbytes             int64                           `json:"sentbytes"`
+	Serviceofferingid     string                          `json:"serviceofferingid"`
+	Serviceofferingname   string                          `json:"serviceofferingname"`
+	Servicestate          string                          `json:"servicestate"`
+	State                 string                          `json:"state"`
+	Tags                  []Tags                          `json:"tags"`
+	Templatedisplaytext   string                          `json:"templatedisplaytext"`
+	Templateformat        string                          `json:"templateformat"`
+	Templateid            string                          `json:"templateid"`
+	Templatename          string                          `json:"templatename"`
+	Templatetype          string                          `json:"templatetype"`
+	Userdata              string                          `json:"userdata"`
+	Userdatadetails       string                          `json:"userdatadetails"`
+	Userdataid            string                          `json:"userdataid"`
+	Userdataname          string                          `json:"userdataname"`
+	Userdatapolicy        string                          `json:"userdatapolicy"`
+	Userid                string                          `json:"userid"`
+	Username              string                          `json:"username"`
+	Vgpu                  string                          `json:"vgpu"`
+	Vmtype                string                          `json:"vmtype"`
+	Vnfdetails            map[string]string               `json:"vnfdetails"`
+	Vnfnics               []string                        `json:"vnfnics"`
+	Zoneid                string                          `json:"zoneid"`
+	Zonename              string                          `json:"zonename"`
+}
+
+type ImportVmResponseSecuritygroup struct {
+	Account             string                              `json:"account"`
+	Description         string                              `json:"description"`
+	Domain              string                              `json:"domain"`
+	Domainid            string                              `json:"domainid"`
+	Domainpath          string                              `json:"domainpath"`
+	Egressrule          []ImportVmResponseSecuritygroupRule `json:"egressrule"`
+	Id                  string                              `json:"id"`
+	Ingressrule         []ImportVmResponseSecuritygroupRule `json:"ingressrule"`
+	Name                string                              `json:"name"`
+	Project             string                              `json:"project"`
+	Projectid           string                              `json:"projectid"`
+	Tags                []Tags                              `json:"tags"`
+	Virtualmachinecount int                                 `json:"virtualmachinecount"`
+	Virtualmachineids   []interface{}                       `json:"virtualmachineids"`
+}
+
+type ImportVmResponseSecuritygroupRule struct {
+	Account           string `json:"account"`
+	Cidr              string `json:"cidr"`
+	Endport           int    `json:"endport"`
+	Icmpcode          int    `json:"icmpcode"`
+	Icmptype          int    `json:"icmptype"`
+	Protocol          string `json:"protocol"`
+	Ruleid            string `json:"ruleid"`
+	Securitygroupname string `json:"securitygroupname"`
+	Startport         int    `json:"startport"`
+	Tags              []Tags `json:"tags"`
+}
+
+type ImportVmResponseAffinitygroup struct {
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
+}
+
+func (r *ImportVmResponse) UnmarshalJSON(b []byte) error {
+	var m map[string]interface{}
+	err := json.Unmarshal(b, &m)
+	if err != nil {
+		return err
+	}
+
+	if success, ok := m["success"].(string); ok {
+		m["success"] = success == "true"
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	if ostypeid, ok := m["ostypeid"].(float64); ok {
+		m["ostypeid"] = strconv.Itoa(int(ostypeid))
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	type alias ImportVmResponse
+	return json.Unmarshal(b, (*alias)(r))
+}
+
+type UnmanageVirtualMachineParams struct {
+	p map[string]interface{}
+}
+
+func (p *UnmanageVirtualMachineParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	return u
+}
+
+func (p *UnmanageVirtualMachineParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *UnmanageVirtualMachineParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *UnmanageVirtualMachineParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new UnmanageVirtualMachineParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewUnmanageVirtualMachineParams(id string) *UnmanageVirtualMachineParams {
+	p := &UnmanageVirtualMachineParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// Unmanage a guest virtual machine.
+func (s *VirtualMachineService) UnmanageVirtualMachine(p *UnmanageVirtualMachineParams) (*UnmanageVirtualMachineResponse, error) {
+	resp, err := s.cs.newRequest("unmanageVirtualMachine", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r UnmanageVirtualMachineResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		b, err = getRawValue(b)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type UnmanageVirtualMachineResponse struct {
+	Details   string `json:"details"`
+	JobID     string `json:"jobid"`
+	Jobstatus int    `json:"jobstatus"`
+	Success   bool   `json:"success"`
+}
+
+type ListUnmanagedInstancesParams struct {
+	p map[string]interface{}
+}
+
+func (p *ListUnmanagedInstancesParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["clusterid"]; found {
+		u.Set("clusterid", v.(string))
+	}
+	if v, found := p.p["keyword"]; found {
+		u.Set("keyword", v.(string))
+	}
+	if v, found := p.p["name"]; found {
+		u.Set("name", v.(string))
+	}
+	if v, found := p.p["page"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("page", vv)
+	}
+	if v, found := p.p["pagesize"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("pagesize", vv)
+	}
+	return u
+}
+
+func (p *ListUnmanagedInstancesParams) SetClusterid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["clusterid"] = v
+}
+
+func (p *ListUnmanagedInstancesParams) ResetClusterid() {
+	if p.p != nil && p.p["clusterid"] != nil {
+		delete(p.p, "clusterid")
+	}
+}
+
+func (p *ListUnmanagedInstancesParams) GetClusterid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["clusterid"].(string)
+	return value, ok
+}
+
+func (p *ListUnmanagedInstancesParams) SetKeyword(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["keyword"] = v
+}
+
+func (p *ListUnmanagedInstancesParams) ResetKeyword() {
+	if p.p != nil && p.p["keyword"] != nil {
+		delete(p.p, "keyword")
+	}
+}
+
+func (p *ListUnmanagedInstancesParams) GetKeyword() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["keyword"].(string)
+	return value, ok
+}
+
+func (p *ListUnmanagedInstancesParams) SetName(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["name"] = v
+}
+
+func (p *ListUnmanagedInstancesParams) ResetName() {
+	if p.p != nil && p.p["name"] != nil {
+		delete(p.p, "name")
+	}
+}
+
+func (p *ListUnmanagedInstancesParams) GetName() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["name"].(string)
+	return value, ok
+}
+
+func (p *ListUnmanagedInstancesParams) SetPage(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["page"] = v
+}
+
+func (p *ListUnmanagedInstancesParams) ResetPage() {
+	if p.p != nil && p.p["page"] != nil {
+		delete(p.p, "page")
+	}
+}
+
+func (p *ListUnmanagedInstancesParams) GetPage() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["page"].(int)
+	return value, ok
+}
+
+func (p *ListUnmanagedInstancesParams) SetPagesize(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["pagesize"] = v
+}
+
+func (p *ListUnmanagedInstancesParams) ResetPagesize() {
+	if p.p != nil && p.p["pagesize"] != nil {
+		delete(p.p, "pagesize")
+	}
+}
+
+func (p *ListUnmanagedInstancesParams) GetPagesize() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["pagesize"].(int)
+	return value, ok
+}
+
+// You should always use this function to get a new ListUnmanagedInstancesParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewListUnmanagedInstancesParams(clusterid string) *ListUnmanagedInstancesParams {
+	p := &ListUnmanagedInstancesParams{}
+	p.p = make(map[string]interface{})
+	p.p["clusterid"] = clusterid
+	return p
+}
+
+// Lists unmanaged virtual machines for a given cluster.
+func (s *VirtualMachineService) ListUnmanagedInstances(p *ListUnmanagedInstancesParams) (*ListUnmanagedInstancesResponse, error) {
+	resp, err := s.cs.newRequest("listUnmanagedInstances", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ListUnmanagedInstancesResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type ListUnmanagedInstancesResponse struct {
+	Count              int                  `json:"count"`
+	UnmanagedInstances []*UnmanagedInstance `json:"unmanagedinstance"`
+}
+
+type UnmanagedInstance struct {
+	Clusterid        string                  `json:"clusterid"`
+	Clustername      string                  `json:"clustername"`
+	Cpucorepersocket int                     `json:"cpucorepersocket"`
+	Cpunumber        int                     `json:"cpunumber"`
+	Cpuspeed         int                     `json:"cpuspeed"`
+	Disk             []UnmanagedInstanceDisk `json:"disk"`
+	Hostid           string                  `json:"hostid"`
+	Hostname         string                  `json:"hostname"`
+	JobID            string                  `json:"jobid"`
+	Jobstatus        int                     `json:"jobstatus"`
+	Memory           int                     `json:"memory"`
+	Name             string                  `json:"name"`
+	Nic              []Nic                   `json:"nic"`
+	Osdisplayname    string                  `json:"osdisplayname"`
+	Osid             string                  `json:"osid"`
+	Powerstate       string                  `json:"powerstate"`
+}
+
+type UnmanagedInstanceDisk struct {
+	Capacity       int64  `json:"capacity"`
+	Controller     string `json:"controller"`
+	Controllerunit int    `json:"controllerunit"`
+	Datastorehost  string `json:"datastorehost"`
+	Datastorename  string `json:"datastorename"`
+	Datastorepath  string `json:"datastorepath"`
+	Datastoretype  string `json:"datastoretype"`
+	Id             string `json:"id"`
+	Imagepath      string `json:"imagepath"`
+	Label          string `json:"label"`
+	Position       int    `json:"position"`
+}
+
+type ImportUnmanagedInstanceParams struct {
+	p map[string]interface{}
+}
+
+func (p *ImportUnmanagedInstanceParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["account"]; found {
+		u.Set("account", v.(string))
+	}
+	if v, found := p.p["clusterid"]; found {
+		u.Set("clusterid", v.(string))
+	}
+	if v, found := p.p["datadiskofferinglist"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("datadiskofferinglist[%d].disk", i), k)
+			u.Set(fmt.Sprintf("datadiskofferinglist[%d].diskOffering", i), m[k])
+		}
+	}
+	if v, found := p.p["details"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("details[%d].%s", i, k), m[k])
+		}
+	}
+	if v, found := p.p["displayname"]; found {
+		u.Set("displayname", v.(string))
+	}
+	if v, found := p.p["domainid"]; found {
+		u.Set("domainid", v.(string))
+	}
+	if v, found := p.p["forced"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("forced", vv)
+	}
+	if v, found := p.p["hostname"]; found {
+		u.Set("hostname", v.(string))
+	}
+	if v, found := p.p["migrateallowed"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("migrateallowed", vv)
+	}
+	if v, found := p.p["name"]; found {
+		u.Set("name", v.(string))
+	}
+	if v, found := p.p["nicipaddresslist"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("nicipaddresslist[%d].nic", i), k)
+			u.Set(fmt.Sprintf("nicipaddresslist[%d].ip4Address", i), m[k])
+		}
+	}
+	if v, found := p.p["nicnetworklist"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("nicnetworklist[%d].nic", i), k)
+			u.Set(fmt.Sprintf("nicnetworklist[%d].network", i), m[k])
+		}
+	}
+	if v, found := p.p["projectid"]; found {
+		u.Set("projectid", v.(string))
+	}
+	if v, found := p.p["serviceofferingid"]; found {
+		u.Set("serviceofferingid", v.(string))
+	}
+	if v, found := p.p["templateid"]; found {
+		u.Set("templateid", v.(string))
+	}
+	return u
+}
+
+func (p *ImportUnmanagedInstanceParams) SetAccount(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["account"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetAccount() {
+	if p.p != nil && p.p["account"] != nil {
+		delete(p.p, "account")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetAccount() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["account"].(string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetClusterid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["clusterid"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetClusterid() {
+	if p.p != nil && p.p["clusterid"] != nil {
+		delete(p.p, "clusterid")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetClusterid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["clusterid"].(string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetDatadiskofferinglist(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["datadiskofferinglist"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetDatadiskofferinglist() {
+	if p.p != nil && p.p["datadiskofferinglist"] != nil {
+		delete(p.p, "datadiskofferinglist")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetDatadiskofferinglist() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["datadiskofferinglist"].(map[string]string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetDetails(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["details"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetDetails() {
+	if p.p != nil && p.p["details"] != nil {
+		delete(p.p, "details")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetDetails() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["details"].(map[string]string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetDisplayname(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["displayname"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetDisplayname() {
+	if p.p != nil && p.p["displayname"] != nil {
+		delete(p.p, "displayname")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetDisplayname() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["displayname"].(string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetDomainid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["domainid"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetDomainid() {
+	if p.p != nil && p.p["domainid"] != nil {
+		delete(p.p, "domainid")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetDomainid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["domainid"].(string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetForced(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["forced"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetForced() {
+	if p.p != nil && p.p["forced"] != nil {
+		delete(p.p, "forced")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetForced() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["forced"].(bool)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetHostname(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["hostname"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetHostname() {
+	if p.p != nil && p.p["hostname"] != nil {
+		delete(p.p, "hostname")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetHostname() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["hostname"].(string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetMigrateallowed(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["migrateallowed"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetMigrateallowed() {
+	if p.p != nil && p.p["migrateallowed"] != nil {
+		delete(p.p, "migrateallowed")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetMigrateallowed() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["migrateallowed"].(bool)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetName(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["name"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetName() {
+	if p.p != nil && p.p["name"] != nil {
+		delete(p.p, "name")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetName() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["name"].(string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetNicipaddresslist(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["nicipaddresslist"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetNicipaddresslist() {
+	if p.p != nil && p.p["nicipaddresslist"] != nil {
+		delete(p.p, "nicipaddresslist")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetNicipaddresslist() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["nicipaddresslist"].(map[string]string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetNicnetworklist(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["nicnetworklist"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetNicnetworklist() {
+	if p.p != nil && p.p["nicnetworklist"] != nil {
+		delete(p.p, "nicnetworklist")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetNicnetworklist() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["nicnetworklist"].(map[string]string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetProjectid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["projectid"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetProjectid() {
+	if p.p != nil && p.p["projectid"] != nil {
+		delete(p.p, "projectid")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetProjectid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["projectid"].(string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetServiceofferingid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["serviceofferingid"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetServiceofferingid() {
+	if p.p != nil && p.p["serviceofferingid"] != nil {
+		delete(p.p, "serviceofferingid")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetServiceofferingid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["serviceofferingid"].(string)
+	return value, ok
+}
+
+func (p *ImportUnmanagedInstanceParams) SetTemplateid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["templateid"] = v
+}
+
+func (p *ImportUnmanagedInstanceParams) ResetTemplateid() {
+	if p.p != nil && p.p["templateid"] != nil {
+		delete(p.p, "templateid")
+	}
+}
+
+func (p *ImportUnmanagedInstanceParams) GetTemplateid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["templateid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ImportUnmanagedInstanceParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewImportUnmanagedInstanceParams(clusterid string, name string, serviceofferingid string) *ImportUnmanagedInstanceParams {
+	p := &ImportUnmanagedInstanceParams{}
+	p.p = make(map[string]interface{})
+	p.p["clusterid"] = clusterid
+	p.p["name"] = name
+	p.p["serviceofferingid"] = serviceofferingid
+	return p
+}
+
+// Import unmanaged virtual machine from a given cluster.
+func (s *VirtualMachineService) ImportUnmanagedInstance(p *ImportUnmanagedInstanceParams) (*ImportUnmanagedInstanceResponse, error) {
+	resp, err := s.cs.newRequest("importUnmanagedInstance", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ImportUnmanagedInstanceResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	// If we have a async client, we need to wait for the async result
+	if s.cs.async {
+		b, err := s.cs.GetAsyncJobResult(r.JobID, s.cs.timeout)
+		if err != nil {
+			if err == AsyncTimeoutErr {
+				return &r, err
+			}
+			return nil, err
+		}
+
+		b, err = getRawValue(b)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := json.Unmarshal(b, &r); err != nil {
+			return nil, err
+		}
+	}
+
+	return &r, nil
+}
+
+type ImportUnmanagedInstanceResponse struct {
+	Account               string                                         `json:"account"`
+	Affinitygroup         []ImportUnmanagedInstanceResponseAffinitygroup `json:"affinitygroup"`
+	Autoscalevmgroupid    string                                         `json:"autoscalevmgroupid"`
+	Autoscalevmgroupname  string                                         `json:"autoscalevmgroupname"`
+	Backupofferingid      string                                         `json:"backupofferingid"`
+	Backupofferingname    string                                         `json:"backupofferingname"`
+	Bootmode              string                                         `json:"bootmode"`
+	Boottype              string                                         `json:"boottype"`
+	Cpunumber             int                                            `json:"cpunumber"`
+	Cpuspeed              int                                            `json:"cpuspeed"`
+	Cpuused               string                                         `json:"cpuused"`
+	Created               string                                         `json:"created"`
+	Deleteprotection      bool                                           `json:"deleteprotection"`
+	Details               map[string]string                              `json:"details"`
+	Diskioread            int64                                          `json:"diskioread"`
+	Diskiowrite           int64                                          `json:"diskiowrite"`
+	Diskkbsread           int64                                          `json:"diskkbsread"`
+	Diskkbswrite          int64                                          `json:"diskkbswrite"`
+	Diskofferingid        string                                         `json:"diskofferingid"`
+	Diskofferingname      string                                         `json:"diskofferingname"`
+	Displayname           string                                         `json:"displayname"`
+	Displayvm             bool                                           `json:"displayvm"`
+	Domain                string                                         `json:"domain"`
+	Domainid              string                                         `json:"domainid"`
+	Domainpath            string                                         `json:"domainpath"`
+	Forvirtualnetwork     bool                                           `json:"forvirtualnetwork"`
+	Group                 string                                         `json:"group"`
+	Groupid               string                                         `json:"groupid"`
+	Guestosid             string                                         `json:"guestosid"`
+	Haenable              bool                                           `json:"haenable"`
+	Hasannotations        bool                                           `json:"hasannotations"`
+	Hostcontrolstate      string                                         `json:"hostcontrolstate"`
+	Hostid                string                                         `json:"hostid"`
+	Hostname              string                                         `json:"hostname"`
+	Hypervisor            string                                         `json:"hypervisor"`
+	Icon                  interface{}                                    `json:"icon"`
+	Id                    string                                         `json:"id"`
+	Instancename          string                                         `json:"instancename"`
+	Ipaddress             string                                         `json:"ipaddress"`
+	Isdynamicallyscalable bool                                           `json:"isdynamicallyscalable"`
+	Isodisplaytext        string                                         `json:"isodisplaytext"`
+	Isoid                 string                                         `json:"isoid"`
+	Isoname               string                                         `json:"isoname"`
+	JobID                 string                                         `json:"jobid"`
+	Jobstatus             int                                            `json:"jobstatus"`
+	Keypairs              string                                         `json:"keypairs"`
+	Lastupdated           string                                         `json:"lastupdated"`
+	Memory                int                                            `json:"memory"`
+	Memoryintfreekbs      int64                                          `json:"memoryintfreekbs"`
+	Memorykbs             int64                                          `json:"memorykbs"`
+	Memorytargetkbs       int64                                          `json:"memorytargetkbs"`
+	Name                  string                                         `json:"name"`
+	Networkkbsread        int64                                          `json:"networkkbsread"`
+	Networkkbswrite       int64                                          `json:"networkkbswrite"`
+	Nic                   []Nic                                          `json:"nic"`
+	Osdisplayname         string                                         `json:"osdisplayname"`
+	Ostypeid              string                                         `json:"ostypeid"`
+	Password              string                                         `json:"password"`
+	Passwordenabled       bool                                           `json:"passwordenabled"`
+	Pooltype              string                                         `json:"pooltype"`
+	Project               string                                         `json:"project"`
+	Projectid             string                                         `json:"projectid"`
+	Publicip              string                                         `json:"publicip"`
+	Publicipid            string                                         `json:"publicipid"`
+	Readonlydetails       string                                         `json:"readonlydetails"`
+	Receivedbytes         int64                                          `json:"receivedbytes"`
+	Rootdeviceid          int64                                          `json:"rootdeviceid"`
+	Rootdevicetype        string                                         `json:"rootdevicetype"`
+	Securitygroup         []ImportUnmanagedInstanceResponseSecuritygroup `json:"securitygroup"`
+	Sentbytes             int64                                          `json:"sentbytes"`
+	Serviceofferingid     string                                         `json:"serviceofferingid"`
+	Serviceofferingname   string                                         `json:"serviceofferingname"`
+	Servicestate          string                                         `json:"servicestate"`
+	State                 string                                         `json:"state"`
+	Tags                  []Tags                                         `json:"tags"`
+	Templatedisplaytext   string                                         `json:"templatedisplaytext"`
+	Templateformat        string                                         `json:"templateformat"`
+	Templateid            string                                         `json:"templateid"`
+	Templatename          string                                         `json:"templatename"`
+	Templatetype          string                                         `json:"templatetype"`
+	Userdata              string                                         `json:"userdata"`
+	Userdatadetails       string                                         `json:"userdatadetails"`
+	Userdataid            string                                         `json:"userdataid"`
+	Userdataname          string                                         `json:"userdataname"`
+	Userdatapolicy        string                                         `json:"userdatapolicy"`
+	Userid                string                                         `json:"userid"`
+	Username              string                                         `json:"username"`
+	Vgpu                  string                                         `json:"vgpu"`
+	Vmtype                string                                         `json:"vmtype"`
+	Vnfdetails            map[string]string                              `json:"vnfdetails"`
+	Vnfnics               []string                                       `json:"vnfnics"`
+	Zoneid                string                                         `json:"zoneid"`
+	Zonename              string                                         `json:"zonename"`
+}
+
+type ImportUnmanagedInstanceResponseSecuritygroup struct {
+	Account             string                                             `json:"account"`
+	Description         string                                             `json:"description"`
+	Domain              string                                             `json:"domain"`
+	Domainid            string                                             `json:"domainid"`
+	Domainpath          string                                             `json:"domainpath"`
+	Egressrule          []ImportUnmanagedInstanceResponseSecuritygroupRule `json:"egressrule"`
+	Id                  string                                             `json:"id"`
+	Ingressrule         []ImportUnmanagedInstanceResponseSecuritygroupRule `json:"ingressrule"`
+	Name                string                                             `json:"name"`
+	Project             string                                             `json:"project"`
+	Projectid           string                                             `json:"projectid"`
+	Tags                []Tags                                             `json:"tags"`
+	Virtualmachinecount int                                                `json:"virtualmachinecount"`
+	Virtualmachineids   []interface{}                                      `json:"virtualmachineids"`
+}
+
+type ImportUnmanagedInstanceResponseSecuritygroupRule struct {
+	Account           string `json:"account"`
+	Cidr              string `json:"cidr"`
+	Endport           int    `json:"endport"`
+	Icmpcode          int    `json:"icmpcode"`
+	Icmptype          int    `json:"icmptype"`
+	Protocol          string `json:"protocol"`
+	Ruleid            string `json:"ruleid"`
+	Securitygroupname string `json:"securitygroupname"`
+	Startport         int    `json:"startport"`
+	Tags              []Tags `json:"tags"`
+}
+
+type ImportUnmanagedInstanceResponseAffinitygroup struct {
+	Account            string   `json:"account"`
+	Dedicatedresources []string `json:"dedicatedresources"`
+	Description        string   `json:"description"`
+	Domain             string   `json:"domain"`
+	Domainid           string   `json:"domainid"`
+	Domainpath         string   `json:"domainpath"`
+	Id                 string   `json:"id"`
+	Name               string   `json:"name"`
+	Project            string   `json:"project"`
+	Projectid          string   `json:"projectid"`
+	Type               string   `json:"type"`
+	VirtualmachineIds  []string `json:"virtualmachineIds"`
+}
+
+func (r *ImportUnmanagedInstanceResponse) UnmarshalJSON(b []byte) error {
+	var m map[string]interface{}
+	err := json.Unmarshal(b, &m)
+	if err != nil {
+		return err
+	}
+
+	if success, ok := m["success"].(string); ok {
+		m["success"] = success == "true"
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	if ostypeid, ok := m["ostypeid"].(float64); ok {
+		m["ostypeid"] = strconv.Itoa(int(ostypeid))
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	type alias ImportUnmanagedInstanceResponse
+	return json.Unmarshal(b, (*alias)(r))
+}
+
+type CreateVMScheduleParams struct {
+	p map[string]interface{}
+}
+
+func (p *CreateVMScheduleParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["action"]; found {
+		u.Set("action", v.(string))
+	}
+	if v, found := p.p["description"]; found {
+		u.Set("description", v.(string))
+	}
+	if v, found := p.p["enabled"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("enabled", vv)
+	}
+	if v, found := p.p["enddate"]; found {
+		u.Set("enddate", v.(string))
+	}
+	if v, found := p.p["schedule"]; found {
+		u.Set("schedule", v.(string))
+	}
+	if v, found := p.p["startdate"]; found {
+		u.Set("startdate", v.(string))
+	}
+	if v, found := p.p["timezone"]; found {
+		u.Set("timezone", v.(string))
+	}
+	if v, found := p.p["virtualmachineid"]; found {
+		u.Set("virtualmachineid", v.(string))
+	}
+	return u
+}
+
+func (p *CreateVMScheduleParams) SetAction(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["action"] = v
+}
+
+func (p *CreateVMScheduleParams) ResetAction() {
+	if p.p != nil && p.p["action"] != nil {
+		delete(p.p, "action")
+	}
+}
+
+func (p *CreateVMScheduleParams) GetAction() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["action"].(string)
+	return value, ok
+}
+
+func (p *CreateVMScheduleParams) SetDescription(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["description"] = v
+}
+
+func (p *CreateVMScheduleParams) ResetDescription() {
+	if p.p != nil && p.p["description"] != nil {
+		delete(p.p, "description")
+	}
+}
+
+func (p *CreateVMScheduleParams) GetDescription() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["description"].(string)
+	return value, ok
+}
+
+func (p *CreateVMScheduleParams) SetEnabled(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["enabled"] = v
+}
+
+func (p *CreateVMScheduleParams) ResetEnabled() {
+	if p.p != nil && p.p["enabled"] != nil {
+		delete(p.p, "enabled")
+	}
+}
+
+func (p *CreateVMScheduleParams) GetEnabled() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["enabled"].(bool)
+	return value, ok
+}
+
+func (p *CreateVMScheduleParams) SetEnddate(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["enddate"] = v
+}
+
+func (p *CreateVMScheduleParams) ResetEnddate() {
+	if p.p != nil && p.p["enddate"] != nil {
+		delete(p.p, "enddate")
+	}
+}
+
+func (p *CreateVMScheduleParams) GetEnddate() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["enddate"].(string)
+	return value, ok
+}
+
+func (p *CreateVMScheduleParams) SetSchedule(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["schedule"] = v
+}
+
+func (p *CreateVMScheduleParams) ResetSchedule() {
+	if p.p != nil && p.p["schedule"] != nil {
+		delete(p.p, "schedule")
+	}
+}
+
+func (p *CreateVMScheduleParams) GetSchedule() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["schedule"].(string)
+	return value, ok
+}
+
+func (p *CreateVMScheduleParams) SetStartdate(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["startdate"] = v
+}
+
+func (p *CreateVMScheduleParams) ResetStartdate() {
+	if p.p != nil && p.p["startdate"] != nil {
+		delete(p.p, "startdate")
+	}
+}
+
+func (p *CreateVMScheduleParams) GetStartdate() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["startdate"].(string)
+	return value, ok
+}
+
+func (p *CreateVMScheduleParams) SetTimezone(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["timezone"] = v
+}
+
+func (p *CreateVMScheduleParams) ResetTimezone() {
+	if p.p != nil && p.p["timezone"] != nil {
+		delete(p.p, "timezone")
+	}
+}
+
+func (p *CreateVMScheduleParams) GetTimezone() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["timezone"].(string)
+	return value, ok
+}
+
+func (p *CreateVMScheduleParams) SetVirtualmachineid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["virtualmachineid"] = v
+}
+
+func (p *CreateVMScheduleParams) ResetVirtualmachineid() {
+	if p.p != nil && p.p["virtualmachineid"] != nil {
+		delete(p.p, "virtualmachineid")
+	}
+}
+
+func (p *CreateVMScheduleParams) GetVirtualmachineid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["virtualmachineid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new CreateVMScheduleParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewCreateVMScheduleParams(action string, schedule string, timezone string, virtualmachineid string) *CreateVMScheduleParams {
+	p := &CreateVMScheduleParams{}
+	p.p = make(map[string]interface{})
+	p.p["action"] = action
+	p.p["schedule"] = schedule
+	p.p["timezone"] = timezone
+	p.p["virtualmachineid"] = virtualmachineid
+	return p
+}
+
+// Create VM Schedule
+func (s *VirtualMachineService) CreateVMSchedule(p *CreateVMScheduleParams) (*CreateVMScheduleResponse, error) {
+	resp, err := s.cs.newRequest("createVMSchedule", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var nested struct {
+		Response CreateVMScheduleResponse `json:"vmschedule"`
+	}
+	if err := json.Unmarshal(resp, &nested); err != nil {
+		return nil, err
+	}
+	r := nested.Response
+
+	return &r, nil
+}
+
+type CreateVMScheduleResponse struct {
+	Action           string `json:"action"`
+	Created          string `json:"created"`
+	Description      string `json:"description"`
+	Enabled          bool   `json:"enabled"`
+	Enddate          string `json:"enddate"`
+	Id               string `json:"id"`
+	JobID            string `json:"jobid"`
+	Jobstatus        int    `json:"jobstatus"`
+	Schedule         string `json:"schedule"`
+	Startdate        string `json:"startdate"`
+	Timezone         string `json:"timezone"`
+	Virtualmachineid string `json:"virtualmachineid"`
+}
+
+type UpdateVMScheduleParams struct {
+	p map[string]interface{}
+}
+
+func (p *UpdateVMScheduleParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["description"]; found {
+		u.Set("description", v.(string))
+	}
+	if v, found := p.p["enabled"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("enabled", vv)
+	}
+	if v, found := p.p["enddate"]; found {
+		u.Set("enddate", v.(string))
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	if v, found := p.p["schedule"]; found {
+		u.Set("schedule", v.(string))
+	}
+	if v, found := p.p["startdate"]; found {
+		u.Set("startdate", v.(string))
+	}
+	if v, found := p.p["timezone"]; found {
+		u.Set("timezone", v.(string))
+	}
+	return u
+}
+
+func (p *UpdateVMScheduleParams) SetDescription(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["description"] = v
+}
+
+func (p *UpdateVMScheduleParams) ResetDescription() {
+	if p.p != nil && p.p["description"] != nil {
+		delete(p.p, "description")
+	}
+}
+
+func (p *UpdateVMScheduleParams) GetDescription() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["description"].(string)
+	return value, ok
+}
+
+func (p *UpdateVMScheduleParams) SetEnabled(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["enabled"] = v
+}
+
+func (p *UpdateVMScheduleParams) ResetEnabled() {
+	if p.p != nil && p.p["enabled"] != nil {
+		delete(p.p, "enabled")
+	}
+}
+
+func (p *UpdateVMScheduleParams) GetEnabled() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["enabled"].(bool)
+	return value, ok
+}
+
+func (p *UpdateVMScheduleParams) SetEnddate(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["enddate"] = v
+}
+
+func (p *UpdateVMScheduleParams) ResetEnddate() {
+	if p.p != nil && p.p["enddate"] != nil {
+		delete(p.p, "enddate")
+	}
+}
+
+func (p *UpdateVMScheduleParams) GetEnddate() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["enddate"].(string)
+	return value, ok
+}
+
+func (p *UpdateVMScheduleParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *UpdateVMScheduleParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *UpdateVMScheduleParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+func (p *UpdateVMScheduleParams) SetSchedule(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["schedule"] = v
+}
+
+func (p *UpdateVMScheduleParams) ResetSchedule() {
+	if p.p != nil && p.p["schedule"] != nil {
+		delete(p.p, "schedule")
+	}
+}
+
+func (p *UpdateVMScheduleParams) GetSchedule() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["schedule"].(string)
+	return value, ok
+}
+
+func (p *UpdateVMScheduleParams) SetStartdate(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["startdate"] = v
+}
+
+func (p *UpdateVMScheduleParams) ResetStartdate() {
+	if p.p != nil && p.p["startdate"] != nil {
+		delete(p.p, "startdate")
+	}
+}
+
+func (p *UpdateVMScheduleParams) GetStartdate() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["startdate"].(string)
+	return value, ok
+}
+
+func (p *UpdateVMScheduleParams) SetTimezone(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["timezone"] = v
+}
+
+func (p *UpdateVMScheduleParams) ResetTimezone() {
+	if p.p != nil && p.p["timezone"] != nil {
+		delete(p.p, "timezone")
+	}
+}
+
+func (p *UpdateVMScheduleParams) GetTimezone() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["timezone"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new UpdateVMScheduleParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewUpdateVMScheduleParams(id string) *UpdateVMScheduleParams {
+	p := &UpdateVMScheduleParams{}
+	p.p = make(map[string]interface{})
+	p.p["id"] = id
+	return p
+}
+
+// Update VM Schedule.
+func (s *VirtualMachineService) UpdateVMSchedule(p *UpdateVMScheduleParams) (*UpdateVMScheduleResponse, error) {
+	resp, err := s.cs.newRequest("updateVMSchedule", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var nested struct {
+		Response UpdateVMScheduleResponse `json:"vmschedule"`
+	}
+	if err := json.Unmarshal(resp, &nested); err != nil {
+		return nil, err
+	}
+	r := nested.Response
+
+	return &r, nil
+}
+
+type UpdateVMScheduleResponse struct {
+	Action           string `json:"action"`
+	Created          string `json:"created"`
+	Description      string `json:"description"`
+	Enabled          bool   `json:"enabled"`
+	Enddate          string `json:"enddate"`
+	Id               string `json:"id"`
+	JobID            string `json:"jobid"`
+	Jobstatus        int    `json:"jobstatus"`
+	Schedule         string `json:"schedule"`
+	Startdate        string `json:"startdate"`
+	Timezone         string `json:"timezone"`
+	Virtualmachineid string `json:"virtualmachineid"`
+}
+
+type ListVMScheduleParams struct {
+	p map[string]interface{}
+}
+
+func (p *ListVMScheduleParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["action"]; found {
+		u.Set("action", v.(string))
+	}
+	if v, found := p.p["enabled"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("enabled", vv)
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	if v, found := p.p["keyword"]; found {
+		u.Set("keyword", v.(string))
+	}
+	if v, found := p.p["page"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("page", vv)
+	}
+	if v, found := p.p["pagesize"]; found {
+		vv := strconv.Itoa(v.(int))
+		u.Set("pagesize", vv)
+	}
+	if v, found := p.p["virtualmachineid"]; found {
+		u.Set("virtualmachineid", v.(string))
+	}
+	return u
+}
+
+func (p *ListVMScheduleParams) SetAction(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["action"] = v
+}
+
+func (p *ListVMScheduleParams) ResetAction() {
+	if p.p != nil && p.p["action"] != nil {
+		delete(p.p, "action")
+	}
+}
+
+func (p *ListVMScheduleParams) GetAction() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["action"].(string)
+	return value, ok
+}
+
+func (p *ListVMScheduleParams) SetEnabled(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["enabled"] = v
+}
+
+func (p *ListVMScheduleParams) ResetEnabled() {
+	if p.p != nil && p.p["enabled"] != nil {
+		delete(p.p, "enabled")
+	}
+}
+
+func (p *ListVMScheduleParams) GetEnabled() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["enabled"].(bool)
+	return value, ok
+}
+
+func (p *ListVMScheduleParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *ListVMScheduleParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *ListVMScheduleParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+func (p *ListVMScheduleParams) SetKeyword(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["keyword"] = v
+}
+
+func (p *ListVMScheduleParams) ResetKeyword() {
+	if p.p != nil && p.p["keyword"] != nil {
+		delete(p.p, "keyword")
+	}
+}
+
+func (p *ListVMScheduleParams) GetKeyword() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["keyword"].(string)
+	return value, ok
+}
+
+func (p *ListVMScheduleParams) SetPage(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["page"] = v
+}
+
+func (p *ListVMScheduleParams) ResetPage() {
+	if p.p != nil && p.p["page"] != nil {
+		delete(p.p, "page")
+	}
+}
+
+func (p *ListVMScheduleParams) GetPage() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["page"].(int)
+	return value, ok
+}
+
+func (p *ListVMScheduleParams) SetPagesize(v int) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["pagesize"] = v
+}
+
+func (p *ListVMScheduleParams) ResetPagesize() {
+	if p.p != nil && p.p["pagesize"] != nil {
+		delete(p.p, "pagesize")
+	}
+}
+
+func (p *ListVMScheduleParams) GetPagesize() (int, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["pagesize"].(int)
+	return value, ok
+}
+
+func (p *ListVMScheduleParams) SetVirtualmachineid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["virtualmachineid"] = v
+}
+
+func (p *ListVMScheduleParams) ResetVirtualmachineid() {
+	if p.p != nil && p.p["virtualmachineid"] != nil {
+		delete(p.p, "virtualmachineid")
+	}
+}
+
+func (p *ListVMScheduleParams) GetVirtualmachineid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["virtualmachineid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new ListVMScheduleParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewListVMScheduleParams(virtualmachineid string) *ListVMScheduleParams {
+	p := &ListVMScheduleParams{}
+	p.p = make(map[string]interface{})
+	p.p["virtualmachineid"] = virtualmachineid
+	return p
+}
+
+// This is a courtesy helper function, which in some cases may not work as expected!
+func (s *VirtualMachineService) GetVMScheduleByID(id string, virtualmachineid string, opts ...OptionFunc) (*VMSchedule, int, error) {
+	p := &ListVMScheduleParams{}
+	p.p = make(map[string]interface{})
+
+	p.p["id"] = id
+	p.p["virtualmachineid"] = virtualmachineid
+
+	for _, fn := range append(s.cs.options, opts...) {
+		if err := fn(s.cs, p); err != nil {
+			return nil, -1, err
+		}
+	}
+
+	l, err := s.ListVMSchedule(p)
+	if err != nil {
+		if strings.Contains(err.Error(), fmt.Sprintf(
+			"Invalid parameter id value=%s due to incorrect long value format, "+
+				"or entity does not exist", id)) {
+			return nil, 0, fmt.Errorf("No match found for %s: %+v", id, l)
+		}
+		return nil, -1, err
+	}
+
+	if l.Count == 0 {
+		return nil, l.Count, fmt.Errorf("No match found for %s: %+v", id, l)
+	}
+
+	if l.Count == 1 {
+		return l.VMSchedule[0], l.Count, nil
+	}
+	return nil, l.Count, fmt.Errorf("There is more then one result for VMSchedule UUID: %s!", id)
+}
+
+// List VM Schedules.
+func (s *VirtualMachineService) ListVMSchedule(p *ListVMScheduleParams) (*ListVMScheduleResponse, error) {
+	resp, err := s.cs.newRequest("listVMSchedule", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r ListVMScheduleResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type ListVMScheduleResponse struct {
+	Count      int           `json:"count"`
+	VMSchedule []*VMSchedule `json:"vmschedule"`
+}
+
+type VMSchedule struct {
+	Action           string `json:"action"`
+	Created          string `json:"created"`
+	Description      string `json:"description"`
+	Enabled          bool   `json:"enabled"`
+	Enddate          string `json:"enddate"`
+	Id               string `json:"id"`
+	JobID            string `json:"jobid"`
+	Jobstatus        int    `json:"jobstatus"`
+	Schedule         string `json:"schedule"`
+	Startdate        string `json:"startdate"`
+	Timezone         string `json:"timezone"`
+	Virtualmachineid string `json:"virtualmachineid"`
+}
+
+type DeleteVMScheduleParams struct {
+	p map[string]interface{}
+}
+
+func (p *DeleteVMScheduleParams) toURLValues() url.Values {
+	u := url.Values{}
+	if p.p == nil {
+		return u
+	}
+	if v, found := p.p["id"]; found {
+		u.Set("id", v.(string))
+	}
+	if v, found := p.p["ids"]; found {
+		vv := strings.Join(v.([]string), ",")
+		u.Set("ids", vv)
+	}
+	if v, found := p.p["virtualmachineid"]; found {
+		u.Set("virtualmachineid", v.(string))
+	}
+	return u
+}
+
+func (p *DeleteVMScheduleParams) SetId(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["id"] = v
+}
+
+func (p *DeleteVMScheduleParams) ResetId() {
+	if p.p != nil && p.p["id"] != nil {
+		delete(p.p, "id")
+	}
+}
+
+func (p *DeleteVMScheduleParams) GetId() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["id"].(string)
+	return value, ok
+}
+
+func (p *DeleteVMScheduleParams) SetIds(v []string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["ids"] = v
+}
+
+func (p *DeleteVMScheduleParams) ResetIds() {
+	if p.p != nil && p.p["ids"] != nil {
+		delete(p.p, "ids")
+	}
+}
+
+func (p *DeleteVMScheduleParams) GetIds() ([]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["ids"].([]string)
+	return value, ok
+}
+
+func (p *DeleteVMScheduleParams) SetVirtualmachineid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["virtualmachineid"] = v
+}
+
+func (p *DeleteVMScheduleParams) ResetVirtualmachineid() {
+	if p.p != nil && p.p["virtualmachineid"] != nil {
+		delete(p.p, "virtualmachineid")
+	}
+}
+
+func (p *DeleteVMScheduleParams) GetVirtualmachineid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["virtualmachineid"].(string)
+	return value, ok
+}
+
+// You should always use this function to get a new DeleteVMScheduleParams instance,
+// as then you are sure you have configured all required params
+func (s *VirtualMachineService) NewDeleteVMScheduleParams(virtualmachineid string) *DeleteVMScheduleParams {
+	p := &DeleteVMScheduleParams{}
+	p.p = make(map[string]interface{})
+	p.p["virtualmachineid"] = virtualmachineid
+	return p
+}
+
+// Delete VM Schedule.
+func (s *VirtualMachineService) DeleteVMSchedule(p *DeleteVMScheduleParams) (*DeleteVMScheduleResponse, error) {
+	resp, err := s.cs.newRequest("deleteVMSchedule", p.toURLValues())
+	if err != nil {
+		return nil, err
+	}
+
+	var r DeleteVMScheduleResponse
+	if err := json.Unmarshal(resp, &r); err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+type DeleteVMScheduleResponse struct {
+	Displaytext string `json:"displaytext"`
+	JobID       string `json:"jobid"`
+	Jobstatus   int    `json:"jobstatus"`
+	Success     bool   `json:"success"`
+}
+
+func (r *DeleteVMScheduleResponse) UnmarshalJSON(b []byte) error {
+	var m map[string]interface{}
+	err := json.Unmarshal(b, &m)
+	if err != nil {
+		return err
+	}
+
+	if success, ok := m["success"].(string); ok {
+		m["success"] = success == "true"
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	if ostypeid, ok := m["ostypeid"].(float64); ok {
+		m["ostypeid"] = strconv.Itoa(int(ostypeid))
+		b, err = json.Marshal(m)
+		if err != nil {
+			return err
+		}
+	}
+
+	type alias DeleteVMScheduleResponse
+	return json.Unmarshal(b, (*alias)(r))
 }
