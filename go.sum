@@ -10,8 +10,8 @@ github.com/charlievieth/fs v0.0.3 h1:3lZQXTj4PbE81CVPwALSn+JoyCNXkZgORHN6h2XHGlg
 github.com/charlievieth/fs v0.0.3/go.mod h1:hD4sRzto1Hw8zCua76tNVKZxaeZZr1RiKftjAJQRLLo=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20241214100229-ac5e82eede68 h1:LFh4BMLr0p4PPy0otfTScJKFrTslllXJjW0FKLW9tvY=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20241214100229-ac5e82eede68/go.mod h1:mrp7E9FrvRleUdmVsPj5zFtyIKy8srkCB/C7DMQWFT4=
-github.com/cloudfoundry/bosh-utils v0.0.522 h1:yjGsGagOFFibXV/FXBzrS99hy7k+8cX6nls8SgmYEKE=
-github.com/cloudfoundry/bosh-utils v0.0.522/go.mod h1:czOtSwBiyWGS96zWhl/wtOaZb692nM53JQJW8DDIbR8=
+github.com/cloudfoundry/bosh-utils v0.0.524 h1:txU6oC0Cb9UyYvzReWuBYXpS1YGt+cjM9ttl3Ftxvnk=
+github.com/cloudfoundry/bosh-utils v0.0.524/go.mod h1:TgTCOZSIVWIxcr+F7DXMTUVNSoNOtCDz1c+aSjrmzwI=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -39,8 +39,8 @@ github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMyw
 github.com/google/go-cmp v0.4.0/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad h1:a6HEuzUHeKH6hwfN/ZoQgRgVIWFJljSWa/zetS2WTvg=
-github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad/go.mod h1:vavhavw2zAxS5dIdcRluK6cSGGPlZynqzFM8NdvU144=
+github.com/google/pprof v0.0.0-20250125003558-7fdb3d7e6fa0 h1:my2ucqBZmv+cWHIhZNSIYKzgN8EBGyHdC7zD5sASRAg=
+github.com/google/pprof v0.0.0-20250125003558-7fdb3d7e6fa0/go.mod h1:vavhavw2zAxS5dIdcRluK6cSGGPlZynqzFM8NdvU144=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
