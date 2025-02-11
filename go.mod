@@ -6,7 +6,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/apache/cloudstack-go/v2 v2.17.0
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20241214100229-ac5e82eede68
-	github.com/cloudfoundry/bosh-utils v0.0.528
+	github.com/cloudfoundry/bosh-utils v0.0.529
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.36.2
 	github.com/prometheus/common v0.62.0
@@ -28,8 +28,8 @@ require (
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
 	go.uber.org/mock v0.5.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
