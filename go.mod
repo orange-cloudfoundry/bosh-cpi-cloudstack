@@ -1,6 +1,7 @@
 module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
 go 1.23.4
+
 toolchain go1.24.1
 
 require (
@@ -9,7 +10,7 @@ require (
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20241214100229-ac5e82eede68
 	github.com/cloudfoundry/bosh-utils v0.0.536
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.36.2
+	github.com/onsi/gomega v1.36.3
 	github.com/prometheus/common v0.63.0
 )
 
