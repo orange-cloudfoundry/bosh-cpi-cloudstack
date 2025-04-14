@@ -1,12 +1,11 @@
 module github.com/orange-cloudfoundry/bosh-cpi-cloudstack
 
-go 1.23.4
-toolchain go1.24.1
+go 1.24.1
 
 require (
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/apache/cloudstack-go/v2 v2.17.0
-	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20241214100229-ac5e82eede68
+	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20250407220403-a56b2fc78b8a
 	github.com/cloudfoundry/bosh-utils v0.0.538
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.37.0
@@ -27,7 +26,7 @@ require (
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
-	go.uber.org/mock v0.5.0 // indirect
+	go.uber.org/mock v0.5.1 // indirect
 	golang.org/x/net v0.37.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect

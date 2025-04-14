@@ -13,7 +13,11 @@ type MetaMarshal interface {
 func ConvertVMMeta(meta MetaMarshal) map[string]interface{} {
 	var data map[string]interface{}
 	b, _ := meta.MarshalJSON()
-	json.Unmarshal(b, &data)
+	err := json.Unmarshal(b, &data)
+	if err != nil {
+		fmt.Printf("error while unmarshalling meta: %v", err)
+		return nil
+	}
 	return data
 }
 
