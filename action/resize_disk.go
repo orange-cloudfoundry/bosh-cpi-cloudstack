@@ -23,7 +23,7 @@ func (a CPI) ResizeDisk(cid apiv1.DiskCID, size int) error {
 	if offer.Disksize > int64(size/1024) {
 		return NewNotImplementedError(
 			fmt.Errorf(
-				"Disk size requested is smaller than current disk size (current: %dGB, asked: %dGB)",
+				"disk size requested is smaller than current disk size (current: %dGB, asked: %dGB)",
 				offer.Disksize,
 				int64(size/1024),
 			))

@@ -1,6 +1,8 @@
 package action
 
 import (
+	"fmt"
+
 	"github.com/apache/cloudstack-go/v2/cloudstack"
 	"github.com/cloudfoundry/bosh-cpi-go/apiv1"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -41,7 +43,10 @@ func (f Factory) New(callCtx apiv1.CallContext) (apiv1.CPI, error) {
 
 	var ctx Context
 	if callCtx != nil {
-		callCtx.As(&ctx)
+		err := callCtx.As(&ctx)
+		if err != nil {
+			return nil, fmt.Errorf("error while reading call context: %v", err)
+		}
 	}
 
 	return &CPI{client, f.config, f.logger, regFactory, ctx}, nil

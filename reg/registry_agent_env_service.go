@@ -11,6 +11,7 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
 )
 
 type registryAgentEnvService struct {
@@ -52,7 +53,7 @@ func (s registryAgentEnvService) Fetch() (apiv1.AgentEnv, error) {
 		return nil, bosherr.WrapError(err, "Fetching agent env from registry")
 	}
 
-	defer httpResponse.Body.Close()
+	defer util.CloseAndLogError(httpResponse.Body)
 
 	if httpResponse.StatusCode != http.StatusOK {
 		return nil, bosherr.Errorf("Received non-200 status code when contacting registry: '%d'", httpResponse.StatusCode)
@@ -95,7 +96,7 @@ func (s registryAgentEnvService) Update(agentEnv apiv1.AgentEnv) error {
 		return bosherr.WrapErrorf(err, "Updating registry endpoint '%s'", s.endpoint)
 	}
 
-	defer httpResponse.Body.Close()
+	defer util.CloseAndLogError(httpResponse.Body)
 
 	if httpResponse.StatusCode != http.StatusOK && httpResponse.StatusCode != http.StatusCreated {
 		return bosherr.Errorf("Received non-2xx status code when contacting registry: '%d'", httpResponse.StatusCode)
@@ -116,7 +117,7 @@ func (s registryAgentEnvService) Delete() error {
 		return bosherr.WrapErrorf(err, "Delete at registry endpoint '%s'", s.endpoint)
 	}
 
-	defer httpResponse.Body.Close()
+	defer util.CloseAndLogError(httpResponse.Body)
 
 	if httpResponse.StatusCode != http.StatusOK && httpResponse.StatusCode != http.StatusCreated {
 		return bosherr.Errorf("Received non-2xx status code when contacting registry: '%d'", httpResponse.StatusCode)

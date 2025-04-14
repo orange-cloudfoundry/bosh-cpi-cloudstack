@@ -75,7 +75,8 @@ var _ = Describe("RegistryAgentEnvService", func() {
 
 	AfterEach(func() {
 		// Leaking registry server on purpose
-		registryServer.Stop()
+		err := registryServer.Stop()
+		Expect(err).ToNot(HaveOccurred())
 	})
 
 	Describe("Fetch", func() {
@@ -166,7 +167,8 @@ func (s *registryServer) instanceHandler(w http.ResponseWriter, req *http.Reques
 		}
 
 		if s.InstanceSettings != nil {
-			w.Write(respBytes)
+			_, err := w.Write(respBytes)
+			Expect(err).ToNot(HaveOccurred())
 			return
 		}
 

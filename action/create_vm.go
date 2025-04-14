@@ -103,10 +103,10 @@ func (a CPI) CreateBase(p CreateArgs, isV2 bool) (apiv1.VMCID, apiv1.Networks, e
 		cpu := resProps.CPUNumber
 		cpuSpeed := resProps.CPUSpeed
 		ram := resProps.RAM
-		if 0 == cpuSpeed {
+		if cpuSpeed == 0 {
 			cpuSpeed = 2000
 		}
-		if (0 == cpu) || (0 == ram) {
+		if (cpu == 0) || (ram == 0) {
 			return apiv1.VMCID{}, apiv1.Networks{}, bosherr.Errorf("Could not find `cpu` and `memory` cloud_properties mandatory for compute offering %s when creating vm", resProps.ComputeOffering)
 		}
 		deplParams.SetDetails(map[string]string{

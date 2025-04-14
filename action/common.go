@@ -99,7 +99,7 @@ func (a CPI) findDiskOfferingByName(name string) (*cloudstack.DiskOffering, erro
 		return nil, err
 	}
 	if len(resp.DiskOfferings) == 0 {
-		return nil, fmt.Errorf("Cannot found disk offering %s", name)
+		return nil, fmt.Errorf("cannot found disk offering %s", name)
 	}
 	return resp.DiskOfferings[0], nil
 }
@@ -118,20 +118,20 @@ func (a CPI) findServiceOfferingByName(name string) (*cloudstack.ServiceOffering
 	return resp.ServiceOfferings[0], nil
 }
 
-func (a CPI) findNetworkOfferingByNetwork(networkId, zoneID string) (*cloudstack.NetworkOffering, error) {
-	p := a.client.NetworkOffering.NewListNetworkOfferingsParams()
-	p.SetZoneid(zoneID)
-	p.SetNetworkid(networkId)
+// func (a CPI) findNetworkOfferingByNetwork(networkId, zoneID string) (*cloudstack.NetworkOffering, error) {
+// 	p := a.client.NetworkOffering.NewListNetworkOfferingsParams()
+// 	p.SetZoneid(zoneID)
+// 	p.SetNetworkid(networkId)
 
-	resp, err := a.client.NetworkOffering.ListNetworkOfferings(p)
-	if err != nil {
-		return nil, err
-	}
-	if len(resp.NetworkOfferings) == 0 {
-		return nil, fmt.Errorf("Cannot found network offering by network id %s", networkId)
-	}
-	return resp.NetworkOfferings[0], nil
-}
+// 	resp, err := a.client.NetworkOffering.ListNetworkOfferings(p)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	if len(resp.NetworkOfferings) == 0 {
+// 		return nil, fmt.Errorf("cannot found network offering by network id %s", networkId)
+// 	}
+// 	return resp.NetworkOfferings[0], nil
+// }
 
 func (a CPI) findNetworkByName(name string, zoneID string) (*cloudstack.Network, error) {
 	p := a.client.Network.NewListNetworksParams()
@@ -142,7 +142,7 @@ func (a CPI) findNetworkByName(name string, zoneID string) (*cloudstack.Network,
 		return nil, err
 	}
 	if len(resp.Networks) == 0 {
-		return nil, fmt.Errorf("Cannot found network %s", name)
+		return nil, fmt.Errorf("cannot found network %s", name)
 	}
 
 	for _, network := range resp.Networks {
@@ -150,7 +150,7 @@ func (a CPI) findNetworkByName(name string, zoneID string) (*cloudstack.Network,
 			return network, nil
 		}
 	}
-	return nil, fmt.Errorf("Cannot found network %s", name)
+	return nil, fmt.Errorf("cannot found network %s", name)
 }
 
 func (a CPI) findTemplateByName(name string) (*cloudstack.Template, error) {
@@ -202,7 +202,7 @@ func (a CPI) findPublicIpByIp(ip string) (*cloudstack.PublicIpAddress, error) {
 		return nil, err
 	}
 	if len(resp.PublicIpAddresses) == 0 {
-		return nil, fmt.Errorf("Cannot found public ip %s", ip)
+		return nil, fmt.Errorf("cannot found public ip %s", ip)
 	}
 	return resp.PublicIpAddresses[0], nil
 }

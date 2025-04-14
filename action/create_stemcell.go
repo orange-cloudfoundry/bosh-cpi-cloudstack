@@ -18,6 +18,7 @@ import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/google/uuid"
 	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/config"
+	"github.com/orange-cloudfoundry/bosh-cpi-cloudstack/util"
 )
 
 // CreateStemcell - Create CS template from given stemcell
@@ -119,7 +120,7 @@ func (a CPI) createUploadRequest(
 	metadata string) (*http.Request, error) {
 
 	file, _ := os.Open(imagePath)
-	defer file.Close()
+	defer util.CloseAndLogError(file)
 
 	// header
 	h := make(textproto.MIMEHeader)
@@ -139,7 +140,10 @@ func (a CPI) createUploadRequest(
 	if err != nil {
 		return nil, bosherr.WrapErrorf(err, "unable to read stemcell image '%s'", imagePath)
 	}
-	writer.Close()
+	err = writer.Close()
+	if err != nil {
+		return nil, bosherr.WrapErrorf(err, "unable to close multipart writer")
+	}
 
 	r, _ := http.NewRequest("POST", postURL, body)
 
@@ -185,7 +189,7 @@ func (a CPI) performUpload(request *http.Request) error {
 func (a CPI) pollTemplateStatus(templateID string, name string) error {
 	dur, _ := time.ParseDuration(fmt.Sprintf("%ds", a.config.CloudStack.Timeout.PollTemplate))
 	timeout := time.Now().Add(dur)
-	for false == time.Now().After(timeout) {
+	for !time.Now().After(timeout) {
 		a.logger.Debug("create_stemcell", "checking status for template %s (%s)", templateID, name)
 		resp, _, err := a.client.Template.GetTemplateByID(templateID, "executable")
 		if err != nil {

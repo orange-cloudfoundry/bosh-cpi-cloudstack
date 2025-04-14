@@ -120,9 +120,7 @@ func (u *UserDataService) setDNS(networks apiv1.Networks) {
 	list := make([]string, 0)
 	defNet := networks.Default()
 	if defNet.DNS() != nil {
-		for _, dns := range defNet.DNS() {
-			list = append(list, dns)
-		}
+		list = append(list, defNet.DNS()...)
 	}
 	u.data.DNS = UserDataDNS{Nameserver: list}
 }

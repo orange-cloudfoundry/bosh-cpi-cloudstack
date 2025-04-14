@@ -37,7 +37,7 @@ func (a CPI) findEphemeralDiskOffering(diskSize int) (string, error) {
 
 	offers := a.filterDiskOffering(resp.DiskOfferings)
 	if len(offers) == 0 {
-		return "", fmt.Errorf("There is no offers corresponding to tags: %s", strings.Join(a.config.CloudStack.CalculateCloudProp.DiskTags, ","))
+		return "", fmt.Errorf("there is no offers corresponding to tags: %s", strings.Join(a.config.CloudStack.CalculateCloudProp.DiskTags, ","))
 	}
 
 	sort.SliceStable(offers, func(i, j int) bool {
@@ -67,7 +67,7 @@ func (a CPI) findServiceOffering(ram, cpu int) (string, error) {
 
 	offers := resp.ServiceOfferings
 	if len(offers) == 0 {
-		return "", fmt.Errorf("There is no offers corresponding")
+		return "", fmt.Errorf("there is no offers corresponding")
 	}
 
 	sort.SliceStable(offers, func(i, j int) bool {
