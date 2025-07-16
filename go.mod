@@ -6,7 +6,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/apache/cloudstack-go/v2 v2.17.1
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20250407220403-a56b2fc78b8a
-	github.com/cloudfoundry/bosh-utils v0.0.548
+	github.com/cloudfoundry/bosh-utils v0.0.549
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.37.0
 	github.com/prometheus/common v0.65.0
