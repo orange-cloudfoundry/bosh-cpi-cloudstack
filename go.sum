@@ -4,8 +4,8 @@ github.com/alecthomas/kingpin/v2 v2.4.0 h1:f48lwail6p8zpO1bC4TxtqACaGqHYA22qkHjH
 github.com/alecthomas/kingpin/v2 v2.4.0/go.mod h1:0gyi0zQnjuFk8xrkNKamJoyUo382HRL7ATRpFZCw6tE=
 github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b h1:mimo19zliBX/vSQ6PWWSL9lK8qwHozUj03+zLoEB8O0=
 github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b/go.mod h1:fvzegU4vN3H1qMT+8wDmzjAcDONcgo2/SZ/TyfdUOFs=
-github.com/apache/cloudstack-go/v2 v2.17.1 h1:XD0bGDOv+MCavXJfc/qxILgJh+cHJbudpqQ1FzA2sDI=
-github.com/apache/cloudstack-go/v2 v2.17.1/go.mod h1:p/YBUwIEkQN6CQxFhw8Ff0wzf1MY0qRRRuGYNbcb1F8=
+github.com/apache/cloudstack-go/v2 v2.17.2 h1:fMqLUTpHZeJoSVQiD2hDBSoqOvGJ9QMoOaWABW8lc/0=
+github.com/apache/cloudstack-go/v2 v2.17.2/go.mod h1:p/YBUwIEkQN6CQxFhw8Ff0wzf1MY0qRRRuGYNbcb1F8=
 github.com/bmatcuk/doublestar v1.3.4 h1:gPypJ5xD31uhX6Tf54sDPUOBXTqKH4c9aPY66CyQrS0=
 github.com/bmatcuk/doublestar v1.3.4/go.mod h1:wiQtGV+rzVYxB7WIlirSN++5HPtPlXEo9MEoZQC/PmE=
 github.com/charlievieth/fs v0.0.3 h1:3lZQXTj4PbE81CVPwALSn+JoyCNXkZgORHN6h2XHGlg=
