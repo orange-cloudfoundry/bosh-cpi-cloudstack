@@ -12,8 +12,8 @@ github.com/charlievieth/fs v0.0.3 h1:3lZQXTj4PbE81CVPwALSn+JoyCNXkZgORHN6h2XHGlg
 github.com/charlievieth/fs v0.0.3/go.mod h1:hD4sRzto1Hw8zCua76tNVKZxaeZZr1RiKftjAJQRLLo=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20251206100214-575efd567282 h1:cXw5riXWfWFfn9E7ehxnqaFZpDlXAFMvYLTih64w62A=
 github.com/cloudfoundry/bosh-cpi-go v0.0.0-20251206100214-575efd567282/go.mod h1:K0NKOBGaTfIX3Yo/21fdDzzgYHSkUvfmWLhAV4+9lF8=
-github.com/cloudfoundry/bosh-utils v0.0.582 h1:GvpXLVuqIFO0ANzUC/cLp+ZNcbM6M/pozTmmFFflCaM=
-github.com/cloudfoundry/bosh-utils v0.0.582/go.mod h1:2XGBz94ysudy+8WawbeMyiMntLgVNU492pIpZUQkxyI=
+github.com/cloudfoundry/bosh-utils v0.0.586 h1:8KpFh/z7j8et+nEoX2tIs+NZthEOjZIaQBRUc0VJYlw=
+github.com/cloudfoundry/bosh-utils v0.0.586/go.mod h1:10MnWiANRJhtYDQ8oWIJ9Ej7mwdVZ0tec/1xROffs+E=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
@@ -60,8 +60,8 @@ github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+W
 github.com/onsi/ginkgo v1.12.1/go.mod h1:zj2OWP4+oCPe1qIXoGWkgMRwljMUYCdkwsT2108oapk=
 github.com/onsi/ginkgo v1.16.5 h1:8xi0RTUf59SOSfEtZMvwTvXYMzG4gV23XVHOZiXNtnE=
 github.com/onsi/ginkgo v1.16.5/go.mod h1:+E8gABHa3K6zRBolWtd+ROzc/U5bkGt0FwiG042wbpU=
-github.com/onsi/ginkgo/v2 v2.27.5 h1:ZeVgZMx2PDMdJm/+w5fE/OyG6ILo1Y3e+QX4zSR0zTE=
-github.com/onsi/ginkgo/v2 v2.27.5/go.mod h1:ArE1D/XhNXBXCBkKOLkbsb2c81dQHCRcF5zwn/ykDRo=
+github.com/onsi/ginkgo/v2 v2.28.1 h1:S4hj+HbZp40fNKuLUQOYLDgZLwNUVn19N3Atb98NCyI=
+github.com/onsi/ginkgo/v2 v2.28.1/go.mod h1:CLtbVInNckU3/+gC8LzkGUb9oF+e8W8TdUsxPwvdOgE=
 github.com/onsi/gomega v1.7.1/go.mod h1:XdKZgCCFLUoM/7CFJVPcG8C1xQ1AJ0vpAezJrB7JYyY=
 github.com/onsi/gomega v1.10.1/go.mod h1:iN09h71vgCQne3DLsj+A5owkum+a2tYe+TOCB1ybHNo=
 github.com/onsi/gomega v1.39.0 h1:y2ROC3hKFmQZJNFeGAMeHZKkjBL65mIZcvrLQBF9k6Q=
