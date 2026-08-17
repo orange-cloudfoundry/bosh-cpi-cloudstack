@@ -868,7 +868,7 @@ func (s *UserService) NewGetVirtualMachineUserDataParams(virtualmachineid string
 	return p
 }
 
-// Returns user data associated with the VM
+// Returns user data associated with the Instance
 func (s *UserService) GetVirtualMachineUserData(p *GetVirtualMachineUserDataParams) (*GetVirtualMachineUserDataResponse, error) {
 	resp, err := s.cs.newRequest("getVirtualMachineUserData", p.toURLValues())
 	if err != nil {
@@ -955,7 +955,7 @@ func (s *UserService) ListUserTwoFactorAuthenticatorProviders(p *ListUserTwoFact
 
 type ListUserTwoFactorAuthenticatorProvidersResponse struct {
 	Count                               int                                   `json:"count"`
-	UserTwoFactorAuthenticatorProviders []*UserTwoFactorAuthenticatorProvider `json:"usertwofactorauthenticatorprovider"`
+	UserTwoFactorAuthenticatorProviders []*UserTwoFactorAuthenticatorProvider `json:"providers"`
 }
 
 type UserTwoFactorAuthenticatorProvider struct {

@@ -320,6 +320,7 @@ type AddBackupRepositoryResponse struct {
 	Id                        string `json:"id"`
 	JobID                     string `json:"jobid"`
 	Jobstatus                 int    `json:"jobstatus"`
+	Mountopts                 string `json:"mountopts"`
 	Name                      string `json:"name"`
 	Provider                  string `json:"provider"`
 	Type                      string `json:"type"`
@@ -445,7 +446,7 @@ func (s *BackupService) NewCreateBackupParams(virtualmachineid string) *CreateBa
 	return p
 }
 
-// Create VM backup
+// Create Instance backup
 func (s *BackupService) CreateBackup(p *CreateBackupParams) (*CreateBackupResponse, error) {
 	resp, err := s.cs.newPostRequest("createBackup", p.toURLValues())
 	if err != nil {
@@ -652,7 +653,7 @@ func (s *BackupService) NewCreateBackupScheduleParams(intervaltype string, sched
 	return p
 }
 
-// Creates a user-defined VM backup schedule
+// Creates a User-defined Instance backup schedule
 func (s *BackupService) CreateBackupSchedule(p *CreateBackupScheduleParams) (*CreateBackupScheduleResponse, error) {
 	resp, err := s.cs.newPostRequest("createBackupSchedule", p.toURLValues())
 	if err != nil {
@@ -668,32 +669,16 @@ func (s *BackupService) CreateBackupSchedule(p *CreateBackupScheduleParams) (*Cr
 }
 
 type CreateBackupScheduleResponse struct {
-	Account                 string            `json:"account"`
-	Accountid               string            `json:"accountid"`
-	Backupofferingid        string            `json:"backupofferingid"`
-	Backupofferingname      string            `json:"backupofferingname"`
-	Created                 string            `json:"created"`
-	Description             string            `json:"description"`
-	Domain                  string            `json:"domain"`
-	Domainid                string            `json:"domainid"`
-	Externalid              string            `json:"externalid"`
-	Id                      string            `json:"id"`
-	Intervaltype            string            `json:"intervaltype"`
-	Isbackupvmexpunged      bool              `json:"isbackupvmexpunged"`
-	JobID                   string            `json:"jobid"`
-	Jobstatus               int               `json:"jobstatus"`
-	Name                    string            `json:"name"`
-	Size                    int64             `json:"size"`
-	Status                  string            `json:"status"`
-	Type                    string            `json:"type"`
-	Virtualmachineid        string            `json:"virtualmachineid"`
-	Virtualmachinename      string            `json:"virtualmachinename"`
-	Virtualsize             int64             `json:"virtualsize"`
-	Vmbackupofferingremoved bool              `json:"vmbackupofferingremoved"`
-	Vmdetails               map[string]string `json:"vmdetails"`
-	Volumes                 string            `json:"volumes"`
-	Zone                    string            `json:"zone"`
-	Zoneid                  string            `json:"zoneid"`
+	Id                 string `json:"id"`
+	Intervaltype       string `json:"intervaltype"`
+	JobID              string `json:"jobid"`
+	Jobstatus          int    `json:"jobstatus"`
+	Maxbackups         int    `json:"maxbackups"`
+	Quiescevm          bool   `json:"quiescevm"`
+	Schedule           string `json:"schedule"`
+	Timezone           string `json:"timezone"`
+	Virtualmachineid   string `json:"virtualmachineid"`
+	Virtualmachinename string `json:"virtualmachinename"`
 }
 
 type CreateVMFromBackupParams struct {
@@ -747,10 +732,11 @@ func (p *CreateVMFromBackupParams) toURLValues() url.Values {
 		}
 	}
 	if v, found := p.p["datadisksdetails"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("datadisksdetails[%d].key", i), k)
-			u.Set(fmt.Sprintf("datadisksdetails[%d].value", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("datadisksdetails[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["deploymentplanner"]; found {
@@ -763,10 +749,11 @@ func (p *CreateVMFromBackupParams) toURLValues() url.Values {
 		}
 	}
 	if v, found := p.p["dhcpoptionsnetworklist"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("dhcpoptionsnetworklist[%d].key", i), k)
-			u.Set(fmt.Sprintf("dhcpoptionsnetworklist[%d].value", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("dhcpoptionsnetworklist[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["diskofferingid"]; found {
@@ -819,10 +806,11 @@ func (p *CreateVMFromBackupParams) toURLValues() url.Values {
 		u.Set("ipaddress", v.(string))
 	}
 	if v, found := p.p["iptonetworklist"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("iptonetworklist[%d].key", i), k)
-			u.Set(fmt.Sprintf("iptonetworklist[%d].value", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("iptonetworklist[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["keyboard"]; found {
@@ -857,10 +845,11 @@ func (p *CreateVMFromBackupParams) toURLValues() url.Values {
 		u.Set("nicmultiqueuenumber", vv)
 	}
 	if v, found := p.p["nicnetworklist"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("nicnetworklist[%d].nic", i), k)
-			u.Set(fmt.Sprintf("nicnetworklist[%d].network", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("nicnetworklist[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["nicpackedvirtqueuesenabled"]; found {
@@ -1165,7 +1154,7 @@ func (p *CreateVMFromBackupParams) GetDatadiskofferinglist() (map[string]string,
 	return value, ok
 }
 
-func (p *CreateVMFromBackupParams) SetDatadisksdetails(v map[string]string) {
+func (p *CreateVMFromBackupParams) SetDatadisksdetails(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -1178,12 +1167,26 @@ func (p *CreateVMFromBackupParams) ResetDatadisksdetails() {
 	}
 }
 
-func (p *CreateVMFromBackupParams) GetDatadisksdetails() (map[string]string, bool) {
+func (p *CreateVMFromBackupParams) GetDatadisksdetails() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["datadisksdetails"].(map[string]string)
+	value, ok := p.p["datadisksdetails"].([]map[string]string)
 	return value, ok
+}
+
+func (p *CreateVMFromBackupParams) AddDatadisksdetails(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["datadisksdetails"]
+	if !found {
+		p.p["datadisksdetails"] = []map[string]string{}
+		val = p.p["datadisksdetails"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["datadisksdetails"] = l
 }
 
 func (p *CreateVMFromBackupParams) SetDeploymentplanner(v string) {
@@ -1228,7 +1231,7 @@ func (p *CreateVMFromBackupParams) GetDetails() (map[string]string, bool) {
 	return value, ok
 }
 
-func (p *CreateVMFromBackupParams) SetDhcpoptionsnetworklist(v map[string]string) {
+func (p *CreateVMFromBackupParams) SetDhcpoptionsnetworklist(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -1241,12 +1244,26 @@ func (p *CreateVMFromBackupParams) ResetDhcpoptionsnetworklist() {
 	}
 }
 
-func (p *CreateVMFromBackupParams) GetDhcpoptionsnetworklist() (map[string]string, bool) {
+func (p *CreateVMFromBackupParams) GetDhcpoptionsnetworklist() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["dhcpoptionsnetworklist"].(map[string]string)
+	value, ok := p.p["dhcpoptionsnetworklist"].([]map[string]string)
 	return value, ok
+}
+
+func (p *CreateVMFromBackupParams) AddDhcpoptionsnetworklist(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["dhcpoptionsnetworklist"]
+	if !found {
+		p.p["dhcpoptionsnetworklist"] = []map[string]string{}
+		val = p.p["dhcpoptionsnetworklist"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["dhcpoptionsnetworklist"] = l
 }
 
 func (p *CreateVMFromBackupParams) SetDiskofferingid(v string) {
@@ -1543,7 +1560,7 @@ func (p *CreateVMFromBackupParams) GetIpaddress() (string, bool) {
 	return value, ok
 }
 
-func (p *CreateVMFromBackupParams) SetIptonetworklist(v map[string]string) {
+func (p *CreateVMFromBackupParams) SetIptonetworklist(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -1556,12 +1573,26 @@ func (p *CreateVMFromBackupParams) ResetIptonetworklist() {
 	}
 }
 
-func (p *CreateVMFromBackupParams) GetIptonetworklist() (map[string]string, bool) {
+func (p *CreateVMFromBackupParams) GetIptonetworklist() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["iptonetworklist"].(map[string]string)
+	value, ok := p.p["iptonetworklist"].([]map[string]string)
 	return value, ok
+}
+
+func (p *CreateVMFromBackupParams) AddIptonetworklist(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["iptonetworklist"]
+	if !found {
+		p.p["iptonetworklist"] = []map[string]string{}
+		val = p.p["iptonetworklist"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["iptonetworklist"] = l
 }
 
 func (p *CreateVMFromBackupParams) SetKeyboard(v string) {
@@ -1753,7 +1784,7 @@ func (p *CreateVMFromBackupParams) GetNicmultiqueuenumber() (int, bool) {
 	return value, ok
 }
 
-func (p *CreateVMFromBackupParams) SetNicnetworklist(v map[string]string) {
+func (p *CreateVMFromBackupParams) SetNicnetworklist(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -1766,12 +1797,26 @@ func (p *CreateVMFromBackupParams) ResetNicnetworklist() {
 	}
 }
 
-func (p *CreateVMFromBackupParams) GetNicnetworklist() (map[string]string, bool) {
+func (p *CreateVMFromBackupParams) GetNicnetworklist() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["nicnetworklist"].(map[string]string)
+	value, ok := p.p["nicnetworklist"].([]map[string]string)
 	return value, ok
+}
+
+func (p *CreateVMFromBackupParams) AddNicnetworklist(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["nicnetworklist"]
+	if !found {
+		p.p["nicnetworklist"] = []map[string]string{}
+		val = p.p["nicnetworklist"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["nicnetworklist"] = l
 }
 
 func (p *CreateVMFromBackupParams) SetNicpackedvirtqueuesenabled(v bool) {
@@ -2200,6 +2245,7 @@ func (s *BackupService) CreateVMFromBackup(p *CreateVMFromBackupParams) (*Create
 type CreateVMFromBackupResponse struct {
 	Account               string                                    `json:"account"`
 	Affinitygroup         []CreateVMFromBackupResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                    `json:"alloweddetails"`
 	Arch                  string                                    `json:"arch"`
 	Autoscalevmgroupid    string                                    `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                    `json:"autoscalevmgroupname"`
@@ -2301,7 +2347,7 @@ type CreateVMFromBackupResponse struct {
 	Videoram              int64                                     `json:"videoram"`
 	Vmtype                string                                    `json:"vmtype"`
 	Vnfdetails            map[string]string                         `json:"vnfdetails"`
-	Vnfnics               []string                                  `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                 `json:"vnfnics"`
 	Zoneid                string                                    `json:"zoneid"`
 	Zonename              string                                    `json:"zonename"`
 }
@@ -2448,7 +2494,7 @@ func (s *BackupService) NewDeleteBackupParams(id string) *DeleteBackupParams {
 	return p
 }
 
-// Delete VM backup
+// Delete Instance backup
 func (s *BackupService) DeleteBackup(p *DeleteBackupParams) (*DeleteBackupResponse, error) {
 	resp, err := s.cs.newPostRequest("deleteBackup", p.toURLValues())
 	if err != nil {
@@ -2741,7 +2787,7 @@ func (s *BackupService) NewDeleteBackupScheduleParams() *DeleteBackupSchedulePar
 	return p
 }
 
-// Deletes the backup schedule of a VM
+// Deletes the backup schedule of a Instance
 func (s *BackupService) DeleteBackupSchedule(p *DeleteBackupScheduleParams) (*DeleteBackupScheduleResponse, error) {
 	resp, err := s.cs.newPostRequest("deleteBackupSchedule", p.toURLValues())
 	if err != nil {
@@ -3498,7 +3544,7 @@ func (s *BackupService) ListBackupProviders(p *ListBackupProvidersParams) (*List
 
 type ListBackupProvidersResponse struct {
 	Count           int               `json:"count"`
-	BackupProviders []*BackupProvider `json:"backupprovider"`
+	BackupProviders []*BackupProvider `json:"providers"`
 }
 
 type BackupProvider struct {
@@ -3809,6 +3855,7 @@ type BackupRepository struct {
 	Id                        string `json:"id"`
 	JobID                     string `json:"jobid"`
 	Jobstatus                 int    `json:"jobstatus"`
+	Mountopts                 string `json:"mountopts"`
 	Name                      string `json:"name"`
 	Provider                  string `json:"provider"`
 	Type                      string `json:"type"`
@@ -4113,7 +4160,7 @@ func (s *BackupService) GetBackupScheduleByID(id string, opts ...OptionFunc) (*B
 	return nil, l.Count, fmt.Errorf("There is more then one result for BackupSchedule UUID: %s!", id)
 }
 
-// List backup schedule of a VM
+// List backup schedule of an Instance
 func (s *BackupService) ListBackupSchedule(p *ListBackupScheduleParams) (*ListBackupScheduleResponse, error) {
 	resp, err := s.cs.newRequest("listBackupSchedule", p.toURLValues())
 	if err != nil {
@@ -4590,7 +4637,7 @@ func (s *BackupService) GetBackupByID(id string, opts ...OptionFunc) (*Backup, i
 	return nil, l.Count, fmt.Errorf("There is more then one result for Backup UUID: %s!", id)
 }
 
-// Lists VM backups
+// Lists Instance backups
 func (s *BackupService) ListBackups(p *ListBackupsParams) (*ListBackupsResponse, error) {
 	resp, err := s.cs.newRequest("listBackups", p.toURLValues())
 	if err != nil {
@@ -4684,7 +4731,7 @@ func (s *BackupService) NewRestoreBackupParams(id string) *RestoreBackupParams {
 	return p
 }
 
-// Restores an existing stopped or deleted VM using a VM backup
+// Restores an existing stopped or deleted Instance using an Instance backup
 func (s *BackupService) RestoreBackup(p *RestoreBackupParams) (*RestoreBackupResponse, error) {
 	resp, err := s.cs.newPostRequest("restoreBackup", p.toURLValues())
 	if err != nil {
@@ -4886,6 +4933,7 @@ type UpdateBackupRepositoryResponse struct {
 	Id                        string `json:"id"`
 	JobID                     string `json:"jobid"`
 	Jobstatus                 int    `json:"jobstatus"`
+	Mountopts                 string `json:"mountopts"`
 	Name                      string `json:"name"`
 	Provider                  string `json:"provider"`
 	Type                      string `json:"type"`
@@ -5211,7 +5259,7 @@ func (s *BackupService) NewUpdateBackupScheduleParams(intervaltype string, sched
 	return p
 }
 
-// Updates a user-defined VM backup schedule
+// Updates a User-defined Instance backup schedule
 func (s *BackupService) UpdateBackupSchedule(p *UpdateBackupScheduleParams) (*UpdateBackupScheduleResponse, error) {
 	resp, err := s.cs.newPostRequest("updateBackupSchedule", p.toURLValues())
 	if err != nil {

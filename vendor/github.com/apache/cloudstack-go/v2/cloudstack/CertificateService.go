@@ -366,8 +366,7 @@ func (s *CertificateService) ListCaCertificate(p *ListCaCertificateParams) (*Lis
 }
 
 type ListCaCertificateResponse struct {
-	Count         int              `json:"count"`
-	CaCertificate []*CaCertificate `json:"cacertificate"`
+	CaCertificate *CaCertificate `json:"cacertificates"`
 }
 
 type CaCertificate struct {
@@ -578,7 +577,7 @@ func (s *CertificateService) GetTemplateDirectDownloadCertificateByID(id string,
 	return nil, l.Count, fmt.Errorf("There is more then one result for TemplateDirectDownloadCertificate UUID: %s!", id)
 }
 
-// List the uploaded certificates for direct download templates
+// List the uploaded certificates for direct download Templates
 func (s *CertificateService) ListTemplateDirectDownloadCertificates(p *ListTemplateDirectDownloadCertificatesParams) (*ListTemplateDirectDownloadCertificatesResponse, error) {
 	resp, err := s.cs.newRequest("listTemplateDirectDownloadCertificates", p.toURLValues())
 	if err != nil {
@@ -1462,7 +1461,7 @@ func (s *CertificateService) NewUploadTemplateDirectDownloadCertificateParams(ce
 	return p
 }
 
-// Upload a certificate for HTTPS direct template download on KVM hosts
+// Upload a certificate for HTTPS direct Template download on KVM hosts
 func (s *CertificateService) UploadTemplateDirectDownloadCertificate(p *UploadTemplateDirectDownloadCertificateParams) (*UploadTemplateDirectDownloadCertificateResponse, error) {
 	resp, err := s.cs.newPostRequest("uploadTemplateDirectDownloadCertificate", p.toURLValues())
 	if err != nil {

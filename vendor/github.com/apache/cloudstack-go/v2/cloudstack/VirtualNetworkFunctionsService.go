@@ -249,10 +249,11 @@ func (p *DeployVnfApplianceParams) toURLValues() url.Values {
 		}
 	}
 	if v, found := p.p["datadisksdetails"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("datadisksdetails[%d].key", i), k)
-			u.Set(fmt.Sprintf("datadisksdetails[%d].value", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("datadisksdetails[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["deploymentplanner"]; found {
@@ -265,10 +266,11 @@ func (p *DeployVnfApplianceParams) toURLValues() url.Values {
 		}
 	}
 	if v, found := p.p["dhcpoptionsnetworklist"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("dhcpoptionsnetworklist[%d].key", i), k)
-			u.Set(fmt.Sprintf("dhcpoptionsnetworklist[%d].value", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("dhcpoptionsnetworklist[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["diskofferingid"]; found {
@@ -321,10 +323,11 @@ func (p *DeployVnfApplianceParams) toURLValues() url.Values {
 		u.Set("ipaddress", v.(string))
 	}
 	if v, found := p.p["iptonetworklist"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("iptonetworklist[%d].key", i), k)
-			u.Set(fmt.Sprintf("iptonetworklist[%d].value", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("iptonetworklist[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["keyboard"]; found {
@@ -359,10 +362,11 @@ func (p *DeployVnfApplianceParams) toURLValues() url.Values {
 		u.Set("nicmultiqueuenumber", vv)
 	}
 	if v, found := p.p["nicnetworklist"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("nicnetworklist[%d].nic", i), k)
-			u.Set(fmt.Sprintf("nicnetworklist[%d].network", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("nicnetworklist[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["nicpackedvirtqueuesenabled"]; found {
@@ -632,7 +636,7 @@ func (p *DeployVnfApplianceParams) GetDatadiskofferinglist() (map[string]string,
 	return value, ok
 }
 
-func (p *DeployVnfApplianceParams) SetDatadisksdetails(v map[string]string) {
+func (p *DeployVnfApplianceParams) SetDatadisksdetails(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -645,12 +649,26 @@ func (p *DeployVnfApplianceParams) ResetDatadisksdetails() {
 	}
 }
 
-func (p *DeployVnfApplianceParams) GetDatadisksdetails() (map[string]string, bool) {
+func (p *DeployVnfApplianceParams) GetDatadisksdetails() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["datadisksdetails"].(map[string]string)
+	value, ok := p.p["datadisksdetails"].([]map[string]string)
 	return value, ok
+}
+
+func (p *DeployVnfApplianceParams) AddDatadisksdetails(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["datadisksdetails"]
+	if !found {
+		p.p["datadisksdetails"] = []map[string]string{}
+		val = p.p["datadisksdetails"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["datadisksdetails"] = l
 }
 
 func (p *DeployVnfApplianceParams) SetDeploymentplanner(v string) {
@@ -695,7 +713,7 @@ func (p *DeployVnfApplianceParams) GetDetails() (map[string]string, bool) {
 	return value, ok
 }
 
-func (p *DeployVnfApplianceParams) SetDhcpoptionsnetworklist(v map[string]string) {
+func (p *DeployVnfApplianceParams) SetDhcpoptionsnetworklist(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -708,12 +726,26 @@ func (p *DeployVnfApplianceParams) ResetDhcpoptionsnetworklist() {
 	}
 }
 
-func (p *DeployVnfApplianceParams) GetDhcpoptionsnetworklist() (map[string]string, bool) {
+func (p *DeployVnfApplianceParams) GetDhcpoptionsnetworklist() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["dhcpoptionsnetworklist"].(map[string]string)
+	value, ok := p.p["dhcpoptionsnetworklist"].([]map[string]string)
 	return value, ok
+}
+
+func (p *DeployVnfApplianceParams) AddDhcpoptionsnetworklist(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["dhcpoptionsnetworklist"]
+	if !found {
+		p.p["dhcpoptionsnetworklist"] = []map[string]string{}
+		val = p.p["dhcpoptionsnetworklist"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["dhcpoptionsnetworklist"] = l
 }
 
 func (p *DeployVnfApplianceParams) SetDiskofferingid(v string) {
@@ -1010,7 +1042,7 @@ func (p *DeployVnfApplianceParams) GetIpaddress() (string, bool) {
 	return value, ok
 }
 
-func (p *DeployVnfApplianceParams) SetIptonetworklist(v map[string]string) {
+func (p *DeployVnfApplianceParams) SetIptonetworklist(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -1023,12 +1055,26 @@ func (p *DeployVnfApplianceParams) ResetIptonetworklist() {
 	}
 }
 
-func (p *DeployVnfApplianceParams) GetIptonetworklist() (map[string]string, bool) {
+func (p *DeployVnfApplianceParams) GetIptonetworklist() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["iptonetworklist"].(map[string]string)
+	value, ok := p.p["iptonetworklist"].([]map[string]string)
 	return value, ok
+}
+
+func (p *DeployVnfApplianceParams) AddIptonetworklist(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["iptonetworklist"]
+	if !found {
+		p.p["iptonetworklist"] = []map[string]string{}
+		val = p.p["iptonetworklist"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["iptonetworklist"] = l
 }
 
 func (p *DeployVnfApplianceParams) SetKeyboard(v string) {
@@ -1220,7 +1266,7 @@ func (p *DeployVnfApplianceParams) GetNicmultiqueuenumber() (int, bool) {
 	return value, ok
 }
 
-func (p *DeployVnfApplianceParams) SetNicnetworklist(v map[string]string) {
+func (p *DeployVnfApplianceParams) SetNicnetworklist(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -1233,12 +1279,26 @@ func (p *DeployVnfApplianceParams) ResetNicnetworklist() {
 	}
 }
 
-func (p *DeployVnfApplianceParams) GetNicnetworklist() (map[string]string, bool) {
+func (p *DeployVnfApplianceParams) GetNicnetworklist() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["nicnetworklist"].(map[string]string)
+	value, ok := p.p["nicnetworklist"].([]map[string]string)
 	return value, ok
+}
+
+func (p *DeployVnfApplianceParams) AddNicnetworklist(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["nicnetworklist"]
+	if !found {
+		p.p["nicnetworklist"] = []map[string]string{}
+		val = p.p["nicnetworklist"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["nicnetworklist"] = l
 }
 
 func (p *DeployVnfApplianceParams) SetNicpackedvirtqueuesenabled(v bool) {
@@ -1709,6 +1769,7 @@ func (s *VirtualNetworkFunctionsService) DeployVnfAppliance(p *DeployVnfApplianc
 type DeployVnfApplianceResponse struct {
 	Account               string                                    `json:"account"`
 	Affinitygroup         []DeployVnfApplianceResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                    `json:"alloweddetails"`
 	Arch                  string                                    `json:"arch"`
 	Autoscalevmgroupid    string                                    `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                    `json:"autoscalevmgroupname"`
@@ -1810,7 +1871,7 @@ type DeployVnfApplianceResponse struct {
 	Videoram              int64                                     `json:"videoram"`
 	Vmtype                string                                    `json:"vmtype"`
 	Vnfdetails            map[string]string                         `json:"vnfdetails"`
-	Vnfnics               []string                                  `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                 `json:"vnfnics"`
 	Zoneid                string                                    `json:"zoneid"`
 	Zonename              string                                    `json:"zonename"`
 }
@@ -3009,14 +3070,25 @@ func (s *VirtualNetworkFunctionsService) ListVnfAppliances(p *ListVnfAppliancesP
 	return &r, nil
 }
 
+type VnfNic struct {
+	Deviceid    int64  `json:"deviceid"`
+	Description string `json:"description"`
+	Management  bool   `json:"management"`
+	Name        string `json:"name"`
+	Networkid   string `json:"networkid"`
+	Networkname string `json:"networkname"`
+	Required    bool   `json:"required"`
+}
+
 type ListVnfAppliancesResponse struct {
 	Count         int             `json:"count"`
-	VnfAppliances []*VnfAppliance `json:"vnfappliance"`
+	VnfAppliances []*VnfAppliance `json:"virtualmachine"`
 }
 
 type VnfAppliance struct {
 	Account               string                      `json:"account"`
 	Affinitygroup         []VnfApplianceAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                      `json:"alloweddetails"`
 	Arch                  string                      `json:"arch"`
 	Autoscalevmgroupid    string                      `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                      `json:"autoscalevmgroupname"`
@@ -3118,7 +3190,7 @@ type VnfAppliance struct {
 	Videoram              int64                       `json:"videoram"`
 	Vmtype                string                      `json:"vmtype"`
 	Vnfdetails            map[string]string           `json:"vnfdetails"`
-	Vnfnics               []string                    `json:"vnfnics"`
+	Vnfnics               []*VnfNic                   `json:"vnfnics"`
 	Zoneid                string                      `json:"zoneid"`
 	Zonename              string                      `json:"zonename"`
 }
@@ -3982,7 +4054,7 @@ func (s *VirtualNetworkFunctionsService) ListVnfTemplates(p *ListVnfTemplatesPar
 
 type ListVnfTemplatesResponse struct {
 	Count        int            `json:"count"`
-	VnfTemplates []*VnfTemplate `json:"vnftemplate"`
+	VnfTemplates []*VnfTemplate `json:"template"`
 }
 
 type VnfTemplate struct {

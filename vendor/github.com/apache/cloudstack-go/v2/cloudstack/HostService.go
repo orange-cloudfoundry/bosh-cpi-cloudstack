@@ -444,7 +444,7 @@ func (s *HostService) NewAddBaremetalHostParams(hypervisor string, podid string,
 	return p
 }
 
-// add a baremetal host
+// Add a baremetal host
 func (s *HostService) AddBaremetalHost(p *AddBaremetalHostParams) (*AddBaremetalHostResponse, error) {
 	resp, err := s.cs.newPostRequest("addBaremetalHost", p.toURLValues())
 	if err != nil {
@@ -1154,6 +1154,12 @@ func (p *AddSecondaryStorageParams) toURLValues() url.Values {
 	if p.p == nil {
 		return u
 	}
+	if v, found := p.p["details"]; found {
+		m := v.(map[string]string)
+		for i, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("details[%d].%s", i, k), m[k])
+		}
+	}
 	if v, found := p.p["url"]; found {
 		u.Set("url", v.(string))
 	}
@@ -1161,6 +1167,27 @@ func (p *AddSecondaryStorageParams) toURLValues() url.Values {
 		u.Set("zoneid", v.(string))
 	}
 	return u
+}
+
+func (p *AddSecondaryStorageParams) SetDetails(v map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["details"] = v
+}
+
+func (p *AddSecondaryStorageParams) ResetDetails() {
+	if p.p != nil && p.p["details"] != nil {
+		delete(p.p, "details")
+	}
+}
+
+func (p *AddSecondaryStorageParams) GetDetails() (map[string]string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["details"].(map[string]string)
+	return value, ok
 }
 
 func (p *AddSecondaryStorageParams) SetUrl(v string) {
@@ -2312,7 +2339,7 @@ func (s *HostService) NewFindHostsForMigrationParams(virtualmachineid string) *F
 	return p
 }
 
-// Find hosts suitable for migrating a virtual machine.
+// Find hosts suitable for migrating an Instance.
 func (s *HostService) FindHostsForMigration(p *FindHostsForMigrationParams) (*FindHostsForMigrationResponse, error) {
 	resp, err := s.cs.newRequest("findHostsForMigration", p.toURLValues())
 	if err != nil {
@@ -2842,7 +2869,7 @@ func (p *ListHostsParams) toURLValues() url.Values {
 		u.Set("keyword", v.(string))
 	}
 	if v, found := p.p["managementserverid"]; found {
-		u.Set("managementserverid", v.(string))
+		u.Set("managementserverid", string(v.(UUID)))
 	}
 	if v, found := p.p["name"]; found {
 		u.Set("name", v.(string))
@@ -2876,6 +2903,9 @@ func (p *ListHostsParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["type"]; found {
 		u.Set("type", v.(string))
+	}
+	if v, found := p.p["version"]; found {
+		u.Set("version", v.(string))
 	}
 	if v, found := p.p["virtualmachineid"]; found {
 		u.Set("virtualmachineid", v.(string))
@@ -3264,6 +3294,27 @@ func (p *ListHostsParams) GetType() (string, bool) {
 	return value, ok
 }
 
+func (p *ListHostsParams) SetVersion(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["version"] = v
+}
+
+func (p *ListHostsParams) ResetVersion() {
+	if p.p != nil && p.p["version"] != nil {
+		delete(p.p, "version")
+	}
+}
+
+func (p *ListHostsParams) GetVersion() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["version"].(string)
+	return value, ok
+}
+
 func (p *ListHostsParams) SetVirtualmachineid(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -3546,7 +3597,7 @@ func (p *ListHostsMetricsParams) toURLValues() url.Values {
 		u.Set("keyword", v.(string))
 	}
 	if v, found := p.p["managementserverid"]; found {
-		u.Set("managementserverid", v.(string))
+		u.Set("managementserverid", string(v.(UUID)))
 	}
 	if v, found := p.p["name"]; found {
 		u.Set("name", v.(string))
@@ -3580,6 +3631,9 @@ func (p *ListHostsMetricsParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["type"]; found {
 		u.Set("type", v.(string))
+	}
+	if v, found := p.p["version"]; found {
+		u.Set("version", v.(string))
 	}
 	if v, found := p.p["virtualmachineid"]; found {
 		u.Set("virtualmachineid", v.(string))
@@ -3968,6 +4022,27 @@ func (p *ListHostsMetricsParams) GetType() (string, bool) {
 	return value, ok
 }
 
+func (p *ListHostsMetricsParams) SetVersion(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["version"] = v
+}
+
+func (p *ListHostsMetricsParams) ResetVersion() {
+	if p.p != nil && p.p["version"] != nil {
+		delete(p.p, "version")
+	}
+}
+
+func (p *ListHostsMetricsParams) GetVersion() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["version"].(string)
+	return value, ok
+}
+
 func (p *ListHostsMetricsParams) SetVirtualmachineid(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -4118,7 +4193,7 @@ func (s *HostService) ListHostsMetrics(p *ListHostsMetricsParams) (*ListHostsMet
 
 type ListHostsMetricsResponse struct {
 	Count        int            `json:"count"`
-	HostsMetrics []*HostsMetric `json:"hostsmetric"`
+	HostsMetrics []*HostsMetric `json:"host"`
 }
 
 type HostsMetric struct {
@@ -5418,7 +5493,7 @@ func (s *HostService) NewMigrateSecondaryStorageDataParams(destpools []string, s
 	return p
 }
 
-// migrates data objects from one secondary storage to destination image store(s)
+// Migrates data objects from one secondary storage to destination image store(s)
 func (s *HostService) MigrateSecondaryStorageData(p *MigrateSecondaryStorageDataParams) (*MigrateSecondaryStorageDataResponse, error) {
 	resp, err := s.cs.newPostRequest("migrateSecondaryStorageData", p.toURLValues())
 	if err != nil {
@@ -6339,7 +6414,7 @@ func (s *HostService) NewDeclareHostAsDegradedParams(id string) *DeclareHostAsDe
 	return p
 }
 
-// Declare host as 'Degraded'. Host must be on 'Disconnected' or 'Alert' state. The ADMIN must be sure that there are no VMs running on the respective host otherwise this command might corrupted VMs that were running on the 'Degraded' host.
+// Declare host as 'Degraded'. Host must be on 'Disconnected' or 'Alert' state. The ADMIN must be sure that there are no Instances running on the respective host otherwise this command might corrupted Instances that were running on the 'Degraded' host.
 func (s *HostService) DeclareHostAsDegraded(p *DeclareHostAsDegradedParams) (*DeclareHostAsDegradedResponse, error) {
 	resp, err := s.cs.newPostRequest("declareHostAsDegraded", p.toURLValues())
 	if err != nil {
