@@ -4,7 +4,7 @@ go 1.26
 
 require (
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
-	github.com/apache/cloudstack-go/v2 v2.19.0
+	github.com/apache/cloudstack-go/v2 v2.19.1
 	github.com/cloudfoundry/bosh-cpi-go v0.0.0-20260620100136-96c1efec01d3
 	github.com/cloudfoundry/bosh-utils v0.0.635
 	github.com/onsi/ginkgo v1.16.5

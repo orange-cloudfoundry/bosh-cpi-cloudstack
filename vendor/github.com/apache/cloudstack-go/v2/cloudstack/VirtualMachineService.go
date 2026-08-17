@@ -258,7 +258,7 @@ func (s *VirtualMachineService) NewAddNicToVirtualMachineParams(networkid string
 	return p
 }
 
-// Adds VM to specified network by creating a NIC
+// Adds Instance to specified network by creating a NIC
 func (s *VirtualMachineService) AddNicToVirtualMachine(p *AddNicToVirtualMachineParams) (*AddNicToVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("addNicToVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -296,6 +296,7 @@ func (s *VirtualMachineService) AddNicToVirtualMachine(p *AddNicToVirtualMachine
 type AddNicToVirtualMachineResponse struct {
 	Account               string                                        `json:"account"`
 	Affinitygroup         []AddNicToVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                        `json:"alloweddetails"`
 	Arch                  string                                        `json:"arch"`
 	Autoscalevmgroupid    string                                        `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                        `json:"autoscalevmgroupname"`
@@ -397,7 +398,7 @@ type AddNicToVirtualMachineResponse struct {
 	Videoram              int64                                         `json:"videoram"`
 	Vmtype                string                                        `json:"vmtype"`
 	Vnfdetails            map[string]string                             `json:"vnfdetails"`
-	Vnfnics               []string                                      `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                     `json:"vnfnics"`
 	Zoneid                string                                        `json:"zoneid"`
 	Zonename              string                                        `json:"zonename"`
 }
@@ -641,7 +642,7 @@ func (s *VirtualMachineService) NewAssignVirtualMachineParams(virtualmachineid s
 	return p
 }
 
-// Change ownership of a VM from one account to another. This API is available for Basic zones with security groups and Advanced zones with guest networks. A root administrator can reassign a VM from any account to any other account in any domain. A domain administrator can reassign a VM to any account in the same domain.
+// Change ownership of an Instance from one account to another. This API is available for Basic zones with security groups and Advanced zones with guest networks. A root administrator can reassign an Instance from any account to any other account in any domain. A domain administrator can reassign an Instance to any account in the same domain.
 func (s *VirtualMachineService) AssignVirtualMachine(p *AssignVirtualMachineParams) (*AssignVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("assignVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -659,6 +660,7 @@ func (s *VirtualMachineService) AssignVirtualMachine(p *AssignVirtualMachinePara
 type AssignVirtualMachineResponse struct {
 	Account               string                                      `json:"account"`
 	Affinitygroup         []AssignVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                      `json:"alloweddetails"`
 	Arch                  string                                      `json:"arch"`
 	Autoscalevmgroupid    string                                      `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                      `json:"autoscalevmgroupname"`
@@ -760,7 +762,7 @@ type AssignVirtualMachineResponse struct {
 	Videoram              int64                                       `json:"videoram"`
 	Vmtype                string                                      `json:"vmtype"`
 	Vnfdetails            map[string]string                           `json:"vnfdetails"`
-	Vnfnics               []string                                    `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                   `json:"vnfnics"`
 	Zoneid                string                                      `json:"zoneid"`
 	Zonename              string                                      `json:"zonename"`
 }
@@ -1034,7 +1036,7 @@ func (s *VirtualMachineService) NewChangeServiceForVirtualMachineParams(id strin
 	return p
 }
 
-// (This API is deprecated, use scaleVirtualMachine API)Changes the service offering for a virtual machine. The virtual machine must be in a "Stopped" state for this command to take effect.
+// (This API is deprecated, use scaleVirtualMachine API)Changes the service offering for an Instance. The Instance must be in a "Stopped" state for this command to take effect.
 func (s *VirtualMachineService) ChangeServiceForVirtualMachine(p *ChangeServiceForVirtualMachineParams) (*ChangeServiceForVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("changeServiceForVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -1052,6 +1054,7 @@ func (s *VirtualMachineService) ChangeServiceForVirtualMachine(p *ChangeServiceF
 type ChangeServiceForVirtualMachineResponse struct {
 	Account               string                                                `json:"account"`
 	Affinitygroup         []ChangeServiceForVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                                `json:"alloweddetails"`
 	Arch                  string                                                `json:"arch"`
 	Autoscalevmgroupid    string                                                `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                                `json:"autoscalevmgroupname"`
@@ -1153,7 +1156,7 @@ type ChangeServiceForVirtualMachineResponse struct {
 	Videoram              int64                                                 `json:"videoram"`
 	Vmtype                string                                                `json:"vmtype"`
 	Vnfdetails            map[string]string                                     `json:"vnfdetails"`
-	Vnfnics               []string                                              `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                             `json:"vnfnics"`
 	Zoneid                string                                                `json:"zoneid"`
 	Zonename              string                                                `json:"zonename"`
 }
@@ -1250,7 +1253,7 @@ func (s *VirtualMachineService) NewCleanVMReservationsParams() *CleanVMReservati
 	return p
 }
 
-// Cleanups VM reservations in the database.
+// Cleanups Instance reservations in the database.
 func (s *VirtualMachineService) CleanVMReservations(p *CleanVMReservationsParams) (*CleanVMReservationsResponse, error) {
 	resp, err := s.cs.newPostRequest("cleanVMReservations", p.toURLValues())
 	if err != nil {
@@ -1335,10 +1338,11 @@ func (p *DeployVirtualMachineParams) toURLValues() url.Values {
 		}
 	}
 	if v, found := p.p["datadisksdetails"]; found {
-		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("datadisksdetails[%d].key", i), k)
-			u.Set(fmt.Sprintf("datadisksdetails[%d].value", i), m[k])
+		l := v.([]map[string]string)
+		for i, m := range l {
+			for key, val := range m {
+				u.Set(fmt.Sprintf("datadisksdetails[%d].%s", i, key), val)
+			}
 		}
 	}
 	if v, found := p.p["deploymentplanner"]; found {
@@ -1737,7 +1741,7 @@ func (p *DeployVirtualMachineParams) GetDatadiskofferinglist() (map[string]strin
 	return value, ok
 }
 
-func (p *DeployVirtualMachineParams) SetDatadisksdetails(v map[string]string) {
+func (p *DeployVirtualMachineParams) SetDatadisksdetails(v []map[string]string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
@@ -1750,12 +1754,26 @@ func (p *DeployVirtualMachineParams) ResetDatadisksdetails() {
 	}
 }
 
-func (p *DeployVirtualMachineParams) GetDatadisksdetails() (map[string]string, bool) {
+func (p *DeployVirtualMachineParams) GetDatadisksdetails() ([]map[string]string, bool) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
 	}
-	value, ok := p.p["datadisksdetails"].(map[string]string)
+	value, ok := p.p["datadisksdetails"].([]map[string]string)
 	return value, ok
+}
+
+func (p *DeployVirtualMachineParams) AddDatadisksdetails(item map[string]string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	val, found := p.p["datadisksdetails"]
+	if !found {
+		p.p["datadisksdetails"] = []map[string]string{}
+		val = p.p["datadisksdetails"]
+	}
+	l := val.([]map[string]string)
+	l = append(l, item)
+	p.p["datadisksdetails"] = l
 }
 
 func (p *DeployVirtualMachineParams) SetDeploymentplanner(v string) {
@@ -2798,7 +2816,7 @@ func (s *VirtualMachineService) NewDeployVirtualMachineParams(serviceofferingid 
 	return p
 }
 
-// Creates and automatically starts a virtual machine based on a service offering, disk offering, and template.
+// Creates and automatically starts  an Instance based on a service offering, disk offering, and Template.
 func (s *VirtualMachineService) DeployVirtualMachine(p *DeployVirtualMachineParams) (*DeployVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("deployVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -2836,6 +2854,7 @@ func (s *VirtualMachineService) DeployVirtualMachine(p *DeployVirtualMachinePara
 type DeployVirtualMachineResponse struct {
 	Account               string                                      `json:"account"`
 	Affinitygroup         []DeployVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                      `json:"alloweddetails"`
 	Arch                  string                                      `json:"arch"`
 	Autoscalevmgroupid    string                                      `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                      `json:"autoscalevmgroupname"`
@@ -2937,7 +2956,7 @@ type DeployVirtualMachineResponse struct {
 	Videoram              int64                                       `json:"videoram"`
 	Vmtype                string                                      `json:"vmtype"`
 	Vnfdetails            map[string]string                           `json:"vnfdetails"`
-	Vnfnics               []string                                    `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                   `json:"vnfnics"`
 	Zoneid                string                                      `json:"zoneid"`
 	Zonename              string                                      `json:"zonename"`
 }
@@ -3109,7 +3128,7 @@ func (s *VirtualMachineService) NewDestroyVirtualMachineParams(id string) *Destr
 	return p
 }
 
-// Destroys a virtual machine. Once destroyed, only the administrator can recover it.
+// Destroys  an Instance. Once destroyed, only the administrator can recover it.
 func (s *VirtualMachineService) DestroyVirtualMachine(p *DestroyVirtualMachineParams) (*DestroyVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("destroyVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -3147,6 +3166,7 @@ func (s *VirtualMachineService) DestroyVirtualMachine(p *DestroyVirtualMachinePa
 type DestroyVirtualMachineResponse struct {
 	Account               string                                       `json:"account"`
 	Affinitygroup         []DestroyVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                       `json:"alloweddetails"`
 	Arch                  string                                       `json:"arch"`
 	Autoscalevmgroupid    string                                       `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                       `json:"autoscalevmgroupname"`
@@ -3248,7 +3268,7 @@ type DestroyVirtualMachineResponse struct {
 	Videoram              int64                                        `json:"videoram"`
 	Vmtype                string                                       `json:"vmtype"`
 	Vnfdetails            map[string]string                            `json:"vnfdetails"`
-	Vnfnics               []string                                     `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                    `json:"vnfnics"`
 	Zoneid                string                                       `json:"zoneid"`
 	Zonename              string                                       `json:"zonename"`
 }
@@ -3370,7 +3390,7 @@ func (s *VirtualMachineService) NewExpungeVirtualMachineParams(id string) *Expun
 	return p
 }
 
-// Expunge a virtual machine. Once expunged, it cannot be recoverd.
+// Expunge  an Instance. Once expunged, it cannot be recovered.
 func (s *VirtualMachineService) ExpungeVirtualMachine(p *ExpungeVirtualMachineParams) (*ExpungeVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("expungeVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -3452,7 +3472,7 @@ func (s *VirtualMachineService) NewGetVMPasswordParams(id string) *GetVMPassword
 	return p
 }
 
-// Returns an encrypted password for the VM
+// Returns an encrypted password for the Instance
 func (s *VirtualMachineService) GetVMPassword(p *GetVMPasswordParams) (*GetVMPasswordResponse, error) {
 	resp, err := s.cs.newRequest("getVMPassword", p.toURLValues())
 	if err != nil {
@@ -4676,7 +4696,7 @@ func (s *VirtualMachineService) GetVirtualMachineByID(id string, opts ...OptionF
 	return nil, l.Count, fmt.Errorf("There is more then one result for VirtualMachine UUID: %s!", id)
 }
 
-// List the virtual machines owned by the account.
+// List the Instances owned by the account.
 func (s *VirtualMachineService) ListVirtualMachines(p *ListVirtualMachinesParams) (*ListVirtualMachinesResponse, error) {
 	resp, err := s.cs.newRequest("listVirtualMachines", p.toURLValues())
 	if err != nil {
@@ -4699,6 +4719,7 @@ type ListVirtualMachinesResponse struct {
 type VirtualMachine struct {
 	Account               string                        `json:"account"`
 	Affinitygroup         []VirtualMachineAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                        `json:"alloweddetails"`
 	Arch                  string                        `json:"arch"`
 	Autoscalevmgroupid    string                        `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                        `json:"autoscalevmgroupname"`
@@ -4800,7 +4821,7 @@ type VirtualMachine struct {
 	Videoram              int64                         `json:"videoram"`
 	Vmtype                string                        `json:"vmtype"`
 	Vnfdetails            map[string]string             `json:"vnfdetails"`
-	Vnfnics               []string                      `json:"vnfnics"`
+	Vnfnics               []*VnfNic                     `json:"vnfnics"`
 	Zoneid                string                        `json:"zoneid"`
 	Zonename              string                        `json:"zonename"`
 }
@@ -6103,6 +6124,7 @@ type ListVirtualMachinesMetricsResponse struct {
 type VirtualMachinesMetric struct {
 	Account               string                               `json:"account"`
 	Affinitygroup         []VirtualMachinesMetricAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                               `json:"alloweddetails"`
 	Arch                  string                               `json:"arch"`
 	Autoscalevmgroupid    string                               `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                               `json:"autoscalevmgroupname"`
@@ -6211,7 +6233,7 @@ type VirtualMachinesMetric struct {
 	Videoram              int64                                `json:"videoram"`
 	Vmtype                string                               `json:"vmtype"`
 	Vnfdetails            map[string]string                    `json:"vnfdetails"`
-	Vnfnics               []string                             `json:"vnfnics"`
+	Vnfnics               []*VnfNic                            `json:"vnfnics"`
 	Zoneid                string                               `json:"zoneid"`
 	Zonename              string                               `json:"zonename"`
 }
@@ -6526,24 +6548,26 @@ type ListVmsForImportResponse struct {
 }
 
 type VmsForImport struct {
-	Bootmode         string             `json:"bootmode"`
-	Boottype         string             `json:"boottype"`
-	Clusterid        string             `json:"clusterid"`
-	Clustername      string             `json:"clustername"`
-	Cpucorepersocket int                `json:"cpucorepersocket"`
-	Cpunumber        int                `json:"cpunumber"`
-	Cpuspeed         int                `json:"cpuspeed"`
-	Disk             []VmsForImportDisk `json:"disk"`
-	Hostid           string             `json:"hostid"`
-	Hostname         string             `json:"hostname"`
-	JobID            string             `json:"jobid"`
-	Jobstatus        int                `json:"jobstatus"`
-	Memory           int                `json:"memory"`
-	Name             string             `json:"name"`
-	Nic              []Nic              `json:"nic"`
-	Osdisplayname    string             `json:"osdisplayname"`
-	Osid             string             `json:"osid"`
-	Powerstate       string             `json:"powerstate"`
+	Bootmode          string             `json:"bootmode"`
+	Boottype          string             `json:"boottype"`
+	Clusterid         string             `json:"clusterid"`
+	Clustername       string             `json:"clustername"`
+	Cpucorepersocket  int                `json:"cpucorepersocket"`
+	Cpunumber         int                `json:"cpunumber"`
+	Cpuspeed          int                `json:"cpuspeed"`
+	Disk              []VmsForImportDisk `json:"disk"`
+	Hostid            string             `json:"hostid"`
+	Hostname          string             `json:"hostname"`
+	Hypervisor        string             `json:"hypervisor"`
+	Hypervisorversion string             `json:"hypervisorversion"`
+	JobID             string             `json:"jobid"`
+	Jobstatus         int                `json:"jobstatus"`
+	Memory            int                `json:"memory"`
+	Name              string             `json:"name"`
+	Nic               []Nic              `json:"nic"`
+	Osdisplayname     string             `json:"osdisplayname"`
+	Osid              string             `json:"osid"`
+	Powerstate        string             `json:"powerstate"`
 }
 
 type VmsForImportDisk struct {
@@ -6678,7 +6702,7 @@ func (s *VirtualMachineService) NewMigrateVirtualMachineParams(virtualmachineid 
 	return p
 }
 
-// Attempts Migration of a VM to a different host or Root volume of the vm to a different storage pool
+// Attempts Migration of an Instance to a different host or Root volume of the Instance to a different storage pool
 func (s *VirtualMachineService) MigrateVirtualMachine(p *MigrateVirtualMachineParams) (*MigrateVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("migrateVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -6716,6 +6740,7 @@ func (s *VirtualMachineService) MigrateVirtualMachine(p *MigrateVirtualMachinePa
 type MigrateVirtualMachineResponse struct {
 	Account               string                                       `json:"account"`
 	Affinitygroup         []MigrateVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                       `json:"alloweddetails"`
 	Arch                  string                                       `json:"arch"`
 	Autoscalevmgroupid    string                                       `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                       `json:"autoscalevmgroupname"`
@@ -6817,7 +6842,7 @@ type MigrateVirtualMachineResponse struct {
 	Videoram              int64                                        `json:"videoram"`
 	Vmtype                string                                       `json:"vmtype"`
 	Vnfdetails            map[string]string                            `json:"vnfdetails"`
-	Vnfnics               []string                                     `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                    `json:"vnfnics"`
 	Zoneid                string                                       `json:"zoneid"`
 	Zonename              string                                       `json:"zonename"`
 }
@@ -7031,7 +7056,7 @@ func (s *VirtualMachineService) NewMigrateVirtualMachineWithVolumeParams(virtual
 	return p
 }
 
-// Attempts Migration of a VM with its volumes to a different host
+// Attempts Migration of an Instance with its volumes to a different host
 func (s *VirtualMachineService) MigrateVirtualMachineWithVolume(p *MigrateVirtualMachineWithVolumeParams) (*MigrateVirtualMachineWithVolumeResponse, error) {
 	resp, err := s.cs.newPostRequest("migrateVirtualMachineWithVolume", p.toURLValues())
 	if err != nil {
@@ -7069,6 +7094,7 @@ func (s *VirtualMachineService) MigrateVirtualMachineWithVolume(p *MigrateVirtua
 type MigrateVirtualMachineWithVolumeResponse struct {
 	Account               string                                                 `json:"account"`
 	Affinitygroup         []MigrateVirtualMachineWithVolumeResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                                 `json:"alloweddetails"`
 	Arch                  string                                                 `json:"arch"`
 	Autoscalevmgroupid    string                                                 `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                                 `json:"autoscalevmgroupname"`
@@ -7170,7 +7196,7 @@ type MigrateVirtualMachineWithVolumeResponse struct {
 	Videoram              int64                                                  `json:"videoram"`
 	Vmtype                string                                                 `json:"vmtype"`
 	Vnfdetails            map[string]string                                      `json:"vnfdetails"`
-	Vnfnics               []string                                               `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                              `json:"vnfnics"`
 	Zoneid                string                                                 `json:"zoneid"`
 	Zonename              string                                                 `json:"zonename"`
 }
@@ -7342,7 +7368,7 @@ func (s *VirtualMachineService) NewRebootVirtualMachineParams(id string) *Reboot
 	return p
 }
 
-// Reboots a virtual machine.
+// Reboots  an Instance.
 func (s *VirtualMachineService) RebootVirtualMachine(p *RebootVirtualMachineParams) (*RebootVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("rebootVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -7380,6 +7406,7 @@ func (s *VirtualMachineService) RebootVirtualMachine(p *RebootVirtualMachinePara
 type RebootVirtualMachineResponse struct {
 	Account               string                                      `json:"account"`
 	Affinitygroup         []RebootVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                      `json:"alloweddetails"`
 	Arch                  string                                      `json:"arch"`
 	Autoscalevmgroupid    string                                      `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                      `json:"autoscalevmgroupname"`
@@ -7481,7 +7508,7 @@ type RebootVirtualMachineResponse struct {
 	Videoram              int64                                       `json:"videoram"`
 	Vmtype                string                                      `json:"vmtype"`
 	Vnfdetails            map[string]string                           `json:"vnfdetails"`
-	Vnfnics               []string                                    `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                   `json:"vnfnics"`
 	Zoneid                string                                      `json:"zoneid"`
 	Zonename              string                                      `json:"zonename"`
 }
@@ -7603,7 +7630,7 @@ func (s *VirtualMachineService) NewRecoverVirtualMachineParams(id string) *Recov
 	return p
 }
 
-// Recovers a virtual machine.
+// Recovers  an Instance.
 func (s *VirtualMachineService) RecoverVirtualMachine(p *RecoverVirtualMachineParams) (*RecoverVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("recoverVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -7621,6 +7648,7 @@ func (s *VirtualMachineService) RecoverVirtualMachine(p *RecoverVirtualMachinePa
 type RecoverVirtualMachineResponse struct {
 	Account               string                                       `json:"account"`
 	Affinitygroup         []RecoverVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                       `json:"alloweddetails"`
 	Arch                  string                                       `json:"arch"`
 	Autoscalevmgroupid    string                                       `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                       `json:"autoscalevmgroupname"`
@@ -7722,7 +7750,7 @@ type RecoverVirtualMachineResponse struct {
 	Videoram              int64                                        `json:"videoram"`
 	Vmtype                string                                       `json:"vmtype"`
 	Vnfdetails            map[string]string                            `json:"vnfdetails"`
-	Vnfnics               []string                                     `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                    `json:"vnfnics"`
 	Zoneid                string                                       `json:"zoneid"`
 	Zonename              string                                       `json:"zonename"`
 }
@@ -7869,7 +7897,7 @@ func (s *VirtualMachineService) NewRemoveNicFromVirtualMachineParams(nicid strin
 	return p
 }
 
-// Removes VM from specified network by deleting a NIC
+// Removes Instance from specified network by deleting a NIC
 func (s *VirtualMachineService) RemoveNicFromVirtualMachine(p *RemoveNicFromVirtualMachineParams) (*RemoveNicFromVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("removeNicFromVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -7907,6 +7935,7 @@ func (s *VirtualMachineService) RemoveNicFromVirtualMachine(p *RemoveNicFromVirt
 type RemoveNicFromVirtualMachineResponse struct {
 	Account               string                                             `json:"account"`
 	Affinitygroup         []RemoveNicFromVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                             `json:"alloweddetails"`
 	Arch                  string                                             `json:"arch"`
 	Autoscalevmgroupid    string                                             `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                             `json:"autoscalevmgroupname"`
@@ -8008,7 +8037,7 @@ type RemoveNicFromVirtualMachineResponse struct {
 	Videoram              int64                                              `json:"videoram"`
 	Vmtype                string                                             `json:"vmtype"`
 	Vnfdetails            map[string]string                                  `json:"vnfdetails"`
-	Vnfnics               []string                                           `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                          `json:"vnfnics"`
 	Zoneid                string                                             `json:"zoneid"`
 	Zonename              string                                             `json:"zonename"`
 }
@@ -8154,7 +8183,7 @@ func (s *VirtualMachineService) NewResetPasswordForVirtualMachineParams(id strin
 	return p
 }
 
-// Resets the password for virtual machine. The virtual machine must be in a "Stopped" state and the template must already support this feature for this command to take effect. [async]
+// Resets the password for Instance. The Instance must be in a "Stopped" state and the Template must already support this feature for this command to take effect. [async]
 func (s *VirtualMachineService) ResetPasswordForVirtualMachine(p *ResetPasswordForVirtualMachineParams) (*ResetPasswordForVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("resetPasswordForVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -8192,6 +8221,7 @@ func (s *VirtualMachineService) ResetPasswordForVirtualMachine(p *ResetPasswordF
 type ResetPasswordForVirtualMachineResponse struct {
 	Account               string                                                `json:"account"`
 	Affinitygroup         []ResetPasswordForVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                                `json:"alloweddetails"`
 	Arch                  string                                                `json:"arch"`
 	Autoscalevmgroupid    string                                                `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                                `json:"autoscalevmgroupname"`
@@ -8293,7 +8323,7 @@ type ResetPasswordForVirtualMachineResponse struct {
 	Videoram              int64                                                 `json:"videoram"`
 	Vmtype                string                                                `json:"vmtype"`
 	Vnfdetails            map[string]string                                     `json:"vnfdetails"`
-	Vnfnics               []string                                              `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                             `json:"vnfnics"`
 	Zoneid                string                                                `json:"zoneid"`
 	Zonename              string                                                `json:"zonename"`
 }
@@ -8562,7 +8592,7 @@ func (s *VirtualMachineService) NewResetUserDataForVirtualMachineParams(id strin
 	return p
 }
 
-// Resets the UserData for virtual machine. The virtual machine must be in a "Stopped" state.
+// Resets the UserData for Instance. The Instance must be in a "Stopped" state.
 func (s *VirtualMachineService) ResetUserDataForVirtualMachine(p *ResetUserDataForVirtualMachineParams) (*ResetUserDataForVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("resetUserDataForVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -8580,6 +8610,7 @@ func (s *VirtualMachineService) ResetUserDataForVirtualMachine(p *ResetUserDataF
 type ResetUserDataForVirtualMachineResponse struct {
 	Account               string                                                `json:"account"`
 	Affinitygroup         []ResetUserDataForVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                                `json:"alloweddetails"`
 	Arch                  string                                                `json:"arch"`
 	Autoscalevmgroupid    string                                                `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                                `json:"autoscalevmgroupname"`
@@ -8681,7 +8712,7 @@ type ResetUserDataForVirtualMachineResponse struct {
 	Videoram              int64                                                 `json:"videoram"`
 	Vmtype                string                                                `json:"vmtype"`
 	Vnfdetails            map[string]string                                     `json:"vnfdetails"`
-	Vnfnics               []string                                              `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                             `json:"vnfnics"`
 	Zoneid                string                                                `json:"zoneid"`
 	Zonename              string                                                `json:"zonename"`
 }
@@ -8928,7 +8959,7 @@ func (s *VirtualMachineService) NewRestoreVirtualMachineParams(virtualmachineid 
 	return p
 }
 
-// Restore a VM to original template/ISO or new template/ISO
+// Restore an Instance to original Template/ISO or new Template/ISO
 func (s *VirtualMachineService) RestoreVirtualMachine(p *RestoreVirtualMachineParams) (*RestoreVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("restoreVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -8966,6 +8997,7 @@ func (s *VirtualMachineService) RestoreVirtualMachine(p *RestoreVirtualMachinePa
 type RestoreVirtualMachineResponse struct {
 	Account               string                                       `json:"account"`
 	Affinitygroup         []RestoreVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                       `json:"alloweddetails"`
 	Arch                  string                                       `json:"arch"`
 	Autoscalevmgroupid    string                                       `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                       `json:"autoscalevmgroupname"`
@@ -9067,7 +9099,7 @@ type RestoreVirtualMachineResponse struct {
 	Videoram              int64                                        `json:"videoram"`
 	Vmtype                string                                       `json:"vmtype"`
 	Vnfdetails            map[string]string                            `json:"vnfdetails"`
-	Vnfnics               []string                                     `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                    `json:"vnfnics"`
 	Zoneid                string                                       `json:"zoneid"`
 	Zonename              string                                       `json:"zonename"`
 }
@@ -9341,7 +9373,7 @@ func (s *VirtualMachineService) NewScaleVirtualMachineParams(id string, serviceo
 	return p
 }
 
-// Scales the virtual machine to a new service offering. This command also considers the volume size in the service offering or disk offering linked to the new service offering and apply all characteristics to the root volume.
+// Scales the Instance to a new service offering. This command also considers the volume size in the service offering or disk offering linked to the new service offering and apply all characteristics to the root volume.
 func (s *VirtualMachineService) ScaleVirtualMachine(p *ScaleVirtualMachineParams) (*ScaleVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("scaleVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -9569,7 +9601,7 @@ func (s *VirtualMachineService) NewStartVirtualMachineParams(id string) *StartVi
 	return p
 }
 
-// Starts a virtual machine.
+// Starts  an Instance.
 func (s *VirtualMachineService) StartVirtualMachine(p *StartVirtualMachineParams) (*StartVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("startVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -9607,6 +9639,7 @@ func (s *VirtualMachineService) StartVirtualMachine(p *StartVirtualMachineParams
 type StartVirtualMachineResponse struct {
 	Account               string                                     `json:"account"`
 	Affinitygroup         []StartVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                     `json:"alloweddetails"`
 	Arch                  string                                     `json:"arch"`
 	Autoscalevmgroupid    string                                     `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                     `json:"autoscalevmgroupname"`
@@ -9708,7 +9741,7 @@ type StartVirtualMachineResponse struct {
 	Videoram              int64                                      `json:"videoram"`
 	Vmtype                string                                     `json:"vmtype"`
 	Vnfdetails            map[string]string                          `json:"vnfdetails"`
-	Vnfnics               []string                                   `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                  `json:"vnfnics"`
 	Zoneid                string                                     `json:"zoneid"`
 	Zonename              string                                     `json:"zonename"`
 }
@@ -9855,7 +9888,7 @@ func (s *VirtualMachineService) NewStopVirtualMachineParams(id string) *StopVirt
 	return p
 }
 
-// Stops a virtual machine.
+// Stops  an Instance.
 func (s *VirtualMachineService) StopVirtualMachine(p *StopVirtualMachineParams) (*StopVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("stopVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -9893,6 +9926,7 @@ func (s *VirtualMachineService) StopVirtualMachine(p *StopVirtualMachineParams) 
 type StopVirtualMachineResponse struct {
 	Account               string                                    `json:"account"`
 	Affinitygroup         []StopVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                    `json:"alloweddetails"`
 	Arch                  string                                    `json:"arch"`
 	Autoscalevmgroupid    string                                    `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                    `json:"autoscalevmgroupname"`
@@ -9994,7 +10028,7 @@ type StopVirtualMachineResponse struct {
 	Videoram              int64                                     `json:"videoram"`
 	Vmtype                string                                    `json:"vmtype"`
 	Vnfdetails            map[string]string                         `json:"vnfdetails"`
-	Vnfnics               []string                                  `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                 `json:"vnfnics"`
 	Zoneid                string                                    `json:"zoneid"`
 	Zonename              string                                    `json:"zonename"`
 }
@@ -10141,7 +10175,7 @@ func (s *VirtualMachineService) NewUpdateDefaultNicForVirtualMachineParams(nicid
 	return p
 }
 
-// Changes the default NIC on a VM
+// Changes the default NIC on an Instance
 func (s *VirtualMachineService) UpdateDefaultNicForVirtualMachine(p *UpdateDefaultNicForVirtualMachineParams) (*UpdateDefaultNicForVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("updateDefaultNicForVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -10179,6 +10213,7 @@ func (s *VirtualMachineService) UpdateDefaultNicForVirtualMachine(p *UpdateDefau
 type UpdateDefaultNicForVirtualMachineResponse struct {
 	Account               string                                                   `json:"account"`
 	Affinitygroup         []UpdateDefaultNicForVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                                   `json:"alloweddetails"`
 	Arch                  string                                                   `json:"arch"`
 	Autoscalevmgroupid    string                                                   `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                                   `json:"autoscalevmgroupname"`
@@ -10280,7 +10315,7 @@ type UpdateDefaultNicForVirtualMachineResponse struct {
 	Videoram              int64                                                    `json:"videoram"`
 	Vmtype                string                                                   `json:"vmtype"`
 	Vnfdetails            map[string]string                                        `json:"vnfdetails"`
-	Vnfnics               []string                                                 `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                                `json:"vnfnics"`
 	Zoneid                string                                                   `json:"zoneid"`
 	Zonename              string                                                   `json:"zonename"`
 }
@@ -10939,7 +10974,7 @@ func (s *VirtualMachineService) NewUpdateVirtualMachineParams(id string) *Update
 	return p
 }
 
-// Updates properties of a virtual machine. The VM has to be stopped and restarted for the new properties to take effect. UpdateVirtualMachine does not first check whether the VM is stopped. Therefore, stop the VM manually before issuing this call.
+// Updates properties of  an Instance. The Instance has to be stopped and restarted for the new properties to take effect. UpdateVirtualMachine does not first check whether the Instance is stopped. Therefore, stop the Instance manually before issuing this call.
 func (s *VirtualMachineService) UpdateVirtualMachine(p *UpdateVirtualMachineParams) (*UpdateVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("updateVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -10957,6 +10992,7 @@ func (s *VirtualMachineService) UpdateVirtualMachine(p *UpdateVirtualMachinePara
 type UpdateVirtualMachineResponse struct {
 	Account               string                                      `json:"account"`
 	Affinitygroup         []UpdateVirtualMachineResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                      `json:"alloweddetails"`
 	Arch                  string                                      `json:"arch"`
 	Autoscalevmgroupid    string                                      `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                      `json:"autoscalevmgroupname"`
@@ -11058,7 +11094,7 @@ type UpdateVirtualMachineResponse struct {
 	Videoram              int64                                       `json:"videoram"`
 	Vmtype                string                                      `json:"vmtype"`
 	Vnfdetails            map[string]string                           `json:"vnfdetails"`
-	Vnfnics               []string                                    `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                   `json:"vnfnics"`
 	Zoneid                string                                      `json:"zoneid"`
 	Zonename              string                                      `json:"zonename"`
 }
@@ -11516,8 +11552,8 @@ func (p *ImportVmParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["details"]; found {
 		m := v.(map[string]string)
-		for i, k := range getSortedKeysFromMap(m) {
-			u.Set(fmt.Sprintf("details[%d].%s", i, k), m[k])
+		for _, k := range getSortedKeysFromMap(m) {
+			u.Set(fmt.Sprintf("details[0].%s", k), m[k])
 		}
 	}
 	if v, found := p.p["diskpath"]; found {
@@ -11593,6 +11629,9 @@ func (p *ImportVmParams) toURLValues() url.Values {
 			u.Set(fmt.Sprintf("nicnetworklist[%d].network", i), m[k])
 		}
 	}
+	if v, found := p.p["osid"]; found {
+		u.Set("osid", v.(string))
+	}
 	if v, found := p.p["password"]; found {
 		u.Set("password", v.(string))
 	}
@@ -11613,6 +11652,10 @@ func (p *ImportVmParams) toURLValues() url.Values {
 	}
 	if v, found := p.p["username"]; found {
 		u.Set("username", v.(string))
+	}
+	if v, found := p.p["usevddk"]; found {
+		vv := strconv.FormatBool(v.(bool))
+		u.Set("usevddk", vv)
 	}
 	if v, found := p.p["vcenter"]; found {
 		u.Set("vcenter", v.(string))
@@ -12239,6 +12282,27 @@ func (p *ImportVmParams) GetNicnetworklist() (map[string]string, bool) {
 	return value, ok
 }
 
+func (p *ImportVmParams) SetOsid(v string) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["osid"] = v
+}
+
+func (p *ImportVmParams) ResetOsid() {
+	if p.p != nil && p.p["osid"] != nil {
+		delete(p.p, "osid")
+	}
+}
+
+func (p *ImportVmParams) GetOsid() (string, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["osid"].(string)
+	return value, ok
+}
+
 func (p *ImportVmParams) SetPassword(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -12386,6 +12450,27 @@ func (p *ImportVmParams) GetUsername() (string, bool) {
 	return value, ok
 }
 
+func (p *ImportVmParams) SetUsevddk(v bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	p.p["usevddk"] = v
+}
+
+func (p *ImportVmParams) ResetUsevddk() {
+	if p.p != nil && p.p["usevddk"] != nil {
+		delete(p.p, "usevddk")
+	}
+}
+
+func (p *ImportVmParams) GetUsevddk() (bool, bool) {
+	if p.p == nil {
+		p.p = make(map[string]interface{})
+	}
+	value, ok := p.p["usevddk"].(bool)
+	return value, ok
+}
+
 func (p *ImportVmParams) SetVcenter(v string) {
 	if p.p == nil {
 		p.p = make(map[string]interface{})
@@ -12480,6 +12565,7 @@ func (s *VirtualMachineService) ImportVm(p *ImportVmParams) (*ImportVmResponse, 
 type ImportVmResponse struct {
 	Account               string                          `json:"account"`
 	Affinitygroup         []ImportVmResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                          `json:"alloweddetails"`
 	Arch                  string                          `json:"arch"`
 	Autoscalevmgroupid    string                          `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                          `json:"autoscalevmgroupname"`
@@ -12581,7 +12667,7 @@ type ImportVmResponse struct {
 	Videoram              int64                           `json:"videoram"`
 	Vmtype                string                          `json:"vmtype"`
 	Vnfdetails            map[string]string               `json:"vnfdetails"`
-	Vnfnics               []string                        `json:"vnfnics"`
+	Vnfnics               []*VnfNic                       `json:"vnfnics"`
 	Zoneid                string                          `json:"zoneid"`
 	Zonename              string                          `json:"zonename"`
 }
@@ -12752,7 +12838,7 @@ func (s *VirtualMachineService) NewUnmanageVirtualMachineParams(id string) *Unma
 	return p
 }
 
-// Unmanage a guest virtual machine.
+// Unmanage a Guest Instance.
 func (s *VirtualMachineService) UnmanageVirtualMachine(p *UnmanageVirtualMachineParams) (*UnmanageVirtualMachineResponse, error) {
 	resp, err := s.cs.newPostRequest("unmanageVirtualMachine", p.toURLValues())
 	if err != nil {
@@ -12938,7 +13024,7 @@ func (s *VirtualMachineService) NewListUnmanagedInstancesParams(clusterid string
 	return p
 }
 
-// Lists unmanaged virtual machines for a given cluster.
+// Lists unmanaged Instances for a given cluster.
 func (s *VirtualMachineService) ListUnmanagedInstances(p *ListUnmanagedInstancesParams) (*ListUnmanagedInstancesResponse, error) {
 	resp, err := s.cs.newRequest("listUnmanagedInstances", p.toURLValues())
 	if err != nil {
@@ -12959,24 +13045,26 @@ type ListUnmanagedInstancesResponse struct {
 }
 
 type UnmanagedInstance struct {
-	Bootmode         string                  `json:"bootmode"`
-	Boottype         string                  `json:"boottype"`
-	Clusterid        string                  `json:"clusterid"`
-	Clustername      string                  `json:"clustername"`
-	Cpucorepersocket int                     `json:"cpucorepersocket"`
-	Cpunumber        int                     `json:"cpunumber"`
-	Cpuspeed         int                     `json:"cpuspeed"`
-	Disk             []UnmanagedInstanceDisk `json:"disk"`
-	Hostid           string                  `json:"hostid"`
-	Hostname         string                  `json:"hostname"`
-	JobID            string                  `json:"jobid"`
-	Jobstatus        int                     `json:"jobstatus"`
-	Memory           int                     `json:"memory"`
-	Name             string                  `json:"name"`
-	Nic              []Nic                   `json:"nic"`
-	Osdisplayname    string                  `json:"osdisplayname"`
-	Osid             string                  `json:"osid"`
-	Powerstate       string                  `json:"powerstate"`
+	Bootmode          string                  `json:"bootmode"`
+	Boottype          string                  `json:"boottype"`
+	Clusterid         string                  `json:"clusterid"`
+	Clustername       string                  `json:"clustername"`
+	Cpucorepersocket  int                     `json:"cpucorepersocket"`
+	Cpunumber         int                     `json:"cpunumber"`
+	Cpuspeed          int                     `json:"cpuspeed"`
+	Disk              []UnmanagedInstanceDisk `json:"disk"`
+	Hostid            string                  `json:"hostid"`
+	Hostname          string                  `json:"hostname"`
+	Hypervisor        string                  `json:"hypervisor"`
+	Hypervisorversion string                  `json:"hypervisorversion"`
+	JobID             string                  `json:"jobid"`
+	Jobstatus         int                     `json:"jobstatus"`
+	Memory            int                     `json:"memory"`
+	Name              string                  `json:"name"`
+	Nic               []Nic                   `json:"nic"`
+	Osdisplayname     string                  `json:"osdisplayname"`
+	Osid              string                  `json:"osid"`
+	Powerstate        string                  `json:"powerstate"`
 }
 
 type UnmanagedInstanceDisk struct {
@@ -13393,7 +13481,7 @@ func (s *VirtualMachineService) NewImportUnmanagedInstanceParams(clusterid strin
 	return p
 }
 
-// Import unmanaged virtual machine from a given cluster.
+// Import unmanaged Instance from a given cluster.
 func (s *VirtualMachineService) ImportUnmanagedInstance(p *ImportUnmanagedInstanceParams) (*ImportUnmanagedInstanceResponse, error) {
 	resp, err := s.cs.newPostRequest("importUnmanagedInstance", p.toURLValues())
 	if err != nil {
@@ -13431,6 +13519,7 @@ func (s *VirtualMachineService) ImportUnmanagedInstance(p *ImportUnmanagedInstan
 type ImportUnmanagedInstanceResponse struct {
 	Account               string                                         `json:"account"`
 	Affinitygroup         []ImportUnmanagedInstanceResponseAffinitygroup `json:"affinitygroup"`
+	Alloweddetails        string                                         `json:"alloweddetails"`
 	Arch                  string                                         `json:"arch"`
 	Autoscalevmgroupid    string                                         `json:"autoscalevmgroupid"`
 	Autoscalevmgroupname  string                                         `json:"autoscalevmgroupname"`
@@ -13532,7 +13621,7 @@ type ImportUnmanagedInstanceResponse struct {
 	Videoram              int64                                          `json:"videoram"`
 	Vmtype                string                                         `json:"vmtype"`
 	Vnfdetails            map[string]string                              `json:"vnfdetails"`
-	Vnfnics               []string                                       `json:"vnfnics"`
+	Vnfnics               []*VnfNic                                      `json:"vnfnics"`
 	Zoneid                string                                         `json:"zoneid"`
 	Zonename              string                                         `json:"zonename"`
 }
@@ -14085,7 +14174,7 @@ func (s *VirtualMachineService) NewCreateVMScheduleParams(action string, schedul
 	return p
 }
 
-// Create VM Schedule
+// Create Instance Schedule
 func (s *VirtualMachineService) CreateVMSchedule(p *CreateVMScheduleParams) (*CreateVMScheduleResponse, error) {
 	resp, err := s.cs.newPostRequest("createVMSchedule", p.toURLValues())
 	if err != nil {
@@ -14308,7 +14397,7 @@ func (s *VirtualMachineService) NewUpdateVMScheduleParams(id string) *UpdateVMSc
 	return p
 }
 
-// Update VM Schedule.
+// Update Instance Schedule.
 func (s *VirtualMachineService) UpdateVMSchedule(p *UpdateVMScheduleParams) (*UpdateVMScheduleResponse, error) {
 	resp, err := s.cs.newPostRequest("updateVMSchedule", p.toURLValues())
 	if err != nil {
@@ -14567,7 +14656,7 @@ func (s *VirtualMachineService) GetVMScheduleByID(id string, virtualmachineid st
 	return nil, l.Count, fmt.Errorf("There is more then one result for VMSchedule UUID: %s!", id)
 }
 
-// List VM Schedules.
+// List Instance Schedules.
 func (s *VirtualMachineService) ListVMSchedule(p *ListVMScheduleParams) (*ListVMScheduleResponse, error) {
 	resp, err := s.cs.newRequest("listVMSchedule", p.toURLValues())
 	if err != nil {
@@ -14696,7 +14785,7 @@ func (s *VirtualMachineService) NewDeleteVMScheduleParams(virtualmachineid strin
 	return p
 }
 
-// Delete VM Schedule.
+// Delete Instance Schedule.
 func (s *VirtualMachineService) DeleteVMSchedule(p *DeleteVMScheduleParams) (*DeleteVMScheduleResponse, error) {
 	resp, err := s.cs.newPostRequest("deleteVMSchedule", p.toURLValues())
 	if err != nil {
@@ -14815,7 +14904,7 @@ func (s *VirtualMachineService) NewAssignVirtualMachineToBackupOfferingParams(ba
 	return p
 }
 
-// Assigns a VM to a backup offering
+// Assigns an Instance to a backup offering
 func (s *VirtualMachineService) AssignVirtualMachineToBackupOffering(p *AssignVirtualMachineToBackupOfferingParams) (*AssignVirtualMachineToBackupOfferingResponse, error) {
 	resp, err := s.cs.newPostRequest("assignVirtualMachineToBackupOffering", p.toURLValues())
 	if err != nil {
@@ -14922,7 +15011,7 @@ func (s *VirtualMachineService) NewRemoveVirtualMachineFromBackupOfferingParams(
 	return p
 }
 
-// Removes a VM from any existing backup offering
+// Removes an Instance from any existing backup offering
 func (s *VirtualMachineService) RemoveVirtualMachineFromBackupOffering(p *RemoveVirtualMachineFromBackupOfferingParams) (*RemoveVirtualMachineFromBackupOfferingResponse, error) {
 	resp, err := s.cs.newPostRequest("removeVirtualMachineFromBackupOffering", p.toURLValues())
 	if err != nil {
