@@ -9,7 +9,7 @@ require (
 	github.com/cloudfoundry/bosh-utils v0.0.658
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.44.0
-	github.com/prometheus/common v0.72.0
+	github.com/prometheus/common v0.72.1
 )
 
 require (
@@ -26,8 +26,8 @@ require (
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
 	go.uber.org/mock v0.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/net v0.59.0 // indirect
-	golang.org/x/sys v0.48.0 // indirect
-	golang.org/x/text v0.42.0 // indirect
+	golang.org/x/net v0.61.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/text v0.43.0 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 )
